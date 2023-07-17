@@ -1,0 +1,489 @@
+﻿@{
+    ViewData["Title"] = "AddUsers";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* Global CSS, you probably don't need that */
+
+    .clearfix:after {
+        clear: both;
+        content: "";
+        display: block;
+        height: 0;
+    }
+
+    .container {
+        font-family: 'Lato', sans-serif;
+        /*width: 1000px;*/
+        margin: 0 auto;
+    }
+
+    .wrapper {
+        display: table-cell;
+        /*height: 400px;*/
+        vertical-align: middle;
+    }
+
+    .nav {
+        margin-top: 40px;
+    }
+
+    .pull-right {
+        float: right;
+    }
+
+    a, a:active {
+        color: #333;
+        text-decoration: none;
+    }
+
+        a:hover {
+            color: #999;
+        }
+
+    /* Breadcrups CSS */
+
+    .arrow-steps .step {
+        font-size: 14px;
+        text-align: center;
+        color: #666;
+        cursor: default;
+        margin: 0 3px;
+        padding: 10px 10px 10px 30px;
+        min-width: 180px;
+        float: left;
+        position: relative;
+        background-color: #d9e3f7;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        transition: background-color 0.2s ease;
+    }
+
+        .arrow-steps .step:after,
+        .arrow-steps .step:before {
+            content: " ";
+            position: absolute;
+            top: 0;
+            right: -17px;
+            width: 0;
+            height: 0;
+            border-top: 19px solid transparent;
+            border-bottom: 17px solid transparent;
+            border-left: 17px solid #d9e3f7;
+            z-index: 2;
+            transition: border-color 0.2s ease;
+        }
+
+        .arrow-steps .step:before {
+            right: auto;
+            left: 0;
+            border-left: 17px solid #fff;
+            z-index: 0;
+        }
+
+        .arrow-steps .step:first-child:before {
+            border: none;
+        }
+
+        .arrow-steps .step:first-child {
+            border-top-left-radius: 4px;
+            border-bottom-left-radius: 4px;
+        }
+
+        .arrow-steps .step span {
+            position: relative;
+        }
+
+            .arrow-steps .step span:before {
+                opacity: 0;
+                content: "✔";
+                position: absolute;
+                top: -2px;
+                left: -20px;
+            }
+
+        .arrow-steps .step.done span:before {
+            opacity: 1;
+            -webkit-transition: opacity 0.3s ease 0.5s;
+            -moz-transition: opacity 0.3s ease 0.5s;
+            -ms-transition: opacity 0.3s ease 0.5s;
+            transition: opacity 0.3s ease 0.5s;
+        }
+
+        .arrow-steps .step.current {
+            color: #fff;
+            background-color: #23468c;
+        }
+
+            .arrow-steps .step.current:after {
+                border-left: 17px solid #23468c;
+            }
+
+            .hide{
+                display:none;
+            }
+            .show{
+                display:block;
+            }
+
+    #option-1 {
+        color: red;
+    }
+
+    #option-2 {
+        color: green;
+    }
+
+    #option-3 {
+        color: yellow;
+    }
+
+    #option-4 {
+        color: blue;
+    }
+</style>
+
+
+
+
+
+<div class="row">
+    <div class="container">
+        <div class="wrapper">
+            <div class="arrow-steps clearfix">
+                <div class="step first-tab current"> <span> Add New User</span> </div>
+                <div class="step second-tab"> <span>Link To Cases</span> </div>
+                <div class="step third-tab"> <span> Firm Level Permissions</span> </div>
+                <div class="step last-tab"> <span>Access Permissions</span> </div>
+            </div>
+
+            <div class="card first mt-3">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-2 form-group">
+                            <label class="">Name</label>
+                        </div>
+                        <div class="col-lg-3 form-group">
+                            <input type="text" class="form-control" placeholder="First Name" />
+                        </div>
+                        <div class="col-lg-2 form-group">
+                            <input type="text" class="form-control" placeholder="M" />
+                        </div>
+                        <div class="col-lg-3 form-group">
+                            <input type="text" class="form-control" placeholder="Last Name" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-2 form-group">
+                            <label class="">Email</label>
+                        </div>
+                        <div class="col-lg-8 form-group">
+                            <input type="text" class="form-control" placeholder="First Name" />
+                        </div>
+                        
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-2 form-group">
+                            <label class="">UserType</label>
+                        </div>
+                        <div class="col-lg-8 form-group">
+                            <select name="cars" class="form-control" id="cars">
+                                <option value="volvo">Attorney</option>
+                                <option value="saab">Staff</option>
+                                <option value="mercedes">Cashier</option>
+                            </select>
+                        </div>
+                        
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-2 form-group">
+                            <label class="">User Title</label>
+                        </div>
+                        <div class="col-lg-8 form-group">
+                            <input type="text" class="form-control" placeholder="User Title" />
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-2 form-group">
+                            <label class="">Default Rate</label>
+                        </div>
+                        <div class="col-lg-8 form-group">
+                            <input type="number" class="form-control" />
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-2 form-group">
+                            <label class="">Address</label>
+                        </div>
+                        <div class="col-lg-8 form-group">
+                            <input type="text" class="form-control" placeholder="Address"/>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-2 form-group">
+                            <label class="">Phone</label>
+                        </div>
+                        <div class="col-lg-8 form-group">
+                            <input type="text" class="form-control" placeholder="Phone"/>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-2 form-group">
+                            <label class="">Calendar Color</label>
+                        </div>
+                        <div class="col-lg-8 form-group">
+                            <select class="form-control">
+                                <option value="Red" id="option-1">Red</option>
+                                <option value="Green" id="option-2">Green</option>
+                                <option value="Yellow" id="option-3">Yellow</option>
+                                <option value="Blue" id="option-4">Blue</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card second mt-3">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-2 form-group">
+                            <label class="">Name</label>
+                        </div>
+                        <div class="col-lg-3 form-group">
+                            <input type="text" class="form-control" placeholder="First Name" />
+                        </div>
+                        <div class="col-lg-2 form-group">
+                            <input type="text" class="form-control" placeholder="M" />
+                        </div>
+                        <div class="col-lg-3 form-group">
+                            <input type="text" class="form-control" placeholder="Last Name" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-2 form-group">
+                            <label class="">Email</label>
+                        </div>
+                        <div class="col-lg-8 form-group">
+                            <input type="text" class="form-control" placeholder="First Name" />
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-2 form-group">
+                            <label class="">UserType</label>
+                        </div>
+                        <div class="col-lg-8 form-group">
+                            @if (ViewBag.LeadAttorney != null)
+                            {
+                                @Html.DropDownList("LeadAttorney", (IEnumerable<SelectListItem>)ViewBag.Cases, "--- Select Case ---", new { @class = "form-control", Id = "LeadAttorney" })
+                                
+                            }
+                        </div>
+
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="card third mt-3">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-2 form-group">
+                            <label class="">Name</label>
+                        </div>
+                        <div class="col-lg-3 form-group">
+                            <input type="text" class="form-control" placeholder="First Name" />
+                        </div>
+                        <div class="col-lg-2 form-group">
+                            <input type="text" class="form-control" placeholder="M" />
+                        </div>
+                        <div class="col-lg-3 form-group">
+                            <input type="text" class="form-control" placeholder="Last Name" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-2 form-group">
+                            <label class="">Email</label>
+                        </div>
+                        <div class="col-lg-8 form-group">
+                            <input type="text" class="form-control" placeholder="First Name" />
+                        </div>
+
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="card fourth mt-3">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-2 form-group">
+                            <label class="">Name</label>
+                        </div>
+                        <div class="col-lg-3 form-group">
+                            <input type="text" class="form-control" placeholder="First Name" />
+                        </div>
+                        <div class="col-lg-2 form-group">
+                            <input type="text" class="form-control" placeholder="M" />
+                        </div>
+                        <div class="col-lg-3 form-group">
+                            <input type="text" class="form-control" placeholder="Last Name" />
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="nav clearfix">
+                <a href="#" onclick="chkFuncpre()" class="prev btn btn-primary">Previous</a>
+                <a href="#" onclick="chkFuncnxt()" class="next pull-right btn btn-warning">Next</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script>
+    /**/
+
+    jQuery(document).ready(function () {
+
+        var back = jQuery(".prev");
+        var next = jQuery(".next");
+        var steps = jQuery(".step");
+
+        next.bind("click", function () {
+            jQuery.each(steps, function (i) {
+                if (!jQuery(steps[i]).hasClass('current') && !jQuery(steps[i]).hasClass('done')) {
+                    jQuery(steps[i]).addClass('current');
+                    jQuery(steps[i - 1]).removeClass('current').addClass('done');
+                    return false;
+                }
+            })
+        });
+        back.bind("click", function () {
+            jQuery.each(steps, function (i) {
+                if (jQuery(steps[i]).hasClass('done') && jQuery(steps[i + 1]).hasClass('current')) {
+                    jQuery(steps[i + 1]).removeClass('current');
+                    jQuery(steps[i]).removeClass('done').addClass('current');
+                    return false;
+                }
+            })
+        });
+
+    })
+
+    $(document).ready(function () {
+        $(".first").addClass("show");
+        $(".second").addClass("hide");
+        $(".third").addClass("hide");
+        $(".fourth").addClass("hide");
+    });
+
+    function chkFuncnxt(){
+
+        var getdata=$(".first-tab").hasClass("current");
+        if(getdata==true){
+            //show 2nd div
+            //hide rest
+            $(".second").addClass("show");
+            $(".second").removeClass("hide");
+            $(".first").removeClass("show");
+            $(".first").addClass("hide");
+            $(".third").addClass("hide");
+            $(".fourth").addClass("hide");
+
+        }
+
+        var getdataa=$(".second-tab").hasClass("current");
+        //show 3rd hide rest
+        if (getdataa == true) {
+            $(".second").addClass("hide");
+            $(".first").addClass("hide");
+            $(".third").addClass("show");
+            $(".fourth").addClass("hide");
+            $(".third").removeClass("hide");
+            $(".second").removeClass("show");
+
+        }
+        
+        var getdataaa=$(".third-tab").hasClass("current");
+        //show 4th hide rest
+        if (getdataaa == true) {
+            $(".second").addClass("hide");
+            $(".first").addClass("hide");
+            $(".third").addClass("hide");
+            $(".fourth").addClass("show");
+
+            $(".fourth").removeClass("hide");
+            $(".third").removeClass("show");
+
+        }
+        
+        //var getdataaaa=$(".last-tab").hasClass("current");
+        //console.log("4",getdataaaa);
+    }
+    
+    function chkFuncpre(){
+
+        //var getdata=$(".first-tab").hasClass("current");
+        //if(getdata==true){
+        //    $(".second").addClass("show");
+        //    $(".second").removeClass("hide");
+        //    $(".first").removeClass("show");
+        //    $(".first").addClass("hide");
+        //    $(".third").addClass("hide");
+        //    $(".fourth").addClass("hide");
+
+        //}
+
+        var getdataa=$(".second-tab").hasClass("current");
+        if (getdataa == true) {
+            $(".first").addClass("show");
+            $(".second").addClass("hide");
+            $(".third").addClass("hide");
+            $(".fourth").addClass("hide");
+
+            $(".first").removeClass("hide");
+            $(".second").removeClass("show");
+
+        }
+        
+        var getdataaa=$(".third-tab").hasClass("current");
+        if (getdataaa == true) {
+            $(".first").addClass("hide");
+            $(".second").addClass("show");
+            $(".third").addClass("hide");
+            $(".fourth").addClass("hide");
+
+            $(".third").removeClass("show");
+            $(".second").removeClass("hide");
+
+        }
+        
+        var getdataaaa=$(".last-tab").hasClass("current");
+        if (getdataaaa == true) {
+            $(".first").addClass("hide");
+            $(".second").addClass("hide");
+            $(".third").addClass("show");
+            $(".fourth").addClass("hide");
+
+            $(".fourth").removeClass("show");
+            $(".third").removeClass("hide");
+        }
+    }
+    
+
+
+
+</script>

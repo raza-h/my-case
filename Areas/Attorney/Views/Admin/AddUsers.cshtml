@@ -1,0 +1,736 @@
+﻿@{
+    ViewData["Title"] = "AddUsers";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    /* Global CSS, you probably don't need that */
+
+    .clearfix:after {
+        clear: both;
+        content: "";
+        display: block;
+        height: 0;
+    }
+
+    .container {
+        font-family: 'Lato', sans-serif;
+        /*width: 1000px;*/
+        margin: 0 auto;
+    }
+
+    .wrapper {
+        display: table-cell;
+        /*height: 400px;*/
+        vertical-align: middle;
+    }
+
+    .nav {
+        margin-top: 40px;
+    }
+
+    .pull-right {
+        float: right;
+    }
+
+    a, a:active {
+        color: #333;
+        text-decoration: none;
+    }
+
+        a:hover {
+            color: #999;
+        }
+
+    /* Breadcrups CSS */
+
+    .arrow-steps .step {
+        font-size: 14px;
+        text-align: center;
+        color: #666;
+        cursor: default;
+        margin: 0 3px;
+        padding: 10px 10px 10px 30px;
+        min-width: 180px;
+        float: left;
+        position: relative;
+        background-color: #d9e3f7;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        transition: background-color 0.2s ease;
+    }
+
+        .arrow-steps .step:after,
+        .arrow-steps .step:before {
+            content: " ";
+            position: absolute;
+            top: 0;
+            right: -17px;
+            width: 0;
+            height: 0;
+            border-top: 19px solid transparent;
+            border-bottom: 17px solid transparent;
+            border-left: 17px solid #d9e3f7;
+            z-index: 2;
+            transition: border-color 0.2s ease;
+        }
+
+        .arrow-steps .step:before {
+            right: auto;
+            left: 0;
+            border-left: 17px solid #fff;
+            z-index: 0;
+        }
+
+        .arrow-steps .step:first-child:before {
+            border: none;
+        }
+
+        .arrow-steps .step:first-child {
+            border-top-left-radius: 4px;
+            border-bottom-left-radius: 4px;
+        }
+
+        .arrow-steps .step span {
+            position: relative;
+        }
+
+            .arrow-steps .step span:before {
+                opacity: 0;
+                content: "✔";
+                position: absolute;
+                top: -2px;
+                left: -20px;
+            }
+
+        .arrow-steps .step.done span:before {
+            opacity: 1;
+            -webkit-transition: opacity 0.3s ease 0.5s;
+            -moz-transition: opacity 0.3s ease 0.5s;
+            -ms-transition: opacity 0.3s ease 0.5s;
+            transition: opacity 0.3s ease 0.5s;
+        }
+
+        .arrow-steps .step.current {
+            color: #fff;
+            background-color: #23468c;
+        }
+
+            .arrow-steps .step.current:after {
+                border-left: 17px solid #23468c;
+            }
+
+    .hide {
+        display: none;
+    }
+
+    .show {
+        display: block;
+    }
+
+    #option-1 {
+        color: red;
+    }
+
+    #option-2 {
+        color: green;
+    }
+
+    #option-3 {
+        color: yellow;
+    }
+
+    #option-4 {
+        color: blue;
+    }
+</style>
+
+
+
+
+<div class="container">
+    <div class="row mt-4 ">
+        <div class="container">
+            <div class="wrapper">
+                <div class="arrow-steps clearfix">
+                    <div class="step first-tab current"> <span> Add New User</span> </div>
+                    <div class="step second-tab"> <span>Link To Cases</span> </div>
+                    <div class="step third-tab"> <span> Firm Level Permissions</span> </div>
+                    <div class="step last-tab"> <span>Access Permissions</span> </div>
+                </div>
+
+                <div class="card first mt-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-2 form-group">
+                                <label class="">Name</label>
+                            </div>
+                            <div class="col-lg-3 form-group">
+                                <input type="text" class="form-control" placeholder="First Name" />
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="text" class="form-control" placeholder="M" />
+                            </div>
+                            <div class="col-lg-3 form-group">
+                                <input type="text" class="form-control" placeholder="Last Name" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-2 form-group">
+                                <label class="">Email</label>
+                            </div>
+                            <div class="col-lg-8 form-group">
+                                <input type="text" class="form-control" placeholder="First Name" />
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-2 form-group">
+                                <label class="">UserType</label>
+                            </div>
+                            <div class="col-lg-8 form-group">
+                                <select name="cars" class="form-control" id="cars">
+                                    <option value="volvo">Attorney</option>
+                                    <option value="saab">Staff</option>
+                                    <option value="mercedes">Cashier</option>
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-2 form-group">
+                                <label class="">User Title</label>
+                            </div>
+                            <div class="col-lg-8 form-group">
+                                <input type="text" class="form-control" placeholder="User Title" />
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-2 form-group">
+                                <label class="">Default Rate</label>
+                            </div>
+                            <div class="col-lg-8 form-group">
+                                <input type="number" class="form-control" />
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-2 form-group">
+                                <label class="">Address</label>
+                            </div>
+                            <div class="col-lg-8 form-group">
+                                <input type="text" class="form-control" placeholder="Address" />
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-2 form-group">
+                                <label class="">Phone</label>
+                            </div>
+                            <div class="col-lg-8 form-group">
+                                <input type="text" class="form-control" placeholder="Phone" />
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-2 form-group">
+                                <label class="">Calendar Color</label>
+                            </div>
+                            <div class="col-lg-8 form-group">
+                                <select class="form-control">
+                                    <option value="Red" id="option-1">Red</option>
+                                    <option value="Green" id="option-2">Green</option>
+                                    <option value="Yellow" id="option-3">Yellow</option>
+                                    <option value="Blue" id="option-4">Blue</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="card second mt-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-4 form-group">
+                                <label class="">Link User to Case</label>
+                            </div>
+                            <div class="col-lg-8 form-group">
+                                <input type="radio" id="linknocase" name="LinkCase" value="NoCase">
+                                <label for="html">No Cases</label><br>
+                                @*<div class=" form-group">*@
+                                <input type="radio" id="linkallcase" name="LinkCase" value="AllActiveCases">
+                                <label for="html">All Active Cases</label><br>
+                                @*</div>*@
+                                <input type="radio" id="linkspecificcase" name="LinkCase" value="specificCase">
+                                <label for="html">A Specific Case</label><br>
+                                @if (ViewBag.LeadAttorney != null)
+                                {
+                                    @Html.DropDownList("LeadAttorney", (IEnumerable<SelectListItem>)ViewBag.Cases, "--- Select Case ---", new { @class = "form-control", Id = "caseDropdown",@disabled = "disabled" })
+
+                                }
+                            </div>
+
+
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-lg-4 form-group">
+                                <label class="">Case Rate</label>
+                            </div>
+                            <div class="col-lg-8 form-group">
+                                <input type="radio" id="defaultRate" name="caseRate" value="DefaultRate">
+                                <label for="html">Lawyer Default Rate</label><br>
+                                <input type="radio" id="specifyCaseRate" name="caseRate" value="No Case">
+                                <label for="html">Specify Rate For This Case</label>
+                                <span style="display:inline-flex;background-color: #e9ecef;max-width:35%;">
+                                    <span style="min-width: 15%;margin-left: 7%;margin-top: 4%;">$</span>
+                                    <input style="padding:0px;margin:0px" id="specifyRate" type="number" class="form-control" disabled="disabled">
+                                    <span style="min-width: 15%;margin-left: 7%;margin-top: 4%;">/hr</span>
+                                </span>
+                                <br>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="card third mt-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-6 form-group">
+                                <label class="">Access Data from the Cases?</label>
+                            </div>
+                            <div class="col-lg-3 form-group">
+                                <input type="radio" id="accessDataYes" name="accessData" value="allCase">
+                                <label for="html">All Firm Cases</label>
+                            </div>
+                            <div class="col-lg-3 form-group">
+                                <input type="radio" id="accessDataNo" name="accessData" value="linkedCaseOnly">
+                                <label for="html">Only Linked Cases</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 form-group">
+                                <label class="">Able to Add New Members in the Firm?</label>
+                            </div>
+                            <div class="col-lg-3 form-group">
+                                <input type="radio" id="addMemYes" name="addmembers" value="yes">
+                                <label for="html">Yes</label>
+                            </div>
+                            <div class="col-lg-3 form-group">
+                                <input type="radio" id="addMemNo" name="addmembers" value="no">
+                                <label for="html">No</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 form-group">
+                                <label class="">Edit User Permission Settings?</label>
+                            </div>
+                            <div class="col-lg-3 form-group">
+                                <input type="radio" id="editSettingsYes" name="editsettings" value="yes">
+                                <label for="html">Yes</label>
+                            </div>
+                            <div class="col-lg-3 form-group">
+                                <input type="radio" id="editSettingsNo" name="editsettings" value="no">
+                                <label for="html">No</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 form-group">
+                                <label class="">Delete Items From The Firm?</label>
+                            </div>
+                            <div class="col-lg-3 form-group">
+                                <input type="radio" id="delYes" name="deleteitems" value="yes">
+                                <label for="html">Yes</label>
+                            </div>
+                            <div class="col-lg-3 form-group">
+                                <input type="radio" id="delNo" name="deleteitems" value="no">
+                                <label for="html">No</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 form-group">
+                                <label class="">Edit Import Export Capabilities?</label>
+                            </div>
+                            <div class="col-lg-3 form-group">
+                                <input type="radio" id="importYes" name="import" value="yes">
+                                <label for="html">Yes</label>
+                            </div>
+                            <div class="col-lg-3 form-group">
+                                <input type="radio" id="importNo" name="import" value="no">
+                                <label for="html">No</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 form-group">
+                                <label class="">Edit Custom Field Settings?</label>
+                            </div>
+                            <div class="col-lg-3 form-group">
+                                <input type="radio" id="customYes" name="cutomFields" value="yes">
+                                <label for="html">Yes</label>
+                            </div>
+                            <div class="col-lg-3 form-group">
+                                <input type="radio" id="customNo" name="cutomFields" value="no">
+                                <label for="html">No</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 form-group">
+                                <label class="">Manage Your Firm's Preferrences, Billing & Payment Options?</label>
+                            </div>
+                            <div class="col-lg-3 form-group">
+                                <input type="radio" id="manageYes" name="manage" value="yes">
+                                <label for="html">Yes</label>
+                            </div>
+                            <div class="col-lg-3 form-group">
+                                <input type="radio" id="manageNo" name="manage" value="no">
+                                <label for="html">No</label>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="card fourth mt-3">
+                    <div class="card-body">
+                        <label class="">Should this user be able to?</label>
+                        <hr>
+                        <div class="row">
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-2">
+                                <label class="text-muted" style="font-size:14px">Add & Edit</label>
+                            </div>
+                            <div class="col-lg-2">
+                                <label class="text-muted" style="font-size:14px">View Only</label>
+                            </div>
+                            <div class="col-lg-2">
+                                <label class="text-muted" style="font-size:14px">Hidden</label>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-lg-3 form-group">
+                                <label class="">Clients</label>
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataYes" name="forClient" value="allCase">
+
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataNo" name="forClient" value="linkedCaseOnly">
+
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataNo" name="forClient" value="linkedCaseOnly">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-3 form-group">
+                                <label class="">Leads</label>
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataYes" name="forLead" value="allCase">
+
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataNo" name="forLead" value="linkedCaseOnly">
+
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataNo" name="forLead" value="linkedCaseOnly">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-3 form-group">
+                                <label class="">Cases</label>
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataYes" name="forCase" value="allCase">
+
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataNo" name="forCase" value="linkedCaseOnly">
+
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataNo" name="forCase" value="linkedCaseOnly">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-3 form-group">
+                                <label class="">Events</label>
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataYes" name="forEvent" value="allCase">
+
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataNo" name="forEvent" value="linkedCaseOnly">
+
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataNo" name="forEvent" value="linkedCaseOnly">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-3 form-group">
+                                <label class="">Documents</label>
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataYes" name="forDocs" value="allCase">
+
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataNo" name="forDocs" value="linkedCaseOnly">
+
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataNo" name="forDocs" value="linkedCaseOnly">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-3 form-group">
+                                <label class="">Messaging</label>
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataYes" name="forMsg" value="allCase">
+
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataNo" name="forMsg" value="linkedCaseOnly">
+
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataNo" name="forMsg" value="linkedCaseOnly">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-3 form-group">
+                                <label class="">Billing</label>
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataYes" name="forBilling" value="allCase">
+
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataNo" name="forBilling" value="linkedCaseOnly">
+
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataNo" name="forBilling" value="linkedCaseOnly">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-3 form-group">
+                                <label class="">Reporting</label>
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataYes" name="forReporting" value="allCase">
+
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataNo" name="forReporting" value="linkedCaseOnly">
+
+                            </div>
+                            <div class="col-lg-2 form-group">
+                                <input type="radio" id="accessDataNo" name="forReporting" value="linkedCaseOnly">
+
+                            </div>
+                        </div>
+                        @*<div class="row">
+                            <div class="col-lg-10"></div>
+                            <div class="col-lg-2">
+                            <a href="#" onclick="" class="finish btn btn-warning">Finish</a>
+                            </div>
+                        </div>*@
+                    </div>
+                </div>
+
+                <div class="nav clearfix">
+                    <a href="#" onclick="chkFuncpre()" class="prev btn btn-primary me-3">Previous</a>
+                    <a href="#" onclick="chkFuncnxt()" class="next pull-right btn btn-warning">Next</a>
+                    <a href="#" onclick="" class="finish btn btn-warning">Finish</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+<script>
+    /**/
+
+    jQuery(document).ready(function () {
+
+        var back = jQuery(".prev");
+        var next = jQuery(".next");
+        var steps = jQuery(".step");
+
+        next.bind("click", function () {
+            jQuery.each(steps, function (i) {
+                if (!jQuery(steps[i]).hasClass('current') && !jQuery(steps[i]).hasClass('done')) {
+                    jQuery(steps[i]).addClass('current');
+                    jQuery(steps[i - 1]).removeClass('current').addClass('done');
+                    return false;
+                }
+            })
+        });
+        back.bind("click", function () {
+            jQuery.each(steps, function (i) {
+                if (jQuery(steps[i]).hasClass('done') && jQuery(steps[i + 1]).hasClass('current')) {
+                    jQuery(steps[i + 1]).removeClass('current');
+                    jQuery(steps[i]).removeClass('done').addClass('current');
+                    return false;
+                }
+            })
+        });
+
+    })
+
+    $(document).ready(function () {
+        $(".first").addClass("show");
+        $(".second").addClass("hide");
+        $(".third").addClass("hide");
+        $(".fourth").addClass("hide");
+        $(".finish").addClass("hide");
+    });
+
+    function chkFuncnxt() {
+
+        var getdata = $(".first-tab").hasClass("current");
+        if (getdata == true) {
+            //show 2nd div
+            //hide rest
+            $(".second").addClass("show");
+            $(".second").removeClass("hide");
+            $(".first").removeClass("show");
+            $(".first").addClass("hide");
+            $(".third").addClass("hide");
+            $(".fourth").addClass("hide");
+            $(".next").removeClass("hide");
+
+        }
+
+        var getdataa = $(".second-tab").hasClass("current");
+        //show 3rd hide rest
+        if (getdataa == true) {
+            $(".second").addClass("hide");
+            $(".first").addClass("hide");
+            $(".third").addClass("show");
+            $(".fourth").addClass("hide");
+            $(".third").removeClass("hide");
+            $(".second").removeClass("show");
+            $(".next").removeClass("hide");
+
+        }
+
+        var getdataaa = $(".third-tab").hasClass("current");
+        //show 4th hide rest
+        if (getdataaa == true) {
+            $(".second").addClass("hide");
+            $(".first").addClass("hide");
+            $(".third").addClass("hide");
+            $(".fourth").addClass("show");
+
+            $(".fourth").removeClass("hide");
+            //$(".next").removeClass("hide");
+            $(".third").removeClass("show");
+            $(".finish").removeClass("hide");
+            $(".next").addClass("hide");
+        }
+
+        //var getdataaa = $(".last-tab").hasClass("current");
+        ////show 4th hide rest
+        //if (getdataaa == true) {
+        //    $(".next").addClass("hide");
+
+        //}
+    }
+
+    function chkFuncpre() {
+
+        //var getdata=$(".first-tab").hasClass("current");
+        //if(getdata==true){
+        //    $(".next").removeClass("show");
+            
+
+        //}
+
+        var getdataa = $(".second-tab").hasClass("current");
+        if (getdataa == true) {
+            $(".first").addClass("show");
+            $(".second").addClass("hide");
+            $(".third").addClass("hide");
+            $(".fourth").addClass("hide");
+
+            $(".first").removeClass("hide");
+            $(".second").removeClass("show");
+            $(".next").removeClass("hide");
+        }
+
+        var getdataaa = $(".third-tab").hasClass("current");
+        if (getdataaa == true) {
+            $(".first").addClass("hide");
+            $(".second").addClass("show");
+            $(".third").addClass("hide");
+            $(".fourth").addClass("hide");
+
+            $(".third").removeClass("show");
+            $(".second").removeClass("hide");
+            $(".next").removeClass("hide");
+        }
+
+        var getdataaaa = $(".last-tab").hasClass("current");
+        if (getdataaaa == true) {
+            $(".first").addClass("hide");
+            $(".second").addClass("hide");
+            $(".third").addClass("show");
+            $(".fourth").addClass("hide");
+            $(".finish").addClass("hide");
+            $(".next").removeClass("hide");
+            $(".fourth").removeClass("show");
+            $(".third").removeClass("hide");
+        }
+    }
+
+
+    //for enabling disabling input field through radio btn selection
+    $('#specifyCaseRate').click(function () {
+        $('#specifyRate').removeAttr("disabled");
+    });
+
+    $('#defaultRate').click(function () {
+        $('#specifyRate').attr("disabled", "disabled");
+    });
+    //
+    //for enabling disabling input field through radio btn selection
+    $('#linknocase').click(function () {
+        $('#caseDropdown').attr("disabled", "disabled");
+    });
+
+    $('#linkallcase').click(function () {
+        $('#caseDropdown').attr("disabled", "disabled");
+    });
+    $('#linkspecificcase').click(function () {
+        $('#caseDropdown').removeAttr("disabled");
+    });
+                //
+
+
+</script>

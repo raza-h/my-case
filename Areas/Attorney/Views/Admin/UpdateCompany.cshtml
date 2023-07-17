@@ -1,0 +1,156 @@
+﻿@model AbsolCase.Models.Company
+@{
+    ViewBag.Title = "AddCompany";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+
+@if (TempData["response"] != null)
+{
+<div class="alert-danger" id="msgalert">
+    @TempData["response"].ToString()UpdatePricePlan
+</div>
+}
+<link href="~/assets/css/style.css" rel="stylesheet" />
+
+<div class="col-lg-12 grid-margin stretch-card mt-3 ms-3 me-4 pe-4 mb-5">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title text-center">Update Your Company</h4>
+            <form asp-action="UpdateCompany" method="post">
+                @Html.HiddenFor(model => model.Id)
+                @Html.HiddenFor(model => model.FirmId)
+               <input type="hidden" id="countryid" value="@Model.CountryId"/>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Name</label>
+                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", placeholder = "Name" } })
+                        @Html.ValidationMessageFor(model => model.Name, "please enter company name", new { @class = "text-danger db", @id = "companynamevalidation", @style = "display: none;" })
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Email</label>
+                        @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", placeholder = "Email" } })
+                        @Html.ValidationMessageFor(model => model.Email, "please enter valid email", new { @class = "text-danger db", @id = "companyemailvalidation", @style = "display: none;" })
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Website</label>
+                        @Html.EditorFor(model => model.Website, new { htmlAttributes = new { @class = "form-control", placeholder = "Website" } })
+                        @Html.ValidationMessageFor(model => model.Website, "", new { @class = "text-danger db" })
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Main Phone</label>
+                        @Html.EditorFor(model => model.MainPhone, new { htmlAttributes = new { @class = "form-control", placeholder = "Main Phone" } })
+                        @Html.ValidationMessageFor(model => model.MainPhone, "", new { @class = "text-danger db" })
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Fax Number</label>
+                        @Html.EditorFor(model => model.FaxNumber, new { htmlAttributes = new { @class = "form-control", placeholder = "Fax Number" } })
+                        @Html.ValidationMessageFor(model => model.FaxNumber, "", new { @class = "text-danger db" })
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Address</label>
+                        @Html.EditorFor(model => model.Address1, new { htmlAttributes = new { @class = "form-control", placeholder = "Address 1" } })
+                        @Html.ValidationMessageFor(model => model.Address1, "", new { @class = "text-danger db" })
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Address 2</label>
+                        @Html.EditorFor(model => model.Address2, new { htmlAttributes = new { @class = "form-control", placeholder = "Address 2" } })
+                        @Html.ValidationMessageFor(model => model.Address2, "", new { @class = "text-danger db" })
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">City</label>
+                        @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control", placeholder = "City" } })
+                        @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger db" })
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">State</label>
+                        @Html.EditorFor(model => model.State, new { htmlAttributes = new { @class = "form-control", placeholder = "State" } })
+                        @Html.ValidationMessageFor(model => model.State, "", new { @class = "text-danger db" })
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Zip Code</label>
+                        @Html.EditorFor(model => model.ZipCode, new { htmlAttributes = new { @class = "form-control", placeholder = "Zip Code" } })
+                        @Html.ValidationMessageFor(model => model.ZipCode, "", new { @class = "text-danger db" })
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Country</label>
+                        <select id="Country" name="CountryId" class="form-control" aria-label="Country">
+                        </select>
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Private Notes</label>
+                        @Html.EditorFor(model => model.PrivateNotes, new { htmlAttributes = new { @class = "form-control", placeholder = "Private Notes" } })
+                        @Html.ValidationMessageFor(model => model.PrivateNotes, "", new { @class = "text-danger db" })
+
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-lg btn-primary me-3" style="float:right">Update</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var remoteServerUrl = "";
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            token = localStorage.getItem('token');
+        });
+
+        function getRemoteServerURl() {
+            //$.ajax({
+            //    type: 'GET',
+            //    url: '/common/getConfigurationValue',
+            //    data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+            //    getcounties();
+            //})
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+            getcounties();
+        }
+        function getcounties() {
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Country/Get`,
+                headers: { "Authorization": 'Bearer ' + token },
+            }).done(function (data) {
+                let options = "<option value=0>Select Country</option>";
+                $.each(data, function (a, country) {
+                    options += "<option value='" + country.id + "'>" + country.name + "</option>";
+                });
+
+                $("#Country").html(options);
+                $("#Country").val($("#countryid").val());
+            })
+        }
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

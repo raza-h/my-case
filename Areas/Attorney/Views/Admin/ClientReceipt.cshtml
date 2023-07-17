@@ -1,0 +1,165 @@
+﻿@using AbsolCase.Models
+@model Expense
+@{
+    ViewBag.Title = "ClientsReceipts";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<div class="row">
+    <div class="col-md-3">
+    </div>
+    <div class="col-lg-6 grid-margin stretch-card mt-5 ms-3 me-5 pe-5">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">ClientReceipt</h4>
+                <div class="form-group">
+                    <label for="exampleInputUsername1">Clients</label>
+                    <select id="clientreceipt" name="Clients" class="form-control" aria-label="case">
+                        <!--via ajax-->
+                    </select>
+                    <span class="text-danger" id="client-validation" style="display:none">Please select client</span>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="exampleInputUsername1">Date From</label>
+                        <input class="form-control" id="DateFrom" type="date" />
+                        <span class="text-danger" id="datefrom-validation" style="display:none">Please select date</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="exampleInputUsername1">Date To</label>
+                        <input class="form-control" id="DateTo" type="date" />
+                        <span class="text-danger" id="dateto-validation" style="display:none">Please select date</span>
+                    </div>
+                </div>
+                <input type="submit" value="Gernate Receipt" onclick="GetTransaction()" class="btn btn-dark fr" />
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+    </div>
+</div>
+@section scripts {
+    <script>
+
+        //$(document).ready(function () {
+        //    var parentId = "";
+        //    parentId = $("#current-userid").val();
+        //});
+
+        var remoteServerURl = "";
+        var parentId = "";
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            parentId = $("#current-userid").val();
+            token = localStorage.getItem('token');
+        });
+        function getRemoteServerURl() {
+            //$.ajax({
+            //    type: 'GET',
+            //    url: '/common/getConfigurationValue',
+
+            //    data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+            //    GetClients();
+            //})
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+            GetClients();
+        }
+        function GetClients()
+        {
+                token = localStorage.getItem('token');
+            parentId = $("#current-userid").val();
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/UserManagement/GetClientAccounts?ParentId=${parentId}`,
+                 headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                let options = "<option value='undefined'>Select</option>";
+                $.each(data, function (a, accounts) {
+                    options += "<option value='" + accounts.accountNumber + "'>" + accounts.name + "</option>";
+                });
+                $("#clientreceipt").html(options);
+            })
+        }
+
+        function GetTransaction() {
+            var ClientTransactions = [];
+            var ContactId = $('#clientreceipt').val();
+            var DateFrom = $('#DateFrom').val();
+            var DateTo = $('#DateTo').val();
+            if (ContactId == "undefined") {
+                $("#client-validation").show();
+                return;
+            }
+            else
+                $("#client-validation").hide();
+
+            if (DateFrom == null || DateFrom == "") {
+                $("#datefrom-validation").show();
+                return;
+            }
+            else
+                $("#datefrom-validation").hide();
+
+            if (DateTo == null || DateTo == "") {
+                $("#dateto-validation").show();
+                return;
+            }
+            else
+                $("#dateto-validation").hide();
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Transaction/GetTransactionsBetweenDates`,
+                headers: { "Authorization": 'Bearer ' + token },
+                data: {
+                    AccountNum: ContactId,
+                    DateFrom: DateFrom,
+                    DateTo: DateTo,
+                }
+            }).done(function (data) {
+                if (data.length == 0) {
+                    toastr.error("No records found in given date range");
+                    return;
+                }
+                $.each(data, function (i, v) {
+                    console.log("transaction data", v);
+               ClientTransactions.push({
+                   Id: v.id,
+                   ClientName: v.accountName,
+                        Amount: v.amount,
+                   PaymentDate: v.date,
+                   InvoiceNo: v.invoiceNumber,
+                        PaymentType: v.paymentType,
+                        Note: v.description,
+                        ContactId: v.contactId,
+                        IsCash: v.isCash,
+                        IsCredit: v.isCredit,
+                        CheckNumber: v.checkNumber,
+                        CheckTitle: v.checkTitle,
+                        CheckDate: v.checkDate,
+                        CheckAmount: v.checkAmount,
+                        CheckImagePath: v.checkImagePath,
+                        UserId: v.userId,
+                        ParentId: v.parentId,
+                        CreatedDate: v.createdDate,
+                    });
+                });
+
+                $.ajax({
+                    type: 'POST',
+                    ContentType: 'application/json; charset=utf-8',
+                    url: '@Url.Action("SetClientTransactionList", "Admin")',
+                    data: { ClientTransaction: ClientTransactions }
+                }).done(function () {
+                    window.location.href = '@Url.Action("GenerateReceipt", "Admin")'
+                });
+            });
+        }
+    </script>
+}

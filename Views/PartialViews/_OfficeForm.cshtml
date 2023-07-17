@@ -1,0 +1,29 @@
+﻿@model int;  
+<fieldset class="border p-2" id="office-group-@Model" style="margin-bottom: 1.5rem;">
+    <legend class="w-auto" style="float: none; font-size:20px">Office Detail:</legend>
+    <div class="row">
+        <div class="form-group col-md-6">
+            <label for="exampleInputUsername1">Office Name</label>
+            <input class="form-control text-box single-line" id="officename-@Model" name="officename" placeholder="Office Name" type="text" value="">
+            <span class="field-validation-valid text-danger db" data-valmsg-for="OfficeName" data-valmsg-replace="false" id="officenamevalidation-@Model" style="display: none;">please enter office name</span>
+        </div>
+        <div class="form-group col-md-6">
+            <label for="exampleInputUsername1">Phone Number</label>
+            <input class="form-control text-box single-line" id="phonenumber-@Model" name="PhoneNumber" placeholder="Phone Number" type="text" value="">
+            <span class="field-validation-valid text-danger db" data-valmsg-for="PhoneNumber" data-valmsg-replace="false" id="phonenumbervalidation-@Model" style="display: none;">please enter phone number</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-md-12">
+            <label class="switch">
+                <input type="checkbox" id="isprimary-@Model">
+                <span class="slider round"></span>
+            </label>
+            IsPrimary
+        </div>
+    </div>
+    <div id="addressFormSection-@Model">
+        <!--via ajax-->
+    </div>
+    <button onclick="loadOfficeAddressForm(@Model)">Add Address</button>
+</fieldset>

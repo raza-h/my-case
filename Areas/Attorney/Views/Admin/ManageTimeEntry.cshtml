@@ -1,0 +1,364 @@
+﻿@using AbsolCase.Models
+@{
+    @using Newtonsoft.Json;
+    @using Microsoft.AspNetCore.Http;
+    @inject IHttpContextAccessor httpContextAccessor;
+    string userdto = httpContextAccessor.HttpContext.Session.GetString("userData");
+    UserDto userDto = new UserDto();
+    bool canAccessMessages = false;
+    bool canAccessTimeLline = false;
+    bool canAccessCalendar = false;
+    bool canAccessReporting = false;
+    bool canAccessDocuments = false;
+    bool canAccessNotes = false;
+    if (!string.IsNullOrEmpty(userdto))
+    {
+        userDto = JsonConvert.DeserializeObject<UserDto>(userdto);
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Unlimited Messages").FirstOrDefault() != null)
+            canAccessMessages = true;
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Timeline").FirstOrDefault() != null)
+            canAccessTimeLline = true;
+
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Calendar Events").FirstOrDefault() != null)
+            canAccessCalendar = true;
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Reporting").FirstOrDefault() != null)
+            canAccessReporting = true;
+        if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Documents Handling").FirstOrDefault() != null)
+            canAccessDocuments = true;
+        if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Notes Handling").FirstOrDefault() != null)
+            canAccessNotes = true;
+    }
+}
+@{
+    ViewData["Title"] = "ManageTimeEntry";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+
+
+
+<link href="~/css/Packages.css" rel="stylesheet" type="text/css" />
+
+<div class="row mb-1">
+    <div class="card col-md-12 col-lg-12 pull-right grid-margin">
+
+        <div class="card-block mt-3 ml-5">
+            <ul class="navbar dashboard-short-icon">
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;" @(!canAccessCalendar ? "onclick=ShowSubscriptionLimitation()" : "")>
+                    <a href="@(canAccessCalendar == true ? Url.Action("ManageEvents","Admin", new { area = "Attorney"}) : "#")" style="text-decoration:none;">
+                        <img src="~/images/dashboard/event.jpg" width="50" height="50" /><br />
+                        Event
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;" @(!canAccessDocuments ? "onclick=ShowSubscriptionLimitation()" : "")>
+                    <a href="@(canAccessDocuments == true ?  Url.Action("ManageDocuments","Admin", new { area = "Attorney"}) : "#")" style="text-decoration:none;">
+                        <img src="~/images/dashboard/document-removebg.png" width="50" height="50" /><br />
+                        Document
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("ManageTask", "Admin", new { area = "Attorney" })" style="text-decoration:none;">
+                        <img src="~/images/dashboard/task.png" width="50" height="50" /><br />
+                        Task
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("AddPotentialClient", "Admin", new { area = "Attorney" })" style="text-decoration:none;">
+                        <img src="~/images/dashboard/lead-removebg.png" width="50" height="50" /><br />
+
+                        Lead
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("AddContact", "Admin", new { area = "Attorney" })" style="text-decoration:none;" id="contactmodal">
+                        <img src="~/images/dashboard/contact-removebg.png" width="50" height="50" /><br />
+                        Contact
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("ManageCases", "Admin", new { area = "Attorney" })" style="text-decoration:none;" onclick="abc();">
+                        <img src="~/images/dashboard/briefcase-removebg.png" width="50" height="50" /><br />
+                        Case
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;" @(!canAccessMessages ? "onclick=ShowSubscriptionLimitation()" : "")>
+                    <a href="@(canAccessMessages == true ? Url.Action("Message","Admin", new { area = "Attorney"}) : "#")" style="text-decoration:none;">
+                        <img src="~/images/dashboard/message.png" width="50" height="50" /><br />
+                        Message
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box; ">
+                    <a href="@Url.Action("AddExpense", "Admin", new { area = "Attorney" })" style="text-decoration:none;">
+                        <img src="~/images/dashboard/expenses.png" width="50" height="50" /><br />
+                        Expense
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("AddReceipt", "Admin", new { area = "Attorney" })" style="text-decoration:none;">
+                        <img src="~/images/dashboard/invoice.jpg" width="50" height="50" /><br />
+                        Invoice
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;" @(!canAccessNotes ? "onclick=ShowSubscriptionLimitation()" : "")>
+                    <a href="@(canAccessNotes == true ? Url.Action("ManageNotes","Admin", new { area = "Attorney"}) : "#")" style="text-decoration:none;">
+                        <img src="~/images/dashboard/notes.png" width="50" height="50" /><br />
+                        Notes
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="col-lg-12 grid-margin stretch-card">
+    <input type="hidden" id="noteid" />
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Time Entry</h4>
+            <p class="card-description">
+                Manage TimeEntry
+            </p>
+            <div class="table-responsive">
+                <table id="datatable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>SR#</th>
+                            <th>
+                                Date
+                            </th>
+                            <th>
+                                Activity
+                            </th>
+                            <th>
+                                Duration
+                            </th>
+                            <th>
+                                Description
+                            </th>
+                            <th>
+                                Rate
+                            </th>
+                            <th>
+                                Total
+                            </th>
+                            <th>
+                                RateType
+                            </th>
+                            <th>
+                                User
+                            </th>
+                            <th>
+                                Case
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+
+                        </tr>
+                    </thead>
+                    @{
+                        int i = 1;
+                    }
+                    <tbody>
+                        @if (Model != null && Model.Count > 0)
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@i</td>
+                                    <td class="py-1">
+                                        @item.Date.ToShortDateString()
+                                    </td>
+                                    <td class="py-1">
+                                        @item.Activityname
+                                    </td>
+                                    <td class="py-1">
+                                        @item.Duration
+                                    </td>
+                                    <td class="py-1">
+                                        @item.Description
+                                    </td>
+                                    <td class="py-1">
+                                        @item.Rate
+                                    </td>
+                                    <td class="py-1">
+                                        @item.Total
+                                    </td>
+                                    <td class="py-1">
+                                        @item.RateType
+                                    </td>
+                                    <td class="py-1">
+                                        @item.Username
+                                    </td>
+                                    <td class="py-1">
+                                        @item.Casename
+                                    </td>
+
+                                    <td>
+                                        <a href="" onclick="ViewActivity(@item.TimeEntryID)">View </a>
+                                        |
+                                        <a href="@Url.Action("UpdateTimeEntry", "Admin", new { id = item.TimeEntryID })">Edit </a>
+                                        |  <a href="#" onclick="openpopup(@item.TimeEntryID, 'Are you sure to delete this Time Entry?', 'deleteEntry(@item.TimeEntryID)')">Delete</a>
+                                        @*<a href>Edit |</a>
+                                <a>Delete </a>*@
+                                    </td>
+                                </tr>
+                                i++;
+
+                            }
+                        }
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="timerModalView" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content-Time">
+
+            <div class="modal-body">
+                <div class="">
+                    <div class="mb-3">
+                        <label>Select Case</label>
+                        <select id="casesLayout" class="js-example-basic-single w-100 form-control">
+                            <option>Select</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label>Select User</label>
+                        <select id="users" class="js-example-basic-single w-100 form-control">
+                            <option>Select</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="mb-3">
+                                <label>Select Activity</label>
+                                <select id="activity" class="js-example-basic-single w-100 form-control">
+                                    <option>Select</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <button type="button" style="margin-top:12%;" class="btn btn-warning" onclick="AddActivity()">
+                                Add New
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Description</label>
+                        <textarea id="description" style="width:100%" rows="4" cols="50"></textarea>
+                        <div style="color:red ;display:none" id="descriptionError"></div>
+                        <label class="text-muted" style="font-size: 12px;">This description will appear on invoices.</label>
+                    </div>
+                    <div class="mb-3">
+                        <label class="switch">
+                            <input type="checkbox" id="checkbox-btn" checked>
+                            <span class="slider round"></span>
+                        </label>
+                        <label for="billable" class="ms-2 mb-0">This time entry is billable.</label>
+                    </div>
+                    <div class="mb-3">
+                        <button class="btn btn-warning p-1" id="btn-show">Show Custom Fields</button>
+                        <div id="customFields-one">
+                            <hr />
+                            <div class="row">
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="background-color:#dfe3e8b0; padding-top:10px;padding-bottom:15px;margin-left:1px;margin-right:1px;">
+                        <div class="col-lg-4">
+                            <label>Date</label>
+                            <input id="date" type="date" class="form-control" style="padding:0px;" />
+                        </div>
+                        <div class="col-lg-4">
+                            <label>Rate</label>
+                            <div class="row">
+                                <div class="col-lg-8 p-0 m-0"><input id="rate" type="number" min="0" class="form-control" style="padding:0px;" /></div>
+                                <div class="col-lg-4 p-0 m-0">
+                                    <select id="ratetype" class="form-control">
+                                        <option>/Hr</option>
+                                        <option>FlatRate</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <label>Duration</label>
+                            <input id="duration" type="number" min="0" class="form-control" style="padding:0px;" />
+                            <label class="text-muted" style="font-size: 12px;">0.1 = 6 minutes</label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer" style="padding-right: 0px;margin-right: -5px;">
+                    <button type="button" class="btn btn-danger" onclick="timerModalopen()" data-dismiss="modal">Cancel</button>
+                    <button type="button" onclick="SaveTimeEntry()" class="btn btn-success">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts {
+
+    <script>
+        var remoteServerURl = "";
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            token = localStorage.getItem('token');
+        });
+
+        function getRemoteServerURl() {
+            //$.ajax({
+            //    type: 'GET',
+            //    url: '/common/getConfigurationValue',
+            //    data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+            //})
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+        };
+        function deleteEntry(Id) {
+            /*   var id = $("#newid").val();*/
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'Delete',
+                url: `${remoteServerURl}api/AttorneyAdmin/DeleteTimeEntry?Id=` + Id,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                toastr.success("Time Entry deleted successfully");
+                setTimeout(function () {
+                    window.location.href = '@Url.Action("ManageTimeEntry", "Admin")';
+                }, 1000);
+            })
+        }
+        $(document).ready(function () {
+            $('#datatable').dataTable({
+                "columnDefs": [
+                    { "searchable": false, "targets": 2 }
+                ]
+            });
+        });
+
+        function timerModalopen() {
+            $("#timerModalView").modal('toggle');
+        }
+    </script>
+}
+
+
+
+

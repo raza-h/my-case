@@ -1,0 +1,118 @@
+﻿@model List<AbsolCase.Models.ContactGroup>
+
+@{
+    ViewBag.Title = "Manage Contact Groups";
+    Layout = "~/Views/Shared/_SPLayout.cshtml";
+}
+<link href="~/css/Packages.css" rel="stylesheet" type="text/css" />
+
+
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<div class="col-lg-12 grid-margin stretch-card">
+    <input type="hidden" id="contactid" />
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Contactd Groups</h4>
+            <p class="card-description">
+                Available Contact Groups
+            </p>
+            <div class="table-responsive">
+                <table id="datatable" class="table table-striped  dt-responsive nowrap" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>SR#</th>
+                            <th>
+                                Contact Group
+                            </th>
+                            <th>
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Count > 0)
+                        {
+                            int count = 0;
+                            @foreach (var contactGroup in Model)
+                            {
+                                count++;
+                                <tr>
+                                    <td>@count</td>
+                                    <td class="py-1">
+                                        @contactGroup.ContactGroupName
+                                    </td>
+
+                                    <td>
+                                        @Html.ActionLink("Edit", "UpdateContactGroup", "Configuration", new { Id = contactGroup.Id }) |
+                                        <a href="#" onclick="openpopup(@contactGroup.Id )">Delete</a>
+                                    </td>
+
+
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="myModall" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><b>Confirm!</b></h3>
+                <button type="button" class="close" data-dismiss="modal" onclick="closepopups()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:20px; text-align:center; color:black"><b>Are you sure to delete contacts?</b></p>
+            </div>
+            <ul style="display:table;border-collapse:collapse; margin-bottom:20px">
+                <li onclick="closepopups()" style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="#" style="text-decoration: none; color: black ">
+                        <img src="~/images/download (2).png" width="90" height="90" /><br />
+                        No
+                    </a>
+                </li>
+
+                <li onclick="deleteContactGroup()" style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="#" style="text-decoration: none; color: black ">
+                       <img src="~/images/download.jpg" width="100" height="100" /><br />
+                        Yes
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+    </div>
+</div>
+@section  scripts {
+
+        <script>
+            function deleteContactGroup(id) {
+                var id = $("#contactid").val();
+                window.location.href = `DeleteContactGroup/${id}`
+            }
+            function openpopup(id) {
+                $("#myModall").modal('show');
+                $("#contactid").val(id);
+            }
+            function closepopups() {
+                $("#myModall").modal('hide');
+
+            }
+            $(document).ready(function () {
+                $('#datatable').dataTable({
+                    "columnDefs": [
+                        { "searchable": false, "targets": 2 }
+                    ]
+                });
+            });
+</script>
+}

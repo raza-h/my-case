@@ -1,0 +1,1353 @@
+@using AbsolCase.Configurations;
+@using AbsolCase.Models
+
+@{
+    List<CustomField> data = new List<CustomField>();
+}
+
+@{
+    @using Newtonsoft.Json;
+    @using Microsoft.AspNetCore.Http;
+    @inject IHttpContextAccessor httpContextAccessor;
+    @using Microsoft.AspNetCore.Hosting;
+    @using Microsoft.Extensions.Configuration;
+    @using AbsolCase.Utility;
+    @inject IWebHostEnvironment _env;
+    @inject IConfiguration _config;
+    string userdto = httpContextAccessor.HttpContext.Session.GetString("userData");
+    string customdata = httpContextAccessor.HttpContext.Session.GetString("customFields");
+    UserDto userDto = new UserDto();
+    bool canAccessMessages = false;
+    bool canAccessTimeLline = false;
+    bool canAccessCalendar = false;
+    bool canAccessReporting = false;
+    bool canAccessDocuments = false;
+    bool canAccessNotes = false;
+    //string inputString = "a1:b2:c3 d4";
+    //string numbers = System.Text.RegularExpressions.Regex.Replace(inputString, @"[^\d-]", string.Empty);
+    if (!string.IsNullOrEmpty(userdto))
+    {
+        userDto = JsonConvert.DeserializeObject<UserDto>(userdto);
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Unlimited Messages").FirstOrDefault() != null)
+            canAccessMessages = true;
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Timeline").FirstOrDefault() != null)
+            canAccessTimeLline = true;
+
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Calendar Events").FirstOrDefault() != null)
+            canAccessCalendar = true;
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Reporting").FirstOrDefault() != null)
+            canAccessReporting = true;
+        if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Documents Handling").FirstOrDefault() != null)
+            canAccessDocuments = true;
+        if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Notes Handling").FirstOrDefault() != null)
+            canAccessNotes = true;
+    }
+
+    if (!string.IsNullOrEmpty(customdata))
+    {
+        data = JsonConvert.DeserializeObject<List<CustomField>>(customdata);
+        //var CustomFieldsdata = JsonConvert.DeserializeObject<CustomField>(customdata);
+        //data=CustomFieldsdata;
+
+    }
+    var apiBaseUrl = CommonMethods.GetApiBaseURL(_env, _config);/* + "api/";*/
+
+}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Absol Case</title>
+    <!-- plugins:css -->
+    <link href="~/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/vendors/feather/feather.css">
+    <link rel="stylesheet" href="~/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="~/vendors/ti-icons/css/themify-icons.css">
+    <link rel="stylesheet" href="~/vendors/typicons/typicons.css">
+    <link rel="stylesheet" href="~/vendors/simple-line-icons/css/simple-line-icons.css">
+    <link rel="stylesheet" href="~/vendors/css/vendor.bundle.base.css">
+    <script src="~/js/external.js"></script>
+    <!-- endinject -->
+    <link rel=" shortcut icon" href="~/images/favicon.png" />
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="~/vendors/datatables.net-bs4/dataTables.bootstrap4.css">
+    <link rel="stylesheet" href="~/js/select.dataTables.min.css">
+    <!-- End plugin css for this page -->
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <!-- inject:css -->
+    <link rel="stylesheet" href="~/css/vertical-layout-light/style.css">
+    <!-- endinject -->
+    <link href="~/assets/css/appdefault.css" rel="stylesheet" />
+    <link href="~/css/case.css" rel="stylesheet" />
+
+    <link href="~/vendors/jquery-toast-plugin/jquery.toast.min.css" rel="stylesheet" />
+    <link href="~/css/toastr.css" rel="stylesheet" />
+    <link href="~/css/toastr.min.css" rel="stylesheet" />
+    <style type="text/css">
+        .hide {
+            display: none !important;
+        }
+        /* Chart.js */
+        @@keyframes chartjs-render-animation {
+            from {
+                opacity: .99
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+        /*.body{
+                                                                                                                                                                                                                                                    background-color: #F4F5F7;
+                                                                                                                                                                                                                                                }*/
+        .card-rounded {
+            background: #F4F5F7;
+        }
+
+        #datatable_previous {
+            border-color: #010001eb;
+            background-color: #efefef;
+        }
+
+        #datatable_next {
+            border-color: #010001eb;
+            background-color: #efefef;
+        }
+
+        .chartjs-render-monitor {
+            animation: chartjs-render-animation 1ms .chartjs-size-monitor, .chartjs-size-monitor-expand, .chartjs-size-monitor-shrink
+
+        {
+            position: absolute;
+            direction: ltr;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            pointer-events: none;
+            visibility: hidden;
+            z-index: -1
+        }
+
+        .chartjs-size-monitor-expand > div {
+            position: absolute;
+            width: 1000000px;
+            height: 1000000px;
+            left: 0;
+            top: 0
+        }
+
+        .chartjs-size-monitor-shrink > div {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            left: 0;
+            top: 0
+        }
+
+        .nav-item {
+            font-size: 20px;
+            margin-right: 10px;
+        }
+    </style>
+    <style>
+
+        .footer {
+            position: fixed;
+            padding: 10px 10px 0px 10px;
+            bottom: 0;
+            width: 100%;
+            /* Height of the footer*/
+            height: 40px;
+        }
+
+        .cp {
+            cursor: pointer;
+        }
+
+        .card {
+            border-radius: 10px;
+        }
+        /* panel layout mechanics */
+        .panel-wrap {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            width: 30em;
+            transform: translateX(100%);
+            transition: .3s ease-out;
+        }
+
+        .panel {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #f7f7f7;
+            color: #eee;
+            overflow: auto;
+            padding: 1em;
+        }
+
+        /* simulate panel state control --
+                                                                                                                                                                                                                                                            this can also be triggered by a
+                                                                                                                                                                                                                                                            class name added to the body tag.
+                                                                                                                                                                                                                                                            Just using a checkbox sibling here
+                                                                                                                                                                                                                                                            for simplicity
+                                                                                                                                                                                                                                                            */
+        [type="checkbox"]:checked ~ .panel-wrap {
+            transform: translateX(0%);
+        }
+
+
+        /* demo display */
+        /**, *:before, *:after {
+                                                                                                                                                                                                                                                                box-sizing: border-box;
+                                                                                                                                                                                                                                                            }*/
+
+        /*body {
+                                                                                                                                                                                                                                                                font-family: sans-serif;
+                                                                                                                                                                                                                                                                font-size: 18px;
+                                                                                                                                                                                                                                                            }*/
+
+        /*h3 {
+                                                                                                                                                                                                                                                                margin: 0;
+                                                                                                                                                                                                                                                            }
+
+                                                                                                                                                                                                                                                            p {
+                                                                                                                                                                                                                                                                line-height: 1.4;
+                                                                                                                                                                                                                                                                margin: 2em 0 0 0;
+                                                                                                                                                                                                                                                            }*/
+
+        /*[type="checkbox"] {
+                                                                                                                                                                                                                                                                font-size: 1em;
+                                                                                                                                                                                                                                                            }*/
+        .text-b {
+            color: black;
+        }
+    </style>
+    <style>
+        .collapsible {
+            background-color: #777;
+            color: white;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+        }
+
+            .activee, .collapsible:hover {
+                background-color: #555;
+            }
+
+            .collapsible:after {
+                content: '\002B';
+                color: white;
+                font-weight: bold;
+                float: right;
+                margin-left: 5px;
+            }
+
+        .activee:after {
+            content: "\2212";
+        }
+
+        .content {
+            padding: 0 18px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+            background-color: #f1f1f1;
+        }
+
+
+
+        .hover-3 {
+            --b: 0.1em; /* the thickness of the line */
+            --c: #1095c1; /* the color */
+
+            color: #0000;
+            padding-block: var(--b);
+            background: linear-gradient(var(--c) 50%,#000 0) 0% calc(100% - var(--_p,0%))/100% 200%, linear-gradient(var(--c) 0 0) 0% var(--_p,0%)/var(--_p,0%) var(--b) no-repeat;
+            -webkit-background-clip: text,padding-box;
+            background-clip: text,padding-box;
+            transition: .3s var(--_s,0s) linear,background-size .3s calc(.3s - var(--_s,0s));
+        }
+
+            .hover-3:hover {
+                --_p: 100%;
+                --_s: .3s;
+            }
+
+        .badge {
+            display: inline-block;
+            padding: 7px 8px;
+            font-size: 17.844px;
+            font-weight: bold;
+            border-radius: 9px;
+            line-height: 14px;
+            color: #ffffff;
+            vertical-align: baseline;
+            white-space: nowrap;
+            text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+            background-color: #999999;
+        }
+
+        .label-important, .badge-important {
+            background-color: #b94a48;
+        }
+
+        .hide-btn {
+            display: none;
+        }
+
+        .brdr {
+            border-radius: 50px !important;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+            .slider:before {
+                position: absolute;
+                content: "";
+                height: 23px;
+                width: 23px;
+                left: 4px;
+                bottom: 4px;
+                background-color: white;
+                -webkit-transition: .4s;
+                transition: .4s;
+            }
+
+        input:checked + .slider {
+            background-color: #128d15;
+        }
+
+
+            input:checked + .slider:before {
+                -webkit-transform: translateX(26px);
+                -ms-transform: translateX(26px);
+                transform: translateX(26px);
+            }
+
+        /* Rounded sliders */
+        .slider.round {
+            border-radius: 34px;
+        }
+
+            .slider.round:before {
+                border-radius: 50%;
+            }
+
+        .modal-content-Time {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            width: 128%;
+            pointer-events: auto;
+            background-color: #ffffff;
+            background-clip: padding-box;
+            border: 1px solid #dee2e6;
+            border-radius: 0.3rem;
+            outline: 0;
+            left: -3rem;
+        }
+    </style>
+    @RenderSection("styles", false)
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light" style="background:#dfe3e8;">
+        <input type="hidden" value="@userDto.Id" id="current-userid" />
+        <a class="navbar-brand ms-2" href="@Url.Action("Index","Admin",new{@area="Attorney"})">Case Management System</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown" style="justify-content:right;">
+            <ul class="navbar-nav">
+                <li class="nav-item ">
+                    <a class="nav-link" href="@Url.Action("Index","Admin",new{@area="Attorney"})">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="@Url.Action("TimelineIndex","Admin",new{@area="Attorney"})">TimeLine</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                        <span>Firm</span>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="margin-left:-115px;">
+                        @*<a class="dropdown-item" href="~/Attorney/Admin/Settings">Settings</a>*@
+                        <a class="dropdown-item" href="@Url.Action("AddFirm","Admin", new { area = "Attorney"})">My Firm</a>
+                        <hr style="margin:0px;padding:0px" />
+                        <a class="dropdown-item" href="@Url.Action("FirmUsers","Admin", new { area = "Attorney"})">Firm User's</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                        <span>Lead</span>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="margin-left:-115px;">
+                        <a class="dropdown-item" href="@Url.Action("AddPotentialClient","Admin", new { area = "Attorney"})">Add Lead</a>
+                        <hr style="margin:0px;padding:0px" />
+                        <a class="dropdown-item" href="@Url.Action("ManageLead","Admin", new { area = "Attorney"})">Manage Lead</a>
+                        @*<hr style="margin:0px;padding:0px" />
+                        <a class="dropdown-item" href="@Url.Action("BoardLead","Admin", new { area = "Attorney"})">Lead Board</a>*@
+                        <hr style="margin:0px;padding:0px" />
+                        <a class="dropdown-item" href="@Url.Action("AddRejectReason","Admin", new { area = "Attorney"})">Add Reject Reason</a>
+                        <hr style="margin:0px;padding:0px" />
+                        <a class="dropdown-item" href="@Url.Action("ManageRejectReason","Admin", new { area = "Attorney"})">Manage Reject Reasons</a>
+                        <hr style="margin:0px;padding:0px" />
+                        <a class="dropdown-item" href="@Url.Action("AddLeadStatus","Admin", new { area = "Attorney"})">Add Lead Status</a>
+                        <hr style="margin:0px;padding:0px" />
+                        <a class="dropdown-item" href="@Url.Action("ManageLeadStatus","Admin", new { area = "Attorney"})">Manage Lead Status</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                        <span>Company</span>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="margin-left:-115px;">
+                        <a class="dropdown-item" href="@Url.Action("AddCompany","Admin", new { area = "Attorney"})">Add Company</a>
+                        <hr style="margin:0px;padding:0px" />
+                        <a class="dropdown-item" href="@Url.Action("ManageCompany","Admin", new { area = "Attorney"})">Manage Company</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                        <span>Contact</span>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="margin-left:-115px;">
+                        <a class="dropdown-item" href="@Url.Action("AddContact","Admin", new { area = "Attorney"})">Add Contact</a>
+                        <hr style="margin:0px;padding:0px" />
+                        <a class="dropdown-item" href="@Url.Action("ManageContact","Admin", new { area = "Attorney"})">Manage Contact</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                        <span>Cases</span>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="margin-left:-115px;">
+                        <a class="dropdown-item" href="@Url.Action("ManageCases","Admin", new { area = "Attorney"})">Cases</a>
+                        <hr style="margin:0px;padding:0px" />
+                        <a class="dropdown-item" href="@Url.Action("CaseStages","Admin", new { area = "Attorney"})">Case Stages</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                        <span>Task</span>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="margin-left:-115px;">
+                        <a class="dropdown-item" href="@Url.Action("AddTask","Admin", new { area = "Attorney"})">Add Task</a>
+                        <hr style="margin:0px;padding:0px" />
+                        <a class="dropdown-item" href="@Url.Action("ManageTask","Admin", new { area = "Attorney"})">Manage Task</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                        <span>Documents</span>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="margin-left:-115px;">
+                        <a class="dropdown-item" href="@Url.Action("FolderIndex","DMS",new{@area="Attorney"})">Document Versions</a>
+                        <hr style="margin:0px;padding:0px" />
+                        <a class="dropdown-item" href="@Url.Action("ClientDocuments","Admin", new { area = "Attorney"})">Client Documents</a>
+                        <hr style="margin:0px;padding:0px" />
+                        <a class="dropdown-item" href="@Url.Action("DocuIndex","Integrations", new { area = "Attorney"})">Docusign</a>
+                        <hr style="margin:0px;padding:0px" />
+                        <a class="dropdown-item" href="@Url.Action("ManageDocumentSign","Integrations", new { area = "Attorney"})">Manage Docusign</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                        <span>Invoices</span>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="margin-left:-115px;">
+                        <a class="dropdown-item" href="@Url.Action("AddReceipt","Admin", new { area = "Attorney"})">Add Invoice</a>
+                        <hr style="margin:0px;padding:0px" />
+                        <a class="dropdown-item" href="@Url.Action("ClientTransaction","Admin", new { area = "Attorney"})">Manage Invoices</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                        <span>Subscription</span>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="margin-left:-115px;">
+                        @*<a class="dropdown-item" href="~/Attorney/Admin/Settings">Settings</a>*@
+                        <a class="dropdown-item" href="@Url.Action("Invoices","Admin", new { area = "Attorney"})">My Paid Invoices</a>
+                        <hr style="margin:0px;padding:0px" />
+                        <a class="dropdown-item" href="@Url.Action("Subscriptions","Admin", new { area = "Attorney"})">My Subscription</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                        <span>Expenses</span>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="margin-left:-115px;">
+                        @*<a class="dropdown-item" href="~/Attorney/Admin/Settings">Settings</a>*@
+                        <a class="dropdown-item" href="@Url.Action("AddExpense","Admin", new { area = "Attorney"})">Add Expense</a>
+                        <hr style="margin:0px;padding:0px" />
+                        <a class="dropdown-item" href="@Url.Action("ManageExpense","Admin", new { area = "Attorney"})">Manage Expense</a>
+                    </div>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="@Url.Action("ManageNotes","Admin",new{@area="Attorney"})">Notes</a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="@Url.Action("ManageEvents","Admin",new{@area="Attorney"})">Events</a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="@Url.Action("Reporting","Admin",new{@area="Attorney"})">Reporting</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                        <span><i class="fa fa-clock-o fa-lg" aria-hidden="true"></i> Time Entry</span>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="margin-left:-115px;">
+                        <div id="t" class="badge" style="margin-left:9px;width:90%;">00:00</div>
+                        <br />
+                        <hr />
+                        <button id="btnStart" onclick="event.stopPropagation()" class="btn btn-success brdr">Start</button>
+                        <button id="btnPause" onclick="event.stopPropagation()" class="btn btn-warning brdr">Pause</button>
+                        <button id="btnResume" onclick="event.stopPropagation()" class="btn btn-warning hide-btn brdr">Resume</button>
+                        <button id="btnReset" onclick="event.stopPropagation()" class="btn btn-danger brdr">Reset</button>
+                        <hr />
+                        <button id="btnSave" onclick="timerModalopen()" class="btn btn-success brdr" style="margin-left: 2.5rem;">Save Entry</button>
+                    </div>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                        <i class="fa fa-cogs" aria-hidden="true"></i>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="margin-left:-115px;">
+                        @*<a class="dropdown-item" href="~/Attorney/Admin/Settings">Settings</a>*@
+                        <a class="dropdown-item" href="@Url.Action("AllSettings","Admin", new { area = "Attorney"})"><i class="dropdown-item-icon mdi mdi-settings-outline text-primary me-2"></i>Settings</a>
+                        <hr style="margin:0px;padding:0px" />
+                        <a class="dropdown-item cp" id="setup"><i class="dropdown-item-icon mdi mdi-message-settings-variant text-primary me-2"></i>Setups</a>
+                        <hr style="margin:0px;padding:0px" />
+                        <a class="dropdown-item" href="@Url.Action("UserProfile","Admin", new { area = "Attorney"})"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i>My Profile</a>
+                        <hr style="margin:0px;padding:0px" />
+                        <a class="dropdown-item" href="@Url.Action("ActivityIndex","Admin", new { area = "Attorney"})"><i class="dropdown-item-icon mdi mdi-calendar-check-outline text-primary me-2"></i>Activity Logs</a>
+                        <hr style="margin:0px;padding:0px" />
+                        <a class="dropdown-item" href="@Url.Action("Logout","Account", new { area = "Security"})"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+
+
+
+    @RenderBody()
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    @*///// for setup side panel /////// *@
+
+    @*/////for side panel ///////*@
+    <input id="clickerSetup" type="checkbox" style="display:none" />
+    @*<label for="clicker">Click me! I'm an arbitrary trigger</label>*@
+    <div class="panel-wrap showhide" style="min-width:10rem">
+        <div class="panel">
+            <button class="btn btn-danger btn-sm" id="closeBtnSetup" style="float:right;"><i class="fa fa-times" aria-hidden="true"></i></button>
+            <div class="container mt-3">
+                <div class="row mt-4 ">
+                    <div>
+                        <button class="collapsible">Tags</button>
+                        <div class="content mt-2">
+                            <h4 class="mt-4">
+                                <a class=" hover-3" style="text-decoration:none" asp-area="Attorney" asp-controller="Admin" asp-action="AddNotesTag">Notes Tag</a>
+                            </h4>
+                            <h4 class="mt-4">
+                                <a class=" hover-3" style="text-decoration:none" asp-area="Attorney" asp-controller="Admin" asp-action="ManageNotesTag">Manage Notes Tags</a>
+                            </h4>
+                            <hr style="color:black" />
+                            <h4 class="mt-4">
+                                <a class=" hover-3" style="text-decoration:none" asp-area="Attorney" asp-controller="Admin" asp-action="AddDocumentTag">Document Tags</a>
+                            </h4>
+                            <h4 class="mt-4">
+                                <a class=" hover-3" style="text-decoration:none" asp-area="Attorney" asp-controller="Admin" asp-action="ManageDocumentTag">Manage Document Tags</a>
+                            </h4>
+                        </div>
+                        <button class="collapsible mt-3">Configurations</button>
+                        <div class="content">
+                            <h4 class="mt-4">
+                                <a class=" hover-3" style="text-decoration:none" asp-area="Attorney" asp-controller="Admin" asp-action="AddContactGroup">Add Contact Group</a>
+                            </h4>
+                            <h4 class="mt-4">
+                                <a class=" hover-3" style="text-decoration:none" asp-area="Attorney" asp-controller="Admin" asp-action="ManageContactGroup">Manage Contact Group</a>
+                            </h4>
+                            <hr style="color:black" />
+                            <h4 class="mt-4">
+                                <a class=" hover-3" style="text-decoration:none" asp-area="Attorney" asp-controller="Admin" asp-action="AddPracticeArea">Add Practice Area</a>
+                            </h4>
+                            <h4 class="mt-4">
+                                <a class=" hover-3" style="text-decoration:none" asp-area="Attorney" asp-controller="Admin" asp-action="ManagePracticeArea">Manage Practice Area</a>
+                            </h4>
+                            <hr style="color:black" />
+                            <h4 class="mt-4">
+                                <a class=" hover-3" style="text-decoration:none" asp-area="Attorney" asp-controller="Admin" asp-action="AddRefferalSource">Add Refferal Source</a>
+                            </h4>
+                            <h4 class="mt-4">
+                                <a class=" hover-3" style="text-decoration:none" asp-area="Attorney" asp-controller="Admin" asp-action="ManageRefferalSource">Manage Refferal Source</a>
+                            </h4>
+                            <hr style="color:black" />
+                            <h4 class="mt-4">
+                                <a class=" hover-3" style="text-decoration:none" asp-area="Attorney" asp-controller="Admin" asp-action="AddBillingMethod">Add Billing Method</a>
+                            </h4>
+                            <h4 class="mt-4">
+                                <a class=" hover-3" style="text-decoration:none" asp-area="Attorney" asp-controller="Admin" asp-action="ManageBillingMethod">Manage Billing Method</a>
+                            </h4>
+
+                        </div>
+                        <button class="collapsible mt-3">Custom Fields</button>
+                        <div class="content mt-2">
+                            <h4 class="mt-4">
+                                <a class=" hover-3" style="text-decoration:none" asp-area="Attorney" asp-controller="Admin" asp-action="AddCustomFields">Add Custom Fields</a>
+                            </h4>
+                            <h4 class="mt-4">
+                                <a class=" hover-3" style="text-decoration:none" asp-area="Attorney" asp-controller="Admin" asp-action="GetCaseFields">Custom Case Fields</a>
+                            </h4>
+                            <h4 class="mt-4">
+                                <a class=" hover-3" style="text-decoration:none" asp-area="Attorney" asp-controller="Admin" asp-action="GetContactFields">Custom Contact Fields</a>
+                            </h4>
+                            <h4 class="mt-4">
+                                <a class=" hover-3" style="text-decoration:none" asp-area="Attorney" asp-controller="Admin" asp-action="GetCompanyFields">Custom Company Fields</a>
+                            </h4>
+                            <h4 class="mt-4">
+                                <a class=" hover-3" style="text-decoration:none" asp-area="Attorney" asp-controller="Admin" asp-action="GetExpenseFields">Custom TimeEntry Fields</a>
+                            </h4>
+                        </div>
+                        <button class="collapsible mt-3">Time Entry</button>
+                        <div class="content mt-2">
+                            <h4 class="mt-4">
+                                <a class=" hover-3" style="text-decoration:none" asp-area="Attorney" asp-controller="Admin" asp-action="ManageTimeEntry">Manage TimeEntry</a>
+                            </h4>
+                            <h4 class="mt-4">
+                                <a class=" hover-3" style="text-decoration:none" asp-area="Attorney" asp-controller="Admin" asp-action="ManageTimeEntryActivity">Manage TimeEntry Activities</a>
+                            </h4>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div id="myModall" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title"><b>Confirm!</b></h3>
+                    <button type="button" class="close" data-dismiss="modal" onclick="closepopup()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p style="font-size:20px; text-align:center; color:black" ;><b id="confirmation-text"></b></p>
+                </div>
+                <ul style="display:table;border-collapse:collapse; margin-bottom:20px">
+                    <li onclick="closepopup()" style="display: table-cell;text-align:center; box-sizing: border-box;">
+                        <a href="#" style="text-decoration:none;">
+                            <img src="~/images/download (2).png" width="90" height="90" /><br />
+                            <p style="font-size:15px; text-align:center; color:black"><b>No</b></p>
+                        </a>
+                    </li>
+                    <li id="btn-yes" onclick="" style="display: table-cell;text-align:center; box-sizing: border-box;">
+                        <a href="#" style="text-decoration:none;">
+                            <img src="~/images/download.jpg" width="100" height="100" /><br />
+                            <p style="font-size:15px; text-align:center; color:black"><b>Yes</b></p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="SubModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title"><b>Confirm!</b></h3>
+                    <button type="button" class="close" data-dismiss="modal" onclick="closesubpopup()">&times;</button>
+                </div>
+                <div class="modal-body" style="padding: 24px 26px;">
+                    <p style="font-size:20px; color:black">Your subscription package does not allow access to this service, To use this feature have a look on another plans.</p>
+                </div>
+                <ul style="display:table;border-collapse:collapse; margin-bottom:20px">
+                    <li onclick="closesubpopup()" style="display: table-cell;text-align:center; box-sizing: border-box;">
+                        <a href="#" class="btn btn-danger" style="text-decoration:none;">Cancel</a>
+                    </li>
+                    <li id="btn-yes" onclick="" style="display: table-cell;text-align:center; box-sizing: border-box;">
+                        <a href="@Url.Action("ReSubscribe", "Subscription" , new { area = "Public" }, null)" class="btn btn-primary" style="text-decoration:none;">Visit Plans</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <!-- Modal for timer -->
+    <!-- Button trigger modal -->
+    <!-- Modal -->
+    <div class="modal fade" id="timerModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content-Time">
+
+                <div class="modal-body">
+                    <div class="">
+                        <div class="mb-3">
+                            <label>Select Case</label>
+                            <select id="casesLayout" class="js-example-basic-single w-100 form-control">
+                                <option>Select</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label>Select User</label>
+                            <select id="users" class="js-example-basic-single w-100 form-control">
+                                <option>Select</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <div class="mb-3">
+                                    <label>Select Activity</label>
+                                    <select id="activity" class="js-example-basic-single w-100 form-control">
+                                        <option>Select</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <button type="button" style="margin-top:12%;" class="btn btn-warning" onclick="AddActivity()">
+                                    Add New
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Description</label>
+                            <textarea id="description" style="width:100%" rows="4" cols="50"></textarea>
+                            <div style="color:red ;display:none" id="descriptionError"></div>
+                            <label class="text-muted" style="font-size: 12px;">This description will appear on invoices.</label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="switch">
+                                <input type="checkbox" id="checkbox-btn" checked>
+                                <span class="slider round"></span>
+                            </label>
+                            <label for="billable" class="ms-2 mb-0">This time entry is billable.</label>
+                        </div>
+                        <div class="mb-3">
+                            <button class="btn btn-warning p-1" id="btn-show">Show Custom Fields</button>
+                            <div id="customFields-one">
+                                <hr />
+                                <div class="row">
+                                    @if (data != null && data.Count > 0)
+                                    {
+                                        @foreach (var item in data)
+                                        {
+                                            if (item.CustomFieldType == "Text")
+                                            {
+                                                <div class="form-group col-md-4">
+                                                    <label for="exampleInputUsername1">@item.CustomFieldName</label>
+                                                    <input type="text" class="form-control p-0" id="@("custom-"+ item.FieldId)" />
+                                                </div>
+                                            }
+                                            else if (item.CustomFieldType == "Currency")
+                                            {
+                                                <div class="form-group col-md-4">
+                                                    <label for="exampleInputUsername1">@item.CustomFieldName</label>
+                                                    <span style="display:flex">
+                                                        $
+                                                        <input type="number" class="form-control p-0" min="0" id="@("custom-"+ item.FieldId)" style="margin-left:2%" />
+                                                    </span>
+                                                </div>
+                                            }
+                                            else if (item.CustomFieldType == "Date")
+                                            {
+                                                <div class="form-group col-md-4">
+                                                    <label for="exampleInputUsername1">@item.CustomFieldName</label>
+                                                    <input type="date" class="form-control p-0" id="@("custom-"+ item.FieldId)" />
+                                                </div>
+                                            }
+                                            else if (item.CustomFieldType == "True/False")
+                                            {
+                                                <div class="form-group col-md-4">
+                                                    <label for="exampleInputUsername1">@item.CustomFieldName</label>
+
+                                                    <div class="form-group">
+                                                        <label for="exampleInputUsername1">True</label>
+                                                        <input type="radio" value="true" name="rad" id="@("True-"+ item.FieldId)" />
+                                                        <label for="exampleInputUsername1">False</label>
+                                                        <input type="radio" value="false" name="rad" id="@("False-"+ item.FieldId)" />
+                                                    </div>
+
+                                                </div>
+                                            }
+                                            else if (item.CustomFieldType == "Number")
+                                            {
+                                                <div class="form-group col-md-4">
+                                                    <label for="exampleInputUsername1">@item.CustomFieldName</label>
+                                                    <input type="number" class="form-control p-0" min="0" id="@("custom-"+ item.FieldId)" />
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                    else { }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="background-color:#dfe3e8b0; padding-top:10px;padding-bottom:15px;margin-left:1px;margin-right:1px;">
+                            <div class="col-lg-4">
+                                <label>Date</label>
+                                <input id="date" type="date" class="form-control" style="padding:0px;" />
+                            </div>
+                            <div class="col-lg-4">
+                                <label>Rate</label>
+                                <div class="row">
+                                    <div class="col-lg-8 p-0 m-0"><input id="rate" type="number" min="0" class="form-control" style="padding:0px;" /></div>
+                                    <div class="col-lg-4 p-0 m-0">
+                                        <select id="ratetype" class="form-control">
+                                            <option>/Hr</option>
+                                            <option>FlatRate</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <label>Duration</label>
+                                <input id="duration" type="number" min="0" class="form-control" style="padding:0px;background-color:#f0f0f0" disabled />
+                                <label class="text-muted" style="font-size: 12px;">0.1 = 6 minutes</label>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer" style="padding-right: 0px;margin-right: -5px;">
+                        <button type="button" class="btn btn-danger" onclick="timerModalopen()" data-dismiss="modal">Cancel</button>
+                        <button type="button" onclick="SaveTimeEntry()" class="btn btn-success">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!--Add New  Modal -->
+    <div class="modal fade" id="newActivityModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Add New Activity</h5>
+                    <button type="button" class="close" onclick="AddActivity()" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Activity Name</label>
+                        <input id="activityName" type="text" class="form-control" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" onclick="AddActivity()">Close</button>
+                    <button type="button" class="btn btn-success" onclick="AddNewActivity()">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <footer class="footer">
+        <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Powered by <a href="https://www.ab-sol.com/" target="_blank">Absolute solutions</a></span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Copyright © @DateTime.Now.Year.ToString();. All rights reserved Absol Case.</span>
+        </div>
+    </footer>
+
+
+    <script src="~/js/toastr.min.js"></script>
+    <script src="~/jquery/jquery.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/vendors/jquery-toast-plugin/jquery.toast.min.js"></script>
+
+    <!-- Plugin js for this page -->
+    <script src="~/Scripts/bootstrap.js"></script>
+    <script src="~/vendors/chart.js/Chart.min.js"></script>
+    <script src="~/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+    <script src="~/vendors/progressbar.js/progressbar.min.js"></script>
+    <!-- Plugin js for this page-->
+    <script src="~/vendors/datatables.net/jquery.dataTables.js"></script>
+    <script src="~/vendors/datatables.net-bs4/dataTables.bootstrap4.js"></script>
+    <!-- End plugin js for this page -->
+    <script src="~/vendors/datatables.net/jquery.dataTables.js"></script>
+    <script src="~/vendors/datatables.net-bs4/dataTables.bootstrap4.js"></script>
+    <!-- inject:js -->
+    <script src="~/js/off-canvas.js"></script>
+    <script src="~/js/hoverable-collapse.js"></script>
+    <script src="~/js/settings.js"></script>
+    <script src="~/js/todolist.js"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page-->
+    <script src="~/js/dashboard.js"></script>
+    <script src="~/js/Chart.roundedBarCharts.js"></script>
+    <script src="~/vendors/js/vendor.bundle.base.js"></script>
+
+    @RenderSection("scripts", required: false)
+    <style>
+        .dataTables_wrapper .dataTable thead .sorting:after, .dataTables_wrapper .dataTable thead .sorting_asc:after, .dataTables_wrapper .dataTable thead .sorting_desc:after, .dataTables_wrapper .dataTable thead .sorting_asc_disabled:after, .dataTables_wrapper .dataTable thead .sorting_desc_disabled:after {
+            display: none
+        }
+
+        .dataTables_wrapper .dataTable thead .sorting:before, .dataTables_wrapper .dataTable thead .sorting_asc:before, .dataTables_wrapper .dataTable thead .sorting_desc:before, .dataTables_wrapper .dataTable thead .sorting_asc_disabled:before, .dataTables_wrapper .dataTable thead .sorting_desc_disabled:before {
+            display: none
+        }
+    </style>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+    <script src="~/assets/js/dataTables.min.js"></script>
+    <script src="/js/timer.jquery.min.js"></script>
+    <script>
+
+        //function test() {
+        //    var ABC = "45:10 hrs";
+        //    var numbers = [];
+        //    var parts = ABC.split(" ");
+        //    for (var i = 0; i < parts.length; i++) {
+        //        var subparts = parts[i].split(":");
+        //        for (var j = 0; j < subparts.length; j++) {
+        //            var match = subparts[j].match(/\d+/);
+        //            if (match) {
+        //                numbers.push(match[0]);
+        //            }
+        //        }
+        //    }
+        //    console.log(numbers);
+        //    var output = numbers.join(":");
+        //    console.log(output);
+        //}
+
+        $(document).ready(function () {
+            $("#btnPause").addClass("hide-btn");
+            $("#btnSave").addClass("hide-btn");
+            $("#customFields-one").addClass("hide");
+            getCasesLayout();
+            getActivityLayout();
+            getBillingContactsLayout();
+
+            $('#datatable').DataTable();
+            localStorage.setItem("token", '@userDto.Token');
+
+            var getseconds = localStorage.getItem('timerValue');
+            var getState = localStorage.getItem('timerState');
+            if (getseconds != 'undefined') {
+                if (getState == 'running') {
+                    $("#t").timer({
+                        action: 'start',
+                        seconds: getseconds
+                    });
+                    $("#t").addClass("badge-important");
+                    $("#btnPause").removeClass("hide-btn");
+                    $("#btnStart").addClass("hide-btn");
+                    $("#btnSave").addClass("hide-btn");
+                } else if (getState == 'paused') {
+                    $("#t").timer({
+                        action: 'start',
+                        seconds: getseconds
+                    });
+                    $("#t").timer('pause');
+                    $("#t").removeClass("badge-important");
+                    $("#btnStart").addClass("hide-btn");
+                    $("#btnPause").addClass("hide-btn");
+                    $("#btnResume").removeClass("hide-btn");
+                    $("#btnSave").removeClass("hide-btn");
+                }
+            }
+        });
+
+        function updateTime() {
+            var seconds = $("#t").data('seconds');
+            localStorage.setItem('timerValue', seconds);
+            var state = $("#t").data('state');
+            localStorage.setItem('timerState', state);
+        }
+        setInterval(updateTime, 2000);
+
+        $("#btnStart").click(function () {
+            $("#t").timer({
+                action: 'start',
+                seconds: 0
+            });
+            $("#t").addClass("badge-important");
+            $("#btnPause").removeClass("hide-btn");
+            $("#btnStart").addClass("hide-btn");
+            $("#btnSave").addClass("hide-btn");
+        });
+
+        $("#btnPause").click(function () {
+            $("#t").timer('pause');
+            $("#t").removeClass("badge-important");
+            $("#btnPause").addClass("hide-btn");
+            $("#btnResume").removeClass("hide-btn");
+            $("#btnSave").removeClass("hide-btn");
+
+        });
+
+        $("#btnResume").click(function () {
+            $("#t").timer('resume');
+            $("#t").addClass("badge-important");
+            $("#btnResume").addClass("hide-btn");
+            $("#btnSave").addClass("hide-btn");
+            $("#btnPause").removeClass("hide-btn");
+        });
+
+        $("#btnReset").click(function () {
+            $("#t").timer('reset');
+            $("#t").timer('pause');
+            $("#t").removeClass("badge-important");
+            $("#btnStart").removeClass("hide-btn");
+            $("#btnPause").addClass("hide-btn");
+            $("#btnResume").addClass("hide-btn");
+            $("#btnSave").addClass("hide-btn");
+            $("#t").timer('remove');
+            $("#t").timer('reset');
+            $("#t").timer('remove');
+        });
+
+        function timerModalopen() {
+            $("#timerModal").modal('toggle');
+            var calculation = 0.1;
+            var getseconds = localStorage.getItem('timerValue');
+            var minutes = (getseconds / 60).toFixed(1);
+            while (minutes > 6) {
+                calculation += 0.1;
+                minutes -= 6;
+            }
+            //if (minutes <= 6) {
+            //    calculation = 0.1;
+            //} else {
+            //    calculation = ((minutes / 6) / 10).toFixed(1);
+            //}
+            calculation = calculation.toFixed(1);
+            $("#duration").val(calculation);
+
+            // for adding current date to input
+            $('#date').val(new Date().toJSON().slice(0, 10));
+        }
+        function AddActivity() {
+            $("#timerModal").modal('toggle');
+            $("#newActivityModal").modal('toggle');
+
+        }
+        //function CloseAddActivity() {
+        //    $("#newActivityModal").modal('toggle');
+        //}
+
+        //function start() {
+        //    var seconds = 0;
+        //    console.log(@Global_variable.listcart);
+        //    if (@Global_variable.listcart > 0) {
+        //        seconds = @Global_variable.listcart;
+        //    }
+        //    var timerElement = document.getElementById("tt");
+        //    setInterval(function () {
+        //        seconds++;
+        //        timerElement.innerText = seconds;
+        //    }, 1000);
+        //    console.log(seconds);
+        ////@Global_variable.listcart = seconds;
+
+        //}
+
+        function SaveTimeEntry() {
+            $("#t").timer('reset');
+            $("#t").timer('pause');
+            $("#t").removeClass("badge-important");
+            $("#btnStart").removeClass("hide-btn");
+            $("#btnPause").addClass("hide-btn");
+            $("#btnResume").addClass("hide-btn");
+            $("#btnSave").addClass("hide-btn");
+            $("#t").timer('remove');
+
+
+
+
+            var caseselected = $("#casesLayout").val();
+            var user = $("#users").val();
+            var activity = $("#activity").val();
+            var description = $("#description").val();
+            var isBillable = $("#checkbox-btn").prop("checked");
+            var date = $("#date").val();
+            var rate = $("#rate").val();
+            var rateType = $("#ratetype").val();
+            var duration = $("#duration").val();
+
+            var data = [];
+            $("#customFields-one input").each(function (index, volume) {
+                var innerdata = {};
+                innerdata = new FormData();
+                var Type = $(volume).attr('type');
+                var CurrentID = $(volume).attr('id');
+                var value = $("#" + CurrentID).val();
+                var Isvalid = true;
+                if (Type == "radio") {
+                    var CurrentID = $(volume).attr('id');
+
+                    if ($("#True" + CurrentID.split('-')[1]).is(":checked")) {
+                        //innerdata.append("Value", true);
+
+                    } else {
+                        // innerdata.append("Value", false);
+                    }
+                } else {
+                    //innerdata.append("FieldID", CurrentID.split('-')[1]);
+                    //innerdata.append("ModuleType", Type);
+                    //innerdata.append("Value", value);
+                }
+
+                var cfield = {
+                    FieldID: CurrentID.split('-')[1],
+                    ModuleType: Type,
+                    Value: value
+                }
+                data.push(cfield);
+            });
+
+            var model = {
+                UserId: user,
+                CaseId: caseselected,
+                Description: description,
+                IsBillable: isBillable,
+                ActivityId: activity,
+                Date: date,
+                Rate: rate,
+                RateType: rateType,
+                Duration: duration,
+                cfieldValue: data,
+            };
+
+            console.log(model);
+
+            token = localStorage.getItem('token');
+            $.ajax({
+                url: `${remoteServerURl}api/AttorneyAdmin/AddTimeEntry`,
+                headers: { "Authorization": 'Bearer ' + token },
+                type: "POST",
+                data: JSON.stringify(model),
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    toastr.success("Time Entry Added Successfully");
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 500);
+                },
+                error: function (response) {
+                    if (response.responseText == "Please Add Firm Details First") {
+                        toastr.success(response.responseText);
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("AddFirm", "Admin", new { area= "Attorney" })';
+                        }, 500);
+                    } else {
+                        toastr.error(response.responseText);
+                    }
+                }
+            });
+        };
+
+        function AddNewActivity() {
+            var model = {
+                ActivityName: $('#activityName').val(),
+            };
+            token = localStorage.getItem('token');
+            $.ajax({
+                url: `${remoteServerURl}api/AttorneyAdmin/AddTimeEntryActivity`,
+                headers: { "Authorization": 'Bearer ' + token },
+                type: "POST",
+                data: JSON.stringify(model),
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    toastr.success("Activity added Successfully");
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 500);
+                },
+                error: function (response) {
+                    if (response.responseText == "Please Add Firm Details First") {
+                        toastr.success(response.responseText);
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("AddFirm", "Admin", new { area= "Attorney" })';
+                        }, 500);
+                    } else {
+                        toastr.error(response.responseText);
+                    }
+                }
+            });
+        };
+
+        //function AddCustomFields() {
+        //    $("#customFields-one").toggle('hide');
+        //}
+
+        $("#btn-show").click(function () {
+            if (!$("#customFields-one").hasClass("hide")) {
+                $("#customFields-one").addClass("hide");
+            } else {
+                $("#customFields-one").removeClass("hide");
+            }
+        });
+
+        function getBillingContactsLayout() {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/contact/GetContacts`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                let options = "<option value='undefined'>Select</option>";
+                $.each(data, function (a, b) {
+                    options += "<option value='" + b.contactId + "'>" + b.firstName + "</option>";
+                });
+
+                $("#users").html(options);
+            })
+        };
+
+        function getCasesLayout() {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Case/GetCases`,
+                headers: { "Authorization": 'Bearer ' + token },
+                error: function (data) {
+                    if (data.responseText == 'Please Add Firm Details First') {
+                        window.location.href = '@Url.Action("AddFirm", "Admin", new { area= "Attorney" })';
+                    }
+                }
+            }).done(function (data) {
+                let options = "<option value='undefined'>Select</option>";
+                $.each(data, function (a, b) {
+                    options += "<option value='" + b.id + "'>" + b.caseName + "</option>";
+                });
+
+                $("#casesLayout").html(options);
+                $("#caseDropdown").html(options);
+
+            })
+        };
+        function getActivityLayout() {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/AttorneyAdmin/GetTimeEntryActivity`,
+                headers: { "Authorization": 'Bearer ' + token },
+                error: function (data) {
+                    if (data.responseText == 'Please Add Firm Details First') {
+                        window.location.href = '@Url.Action("AddFirm", "Admin", new { area= "Attorney" })';
+                    }
+                }
+            }).done(function (data) {
+                console.log(data);
+                let options = "<option value='undefined'>Select</option>";
+                $.each(data, function (a, b) {
+                    options += "<option value='" + b.activityId + "'>" + b.activityName + "</option>";
+                });
+
+                $("#activity").html(options);
+
+            })
+        };
+
+    </script>
+    <script>
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function () {
+                this.classList.toggle("activee");
+                var content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
+            });
+        }
+    </script>
+    <script>
+
+
+        function toggleIcon() {
+            $('body').toggleClass("sidebar-icon-only");
+        }
+        function ShowSubscriptionLimitation() {
+            $("#SubModal").modal('show');
+            $(".modal-backdrop").css("display", "none");
+        }
+
+        $("#setup").click(function () {
+            $("#clickerSetup").trigger("click");
+        });
+
+        $("#closeBtnSetup").click(function () {
+            //alert("The paragraph was clicked.");
+            $("#clickerSetup").trigger("click");
+            //window.setTimeout(function () { location.reload() }, 3000)
+        });
+
+        function GetURL() {
+            var URL = "@apiBaseUrl";
+            //var URL = "https://localhost:44318/";
+            //var URL = "http://38.17.51.206:8010/";
+            return URL;
+        }
+    </script>
+</body>
+</html>
+
+
+

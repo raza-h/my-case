@@ -1,0 +1,122 @@
+﻿@model List<AbsolCase.Models.Company>
+
+@{
+    ViewBag.Title = "Manage Company";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/css/Packages.css" rel="stylesheet" type="text/css" />
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<div class="col-lg-12 grid-margin stretch-card">
+    <input type="hidden" id="companyid" />
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Manage Company</h4>
+            <p class="card-description">
+                Manage Your Company
+            </p>
+            <div class="table-responsive">
+                <table id="datatable" class="table table-striped  dt-responsive nowrap" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>
+                                Email
+                            </th>
+                            <th>Website</th>
+                            <th>Phone</th>
+                            <th>Address</th>
+                            <th>City</th>
+                            <th>
+                                Action
+                            </th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Count > 0)
+                        {
+                            @foreach (var company in Model)
+                            {
+                                <tr>
+                                    <td>@(!string.IsNullOrEmpty(company.Name)? company.Name :"N/A")</td>
+                                    <td class="py-1">@(!string.IsNullOrEmpty(company.Email)? company.Email :"N/A")</td>
+                                    <td>@(!string.IsNullOrEmpty(company.Website)? company.Website :"N/A")</td>
+                                    <td>@(!string.IsNullOrEmpty(company.MainPhone)? company.MainPhone :"N/A")</td>
+                                    
+                                    <td>@(!string.IsNullOrEmpty(company.Address1)? company.Address1 :"N/A")</td>
+                                    
+                                    <td>@(!string.IsNullOrEmpty(company.City)? company.City :"N/A")</td>
+                                    <td>
+                                        @Html.ActionLink("Edit", "UpdateCompany", "Company", new { Id = company.Id }) |
+                                        <a href="#" onclick="openpopup(@company.Id,  'Are you sure to delete company?', 'deleteCompany(@company.Id)')">Delete</a>
+
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+
+    <script>
+        var remoteServerURl = "";
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            token = localStorage.getItem('token');
+        });
+
+        function getRemoteServerURl() {
+            //$.ajax({
+            //    type: 'GET',
+            //    url: '/common/getConfigurationValue',
+            //    data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+
+
+            //})
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+        };
+        function deleteCompany(Id) {
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'Delete',
+                url: `${remoteServerURl}api/CompanyManagement/Delete?Id=` + Id,
+                headers: { "Authorization": 'Bearer ' + token },
+                success: function (response) {
+                    closepopup();
+                    toastr.success(response);
+                    setTimeout(function () {
+                        window.location.href = '@Url.Action("ManageCompany", "Company")'
+                    }, 1000);
+                },
+                error: function (response) {
+                    closepopup();
+                    toastr.error(response.responseText);
+                }
+            });
+        }
+        $(document).ready(function () {
+            $('#datatable').dataTable({
+                "columnDefs": [
+                    { "searchable": false, "targets": 6 }
+                ]
+            });
+        });
+    </script>
+}
+

@@ -1,0 +1,63 @@
+﻿@model AbsolCase.Models.PaymentInfoDto
+@{
+    if (Model.UserData == null)
+        Model.UserData = new AbsolCase.Models.UserDto();
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="row">
+   
+    <div class="col-lg-12">
+        <div class="card px-2">
+            <div class="container-fluid" style="margin-top: 20px">
+                <h3 class="text-right">Invoice&nbsp;&nbsp;#@Model.InvoiceNo</h3>
+                <hr>
+            </div>
+            <div class="container-fluid d-flex justify-content-between">
+                <div class="col-lg-3 ps-0">
+                    <p class="mb-2 text-right"><b>Invoice from</b></p>
+                    <p class="mb-2"><b>Case Management System</b></p>
+                    <p class="text-right">Our Team<br> USA.</p>
+                </div>
+                <div class="col-lg-3 pr-0">
+                    <p class="mb-2 text-right"><b>Invoice to</b></p>
+                 
+                    <p class="mb-2"><b>@Model.UserData.FirstName @Model.UserData.LastName</b></p>
+                    <p>@Model.UserData.Address,<br>@Model.UserData.State, @Model.UserData.City @Model.UserData.PostCode.</p>
+                </div>
+            </div>
+            <div class="container-fluid d-flex justify-content-between">
+                <div class="col-lg-3 ps-0" style="margin-bottom: 15px">
+                    <p class="mb-0" style="font-weight: bold">Invoice Date : @Html.FormatValue("dd/MM/yyyy", Model.PaymentDate.ToString("dd/MM/yyyy"))</p>
+                </div>
+            </div>
+            <div class="container-fluid d-flex justify-content-center w-100">
+                <div class="table-responsive w-100">
+                    <table class="table">
+                        <thead>
+                            <tr class="bg-dark text-white">
+                                <th>Package Name</th>
+                                <th class="text-right">Price</th>
+                                <th class="text-right">Payment Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="text-right">
+                                <td class="text-left">@Model.PlanName</td>
+                                <td>$@Model.Price</td>
+                                <td>@Model.PaymentType</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="container-fluid w-100">
+                <h4 class="text-right mb-5">Total : $@Model.Price</h4>
+                <hr>
+            </div>
+        </div>
+    </div>
+</div>
+

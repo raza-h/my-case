@@ -1,0 +1,55 @@
+﻿@model AbsolCase.Models.Zoom
+@{
+    ViewData["Title"] = "Zoom";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+
+<head>
+    <title> Absol Case </title>
+    <link rel=" shortcut icon" href="~/images/favicon.png" />
+</head>
+<body>
+    <div class="table-responsive">
+        <table class="table" style="max-width:70%">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Host)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Join)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Code)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.shareurl)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem.Host)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem.Join)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem.Code)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem.shareurl)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                        @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                        @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>

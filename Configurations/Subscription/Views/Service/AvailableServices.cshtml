@@ -1,0 +1,118 @@
+﻿@model AbsolCase.Models.AspNetUsers
+
+@{
+    ViewBag.Title = "Add User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/css/Packages.css" rel="stylesheet" type="text/css" />
+
+
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Subscription</h4>
+            <p class="card-description">
+                Available Subscription Plans
+            </p>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>SR#</th>
+                            <th>
+                                Title
+                            </th>
+                            <th>
+                                Price
+                            </th>
+                            <th>
+                                Type
+                            </th>
+                            <th>
+                                Action
+                            </th>
+                            <th>
+                                Assign Services
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td class="py-1">
+                                Basic
+                            </td>
+                            <td>
+                                $49
+                            </td>
+                            <td>
+                                Per Week
+                            </td>
+                            <td>
+                                <a href="#">Edit |</a>
+                                <a href="">Delete |</a>
+                                <a href="@Url.Action("ViewSubscription","Subscribe")">View Detail</a>
+                            </td>
+                            <td>
+                                <a href="@Url.Action("AddService","Service")">Add Services</a>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td class="py-1">
+                                Plus
+                            </td>
+                            <td>
+                                $199
+                            </td>
+                            <td>
+                                Per Month
+                            </td>
+                            <td>
+                                <a href="#">Edit |</a>
+                                <a href="">Delete |</a>
+                                <a href="@Url.Action("ViewPlus","Subscribe")">View Detail</a>
+                            </td>
+                            <td>
+                                <a href="@Url.Action("AddService","Service")">Add Services</a>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td class="py-1">
+                                Pro
+                            </td>
+                            <td>
+                                $1999
+                            </td>
+                            <td>
+                                Per Year
+                            </td>
+                            <td>
+                                <a href="#">Edit |</a>
+                                <a href="">Delete |</a>
+                                <a href="@Url.Action("ViewPro","Subscribe")">View Detail</a>
+                            </td>
+                            <td>
+                                <a href="@Url.Action("AddService","Service")">Add Services</a>
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

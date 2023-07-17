@@ -1,0 +1,94 @@
+﻿@model List<AbsolCase.Models.ExpenseViewModel>
+@{
+    ViewBag.Title = "Expenses";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Expense Transactions</h4>
+        <div class="row">
+            <div class="col-12">
+                <table id="datatable" class="table table-striped  dt-responsive nowrap" width="100%" cellspacing="0">
+                    <thead>
+                        <tr role="row">
+                            <th>Sr No.</th>
+                            <th>Client Name</th>
+                            <th>Amount</th>
+                            <th>Expense Type</th>
+                            <th>Invoice No</th>
+                            <th>Action</th>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Count > 0)
+                        {
+                            int count = 0;
+                            @foreach (var expense in Model)
+                            {
+                                count++;
+                                <tr class="odd">
+                                    <td class="sorting_1">@count</td>
+                                    <td>@(!string.IsNullOrEmpty(expense.ClientName) ? expense.ClientName : "N/A")</td>
+                                    <td>@(!string.IsNullOrEmpty(expense.Amount.ToString()) ? expense.Amount.ToString() : "0.00")</td>
+                                    <td>@(!string.IsNullOrEmpty(expense.ExpenseTypeName) ? expense.ExpenseTypeName : "N/A")</td>
+                                    <td>@(!string.IsNullOrEmpty(expense.InvoiceNo) ? expense.InvoiceNo : "N/A")</td>
+                                    <td><a href="#" onclick="DownLoadExpense('@expense.Id')">Download</a></td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <script>
+        var remoteServerURl = "";
+        var plan = null;
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            token = localStorage.getItem('token');
+        });
+
+        function getRemoteServerURl() {
+            //$.ajax({
+            //    type: 'GET',
+            //    url: '/common/getConfigurationValue',
+            //    data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+
+            //})
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+        };
+        function DownLoadExpense(Id) {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Expense/GetExpenseById`,
+                headers: { "Authorization": 'Bearer ' + token },
+                data: { Id: Id }
+            }).done(function (data) {
+                console.log(data);
+                var model = {}
+                model.NotesTittle = data.notesTittle;
+                model.NotesDescripation = data.notesDescripation;
+                model.NotesTag = data.notesTag;
+                window.location.href = "@Url.Action("DownloadExpense", "Expense")?ClientName=" + data.clientName + "&Amount=" + data.amount + "&Description=" + data.description + "&CreatedDate=" + data.createdDate+ "&Id=" + data.id;
+            })
+        };
+        $(document).ready(function () {
+            $('#datatable').dataTable({
+                "columnDefs": [
+                    { "searchable": false, "targets": 5 }
+                ]
+            });
+        });
+    </script>
+
+}

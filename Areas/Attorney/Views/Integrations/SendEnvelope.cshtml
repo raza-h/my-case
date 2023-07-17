@@ -1,0 +1,209 @@
+﻿@model AbsolCase.Models.DocumentSign
+@{
+    ViewData["Title"] = "SendEnvelope";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<style>
+    .col-form-label {
+        padding-top: 0px !important;
+    }
+</style>
+<div class="col-md-12 grid-margin stretch-card ms-3 mt-3 pe-4 me-3">
+    <div class="card">
+        <div class="card-body">
+            <form class="form-sample" method="post" enctype="multipart/form-data">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Users</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" aria-label="Users" id="userId">
+                                </select>
+                                <span class="field-validation-valid text-danger db" id="validateBillingContact" style="display: none;"></span>
+                                <div class="mt-2" id="usersList"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Select File</label>
+                            <div class="col-sm-9">
+                                <input type="file" class="form-control" name="file" id="fileInput" accept=".pdf">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <button class="btn btn-warning" onclick="SendEnvelope()" style="float:right">Send</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    <script>
+        var file = null;
+        $('#fileInput').change(function () {
+            file = $(this)[0].files[0];
+            // Perform further operations with the file
+        });
+
+        $("#userId").change(function () {
+            var text = $("#userId option:selected").text();
+
+            if (text != "Select User") {
+                var existingNames = $("#usersList li").map(function () {
+                    return $(this).text().trim().split("×")[0].trim();
+                }).get();
+
+                var splittedText = text.split("×")[0].trim();
+
+                if (existingNames.includes(splittedText)) {
+                    // Name already exists, handle accordingly
+                    toastr.error("Name already exists in the list.");
+                } else {
+                    $("#usersList").append("<li data-valId=" + $("#userId option:selected").val() + " class='btn btn-success'>" + splittedText + "<span class='closeCaseTags pull-right' onclick='DeleteItemm(this)'>&times;</span></li> ");
+                }
+            }
+        });
+
+
+
+    </script>
+    <script>
+
+        var remoteServerURl = "";
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            token = localStorage.getItem('token');
+        });
+
+        function getRemoteServerURl() {
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+            getUsers();
+        };
+        setTimeout(function () {
+            $("#msgalert").hide();
+        }, 3500);
+
+        function getUsers() {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/UserManagement/GetAllUsers`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                console.log(data)
+                let options = "<option value='undefined'>Select User</option>";
+                $.each(data, function (a, b) {
+                    options += "<option value='" + b.id + "'>" + b.firstName + " " + b.lastName + "</option>";
+                });
+
+
+                $("#userId").html(options);
+            })
+        };
+
+        function SendEnvelope() {
+            event.preventDefault();
+            //var billingContact = $('#BillingContact').val();
+            //var BillingMethod = $('#BillingMethod').val();
+
+
+
+            var NotesTagArray = new Array();
+            $("#usersList LI").each(function () {
+
+                var notesTag = {};
+                notesTag.name = $(this).text().substring(0, $(this).text().length - 1)
+                notesTag.id = $(this).attr("data-valId");
+
+                NotesTagArray.push(notesTag);
+            });
+            console.log(NotesTagArray);
+            var notestittle = "";
+            var i;
+            for (i = 0; i < NotesTagArray.length; i++) {
+                if (NotesTagArray.length == 1) {
+                    notestittle = NotesTagArray[i].id + ","
+                }
+                else if (i == 0) {
+                    notestittle = NotesTagArray[i].id
+
+                }
+                else {
+                    notestittle = notestittle + "," + NotesTagArray[i].id;
+
+                }
+            }
+            var trimenotetagstr = notestittle;
+
+
+
+            
+            //var model = {
+            //    Document: file,
+            //    UsersList: trimenotetagstr,
+            //};
+            //console.log(model);
+            //$.ajax({
+            //    url: '@Url.Action("SendEnvelopePost", "Integrations")',
+            //    type: "POST",
+            //    dataType: 'json',
+            //    data: JSON.stringify(model),
+            //    contentType: "application/json; charset=utf-8",
+            //    success: function (data) {
+
+            //    },
+            //    error: function (data) {
+
+            //        console.log("error");
+            //    },
+            //});
+            //token = localStorage.getItem('token');
+            var formData = new FormData();
+            formData.append('Document', file);
+            formData.append('UsersList', trimenotetagstr);
+
+            $.ajax({
+                url: '@Url.Action("SendEnvelopePost", "Integrations")',
+                type: 'POST',
+                dataType: 'json',
+                data: formData,
+                contentType: false, // Let jQuery handle the content type
+                processData: false, // Prevent jQuery from processing the data
+                success: function (response) {
+                    // Handle success response
+                    if (response == "Document Sent"){
+                        window.location.href=('@Url.Action("ManageDocumentSign","Integrations")');
+                    }else{
+                        window.location.href=('@Url.Action("DocuIndex","Integrations")');
+                    }
+                },
+                error: function (response) {
+                    // Handle error response
+                }
+            });
+
+
+        }
+
+    </script>
+    <script>
+        function DeleteItemm(ctl) {
+            $(ctl).parents("li").remove();
+
+        }
+    </script>
+}

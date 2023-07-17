@@ -1,0 +1,43 @@
+﻿@model AbsolCase.Models.AspNetRoles
+@{
+    ViewBag.Title = "AddRole";
+    Layout = "~/Views/Shared/_SPLayout.cshtml";
+}
+
+
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+
+
+
+
+<div class="col-md-6 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Add Role</h4>
+            @*<p class="card-description">
+                    Basic form layout
+                </p>*@
+            @using (Html.BeginForm("AddRole", "Role", FormMethod.Post, new { @class = "forms-sample" }))
+            {
+                <div class="form-group">
+                    <label for="exampleInputUsername1">Role Name</label>
+                    @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", placeholder = "Role"} })
+                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger db" })
+
+                </div>
+                <button type="submit" class="btn btn-primary me-2">Submit</button>
+                @*<button class="btn btn-light">Cancel</button>*@
+            }
+        </div>
+    </div>
+</div>
+<script>
+    setTimeout(function () {
+        $("#msgalert").hide();
+    }, 3500);
+</script>

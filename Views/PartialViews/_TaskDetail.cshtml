@@ -1,0 +1,50 @@
+﻿@model AbsolCase.Models.Tasks
+
+<div style="padding: 2rem">
+    <button type="button" class="close" data-dismiss="modal" onclick="closepopup()" style="float:right; font-family: none; border: none; margin-top: -30px; margin-right: -30px">×</button>
+    <div class="panel-heading" style="margin-bottom:20px">Task Detail</div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="pt-1 ps-0">
+                        Task Name
+                    </th>
+                    <th class="pt-1">
+                        @Model.Name
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <p class="mb-0" style="font-weight: bold">Case Name</p>
+                        <p class="mb-0 text-muted">@Model.CaseName</p>
+                    </td>
+                    <td class="py-1 ps-0">
+                        <div class="d-flex align-items-center">
+                            <div class="ms-3">
+                                <p class="mb-0" style="font-weight: bold">Due Date</p>
+                                <p class="mb-0 text-muted">@Model.DueDate.Value.ToString("dd'/'MM'/'yyyy")</p>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p class="mb-0" style="font-weight: bold">Priority</p>
+                        <p class="mb-0 text-muted">@Model.Priority</p>
+                    </td>
+                    <td class="py-1 ps-0">
+                        <div class="d-flex align-items-center">
+                            <div class="ms-3">
+                                <p class="mb-0" style="font-weight: bold">Description</p>
+                                <p class="mb-0 text-muted" style="white-space: pre-wrap;">@Model.Description</p>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

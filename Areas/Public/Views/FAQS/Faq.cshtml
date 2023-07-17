@@ -1,0 +1,215 @@
+﻿@model IEnumerable<AbsolCase.Models.Faq>
+@{
+    Layout = "~/Views/Shared/_OuterLayout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="irstheme">
+
+    <title> Absol Case </title>
+    <link rel=" shortcut icon" href="~/images/favicon.png" />
+    <link href="~/assets/css/themify-icons.css" rel="stylesheet" />
+    <link href="~/assets/css/flaticon.css" rel="stylesheet" />
+    <link href="~/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/assets/css/animate.css" rel="stylesheet" />
+    <link href="~/assets/css/owl.carousel.css" rel="stylesheet" />
+    <link href="~/assets/css/owl.theme.css" rel="stylesheet" />
+    <link href="~/assets/css/slick.css" rel="stylesheet" />
+    <link href="~/assets/css/slick-theme.css" rel="stylesheet" />
+    <link href="~/assets/css/owl.transitions.css" rel="stylesheet" />
+    <link href="~/assets/css/jquery.fancybox.css" rel="stylesheet" />
+    <link href="~/assets/css/style.css" rel="stylesheet" />
+
+    <style>
+        body {
+            font-family: 'Work Sans', sans-serif;
+        }
+
+        .faq-heading {
+            border-bottom: #777;
+            padding: 20px 60px;
+        }
+
+        .faq-container {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .hr-line {
+            width: 60%;
+            margin: auto;
+        }
+        /* Style the buttons that are used to open and close the faq-page body */
+        .faq-page {
+            /* background-color: #eee; */
+            color: #444;
+            cursor: pointer;
+            padding: 30px 20px;
+            width: 60%;
+            border: none;
+            outline: none;
+            transition: 0.4s;
+            margin: auto;
+        }
+
+        .faq-body {
+            margin: auto;
+            /* text-align: center; */
+            width: 50%;
+            padding: auto;
+        }
+
+        /*.active,*/
+        .faq-page:hover {
+            background-color: #F9F9F9;
+        }
+        /* Style the faq-page panel. Note: hidden by default */
+        .faq-body {
+            padding: 0 18px;
+            background-color: white;
+            display: none;
+            overflow: hidden;
+        }
+
+        .faq-page:after {
+            content: '\02795';
+            /* Unicode character for "plus" sign (+) */
+            font-size: 13px;
+            color: #777;
+            float: right;
+            margin-left: 5px;
+        }
+
+        .faq-page.active:after {
+            content: "\2796";
+            Unicode character for "minus" sign (-)
+        }
+    </style>
+    <style>
+        .testimonials-contact-section {
+            background: none !important;
+        }
+    </style>
+
+</head>
+
+
+<body>
+    <div class="page-wrapper">
+
+
+        <section class="testimonials-contact-section section-padding">
+
+            <div class="container">
+                <div class="page-header">
+                    <h1>FAQ <small>Frequently Asked Questions</small></h1>
+                </div>
+                <div class="accordion container" id="accordionExample" style="margin-top:50px">
+                    <div class="alert alert-warning alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        This section contains a wealth of information, related to <strong>Absolute Solutions</strong>. If you cannot find an answer to your question,
+                        make sure to contact us.
+                    </div>
+
+                    <div class="accordion-item">
+                        @if (Model.Count() >= 1)
+                        {
+                            int i = 1;
+                            @foreach (var item in Model)
+                            {
+                                <main>
+                                    
+                                    <section class="faq-container">
+                                        <div class="faq-one">
+                                            <!-- faq question -->
+                                            <h4 class="faq-page">@item.Question</h4>
+                                            <!-- faq answer -->
+                                            <div class="faq-body">
+                                                <p>
+                                                   @item.Answer
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <hr class="hr-line">
+                                       
+                                    </section>
+                                </main>
+
+                                i++;
+
+
+                            }
+
+
+
+                        }
+                        else
+                        {
+
+
+
+
+
+
+
+
+                        }
+
+
+
+
+
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+
+
+    </div>
+
+
+    <script src="~/assets/js/jquery.min.js"></script>
+    <script src="~/assets/js/bootstrap.min.js"></script>
+    <script src="~/assets/js/jquery-plugin-collection.js"></script>
+    <script src="~/assets/js/script.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('.supportclass').addClass('active');
+
+
+        });
+       
+        var faq = document.getElementsByClassName("faq-page");
+        var i;
+
+        for (i = 0; i < faq.length; i++) {
+            faq[i].addEventListener("click", function () {
+                /* Toggle between adding and removing the "active" class,
+                to highlight the button that controls the panel */
+                this.classList.toggle("active");
+
+                /* Toggle between hiding and showing the active panel */
+                var body = this.nextElementSibling;
+                if (body.style.display === "block") {
+                    body.style.display = "none";
+                } else {
+                    body.style.display = "block";
+                }
+            });
+        }
+
+    </script>
+</body>
+</html>
+

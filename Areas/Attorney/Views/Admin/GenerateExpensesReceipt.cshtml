@@ -1,0 +1,146 @@
+﻿@model List<AbsolCase.Models.JsonExpenseViewModel>
+<!DOCTYPE html>
+@{
+    Layout = null;
+}
+<html lang="en">
+<head>
+    <link href="~/Logo/style.css" rel="stylesheet" />
+    <style type="text/css">
+        / Chart.js /
+        @@keyframes chartjs-render-animation {
+            from
+
+        {
+            opacity: .99
+        }
+
+        to {
+            opacity: 1
+        }
+
+        }
+
+        .chartjs-render-monitor {
+            animation: chartjs-render-animation 1ms
+        }
+
+        .chartjs-size-monitor, .chartjs-size-monitor-expand, .chartjs-size-monitor-shrink {
+            position: absolute;
+            direction: ltr;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            pointer-events: none;
+            visibility: hidden;
+            z-index: -1
+        }
+
+            .chartjs-size-monitor-expand > div {
+                position: absolute;
+                width: 1000000px;
+                height: 1000000px;
+                left: 0;
+                top: 0
+            }
+
+            .chartjs-size-monitor-shrink > div {
+                position: absolute;
+                width: 200%;
+                height: 200%;
+                left: 0;
+                top: 0
+            }
+
+        hr {
+            border: none;
+            border-top: 3px dashed gray;
+            color: gray;
+            background-color: #fff;
+            height: 1px;
+            width: 100%;
+        }
+
+        /*   table, th, td {
+            border: 2px solid black;
+            border-collapse: collapse;
+        }*/
+        table {
+            background-color: white !important
+        }
+    </style>
+
+
+
+</head>
+
+<body>
+    <table>
+        <tr>
+
+            <td style="text-align:start;background-color:white">
+                <h4 style="color: black; text-align: initial"><strong>Law Office of Lydia Charles, LLC</strong></h4>
+                <h4 style="text-align: initial">5660 Corporate Way</h4>
+                <h4 style="text-align: initial">
+                    West Palm Beach, Florida 33407
+                </h4>
+                <h4 style="text-align: initial">United States</h4>
+                <h4 style="text-align: initial">
+                    561-777-4545
+                </h4>
+
+            </td>
+            <td style="background-color: white">
+
+                <img src="~/Logo/Law-Office-of-Lydia-Charles.png" style="width: 330px;" />
+            </td>
+        </tr>
+    </table>
+
+
+    <br />
+
+    <h4>
+        <strong>
+            Expenses
+        </strong>
+    </h4>
+
+
+    <table style="width: 100%; line-height:15px; border: solid">
+        <tr>
+            <th style="text-align: initial; border: 2px solid black; border-collapse: collapse; ">Sr #</th>
+            <th style="text-align: initial; border: 2px solid black; border-collapse: collapse; ">Date</th>
+            <th style="text-align: initial; border: 2px solid black; border-collapse: collapse; ">Client Name</th>
+            <th style="text-align: initial; border: 2px solid black; border-collapse: collapse; ">Expense Type</th>
+            <th style="text-align: initial; border: 2px solid black; border-collapse: collapse; ">Description</th>
+            <th style="text-align: initial; border: 2px solid black; border-collapse: collapse; ">Amount</th>
+        </tr>
+
+        @if (Model != null || Model.Count > 0)
+        {
+            int i = 1;
+            foreach (var item in Model)
+            {
+                <tr style="border: 2px solid black">
+                    <td style="width: 20px; text-align: start; background-color: white; border: 2px solid black">@i</td>
+
+                    <td style="width: 300px; text-align: start; background-color: white; border: 2px solid black">@item.CreatedDate</td>
+                    <td style="width: 300px; text-align: start; background-color: white; border: 2px solid black">@item.ClientName</td>
+                    <td style="width: 300px; text-align: start; background-color: white; border: 2px solid black">@item.ExpenseTypeName</td>
+           
+                    <td style="width: 20px; text-align: start; background-color: white; border: 2px solid black">@item.Description</td>
+                    <td style="width: 20px; text-align: start; background-color: white; border: 2px solid black">@item.Amount</td>
+                </tr>
+                i++;
+            }
+        }
+
+
+
+    </table>
+
+</body>
+</html>

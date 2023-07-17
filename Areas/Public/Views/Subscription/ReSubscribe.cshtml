@@ -1,0 +1,128 @@
+﻿@model List<AbsolCase.Models.PackageService>
+
+@{
+    ViewBag.Title = "Price Plans";
+    Layout = "~/Views/Shared/_OuterLayout.cshtml";
+}
+
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<style>
+
+    .card .card-body {
+        padding: 1.5rem 1.5rem;
+    }
+
+    .card-body {
+        flex: 1 1 auto;
+        padding: 1rem 1rem;
+    }
+
+    .card .card-title {
+        color: #010101;
+        margin-bottom: 1.2rem;
+        text-transform: capitalize;
+        font-size: 1.125rem;
+        font-weight: 600;
+    }
+
+    .text-muted, .preview-list .preview-item .preview-item-content p .content-category, .email-wrapper .mail-sidebar .menu-bar .profile-list-item a .user .u-designation, .email-wrapper .mail-list-container .mail-list .content .message_text, .email-wrapper .mail-list-container .mail-list .details .date {
+        color: #737F8B !important;
+    }
+
+    .text-uppercase {
+        text-transform: uppercase !important;
+    }
+
+    .text-center {
+        text-align: center !important;
+    }
+
+    .card-title {
+        margin-bottom: 0.5rem;
+    }
+
+    .text-center {
+        text-align: center !important;
+    }
+
+    .card {
+        z-index: 0;
+        border: none;
+        position: relative;
+    }
+
+    .card {
+        box-shadow: 0 0 0 0 rgb(90 113 208 / 11%), 0 4px 16px 0 rgb(167 175 183 / 33%);
+        -webkit-box-shadow: 0 0 0 0 rgb(90 113 208 / 11%), 0 4px 16px 0 rgb(167 175 183 / 33%);
+        -moz-box-shadow: 0 0 0 0 rgba(90, 113, 208, 0.11), 0 4px 16px 0 rgba(167, 175, 183, 0.33);
+        -ms-box-shadow: 0 0 0 0 rgba(90, 113, 208, 0.11), 0 4px 16px 0 rgba(167, 175, 183, 0.33);
+        transition: background 0.25s ease;
+        -webkit-transition: background 0.25s ease;
+        -moz-transition: background 0.25s ease;
+        -ms-transition: background 0.25s ease;
+        border: none;
+        border: none;
+    }
+
+    .mb-lg-0 {
+        margin-bottom: 0 !important;
+    }
+
+    .mb-5 {
+        margin-bottom: 3rem !important;
+    }
+
+    .card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        word-wrap: break-word;
+        background-color: #fff;
+        background-clip: border-box;
+        border: 1px solid #e3e3e3;
+        border-radius: 20px;
+    }
+</style>
+<section class="pricing py-5" style="margin-top:20%">
+    <div class="container">
+        <div class="row">
+            <!-- Free Tier -->
+            @if (Model != null && Model.Count > 0)
+            {
+                @foreach (var plan in Model)
+                {
+                    <div class="col-md-4">
+                        <div class="card mb-5 mb-lg-0" style="width:90%; height:400px;">
+                            <div class="card-body cc">
+                                <h5 class="card-title text-muted text-uppercase text-center">@plan.pricePlan.PlanName</h5>
+                                <h6 class="card-price text-center">@plan.pricePlan.PriceRange<span class="period">/@plan.pricePlan.TimeRange</span></h6>
+                                <hr>
+                                <ul class="fa-ul">
+                                    @if (plan.services != null && plan.services.Count > 0)
+                                    {
+                                        @foreach (var service in plan.services)
+                                        {
+                                            <li><span class="fa-li"><i class="fas fa-check"></i></span>@service.Name</li>
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                            <a href="@Url.Action("ReSubscribeWithPaypal", "Subscription" , new { Id=plan.pricePlan.PlanID, area = "Public" }, null)" class="theme-btn-s3" style="color: black; margin-bottom: 0%; text-align:center; position:relative;width:200px; margin-left:60px;">Subscribe</a>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</section>
+<script>
+    setTimeout(function () {
+        $("#msgalert").hide();
+    }, 3500);
+</script>

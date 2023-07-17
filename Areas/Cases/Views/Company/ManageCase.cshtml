@@ -1,0 +1,93 @@
+﻿@model AbsolCase.Models.CaseDetail
+
+@{
+    ViewBag.Title = "Add User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/css/Packages.css" rel="stylesheet" type="text/css" />
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Manage Company</h4>
+            <p class="card-description">
+                Manage Your Company
+            </p>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>First Name</th>
+                            <th>Case Stage</th>
+                            <th>Case Number</th>
+                            <th>Practice Area</th>
+                            <th>Conflict Check Notes</th>
+                            <th>Description</th>
+                            <th>Date Opened</th>
+                            <th>Date Closed</th>                           
+                            <th>Action</th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr>
+                            <td>Ledia</td>
+                            <td class="py-1">ledia@mail.com</td>
+                            <td>mycase.com</td>
+                            <td>0248392</td>
+                            <td>Main California</td>
+                            <td>Loss angels,America</td>
+                            <td>Chicago</td>
+                            <td>USA</td>
+                            <td>Testing website</td>
+                            <td>
+                                <a href="#">Edit |</a>
+                                <a href="">Delete </a>
+                            </td>
+
+
+                        </tr>
+                        <tr>
+                            <td>Ledia</td>
+                            <td class="py-1">
+                                ledia@mail.com
+                            </td>
+                            <td>mycase.com</td>
+                            <td>0248392</td>
+                            <td>Main California</td>
+                            <td>Loss angels,America</td>
+                            <td>Chicago</td>
+                            <td>USA</td>
+                            <td>Berlin</td>
+                            <td>
+                                <a href="#">Edit |</a>
+                                <a href="">Delete </a>
+                            </td>
+
+
+                        </tr>
+
+
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{ 
+<script>
+
+</script>
+
+}
+

@@ -1,0 +1,87 @@
+﻿@model AbsolCase.Models.Firm
+
+@{
+    ViewBag.Title = "Add User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/css/Packages.css" rel="stylesheet" type="text/css" />
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Manage Firm</h4>
+            <p class="card-description">
+               Manage Your Firm
+            </p>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>FirstName</th>
+                            <th>
+                                LastName
+                            </th>
+                            <th>Email</th>
+                            <th>FirmName</th>
+                            <th>Phone</th>
+                            <th>Number of Employees</th>
+
+
+                            <th>
+                                Action
+                            </th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Ledia</td>
+                            <td class="py-1">
+                                Chales
+                            </td>
+                            <td>ledia@mail.com</td>
+                            <td>Test</td>
+                            <td>080036544</td>
+                            <td>12</td>
+
+                            <td>
+                                <a href="#">Edit |</a>
+                                <a href="">Delete </a>
+                            </td>
+
+
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td class="py-1">
+                                Johnson
+                            </td>
+                            <td>lediacharles@mail.com</td>
+                            <td>Test2</td>
+                            <td>0807536544</td>
+                            <td>20</td>
+
+                            <td>
+                                <a href="#">Edit |</a>
+                                <a href="">Delete </a>
+                            </td>
+
+
+                        </tr>
+
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,446 @@
+﻿@{
+    @using AbsolCase.Models
+    @using Newtonsoft.Json;
+    @using Microsoft.AspNetCore.Http;
+    @inject IHttpContextAccessor httpContextAccessor;
+    string userdto = httpContextAccessor.HttpContext.Session.GetString("userData");
+    UserDto userDto = new UserDto();
+    if (!string.IsNullOrEmpty(userdto))
+    {
+        userDto = JsonConvert.DeserializeObject<UserDto>(userdto);
+    }
+}
+@model AbsolCase.Models.LeadDetail
+@{
+    ViewData["Title"] = "LeadDetails";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<style>
+    .modal:nth-of-type(even) {
+        z-index: 1052 !important;
+    }
+
+    .modal-backdrop.show:nth-of-type(even) {
+        z-index: 1051 !important;
+    }
+
+    .btn-Custom:hover span {
+        color: white !important;
+    }
+
+    .btn-Close:hover {
+        color: white !important;
+    }
+
+    .btn-Close {
+        color: red !important;
+        border: 1px solid red;
+        border-radius: 19px !important;
+    }
+
+    .box {
+        float: left;
+        height: 20px;
+        width: 20px;
+        margin-bottom: 15px;
+        border: 1px solid black;
+        clear: both;
+    }
+
+    .color1 {
+        background-color: rgb(105, 182, 214);
+    }
+
+    .color2 {
+        background-color: rgb(102, 16, 81);
+    }
+
+    .color3 {
+        background-color: rgb(191, 216, 225);
+    }
+
+    .color4 {
+        background-color: rgb(220, 190, 212);
+    }
+
+    .fWeight-6 {
+        font-weight: 600;
+        font-size: 13px;
+    }
+
+    .tab-content {
+        border: none !important;
+    }
+
+    .text-none {
+        text-decoration: none;
+        color: white;
+    }
+
+        .text-none:hover {
+            color: white;
+        }
+</style>
+<div class="container-fluid mb-5 p-4">
+
+
+    <div class="row">
+        <div class="col-lg-6" style="display:inline-flex">
+            @*<img src="~/images/dashboard/briefcase-removebg.png" width="50" height="50" /><br />*@
+            @*<i class="fas fa-3x fa-suitcase" aria-hidden="true"></i>*@
+
+            <h4 style="margin-left:1rem;">@Model.FirstName @Model.LastName</h4>
+        </div>
+        <div class="col-lg-3">
+        </div>
+        <div class="col-lg-3">
+            <button type="button" class="btn btn-outline-dark btn-Custom btn-lg" style="margin-left:1rem;width: 14rem;border-radius: 15px;padding:12px">
+                <span style="color:#484848">Convert To Case</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+
+        <div class="col-lg-10">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Lead Details</button>
+                </li>
+                @*<li class="nav-item" role="presentation">
+                <button class="nav-link" id="profile-tab" data-toggle="tab" data-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Linked Cases</button>
+                </li>*@
+
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Lead Information:</h5>
+                            <span class="btn btn-primary" style="float:right;">@Html.ActionLink("Edit Lead", "UpdateLead", "Admin", new { Id = Model.Id }, new {@class= "text-none"})</span>
+                            <div class="row">
+                                <h4 class="card-title mt-4 mb-3">Case Information</h4>
+                                <div class="col-lg-6">
+                                    <label class="fWeight-6">Name:</label>
+                                    <span id="caseName">@Model.FirstName @Model.LastName</span><br>
+                                    <label class="fWeight-6">Home:</label>
+                                    <span id="caseNo">@Model.HomePhone</span><br>
+                                    <label class="fWeight-6">Work:</label>
+                                    <span id="caseNo">@Model.WorkPhone</span><br>
+                                    <label class="fWeight-6">Cell:</label>
+                                    <span id="caseNo">@Model.CellPhone</span><br>
+                                    <label class="fWeight-6">BirthDate:</label><br>
+                                    @*<span id="caseNo">@Model.DOB.Value.ToShortDateString()</span><br><br>*@
+                                    <label class="fWeight-6">Drivers License:</label>
+                                    <span id="caseNo">@Model.DriverLicence</span><br>
+
+                                </div>
+                                <div class="col-lg-6">
+                                    <label class="fWeight-6">Address:</label>
+                                    <span id="caseName">@Model.Address</span><br>
+                                    <label class="fWeight-6">Email:</label>
+                                    <span id="caseNo">@Model.Email</span><br>
+                                    <label class="fWeight-6">Reffered By:</label>
+                                    <span id="caseNo">@Model.RefferelSource</span><br>
+                                    <label class="fWeight-6">Lead Details:</label>
+                                    <span id="caseNo">@Model.LeadDetails</span><br>
+
+
+                                </div>
+                                @*<div class="col-lg-6">
+                                <label class="fWeight-6">Date Opened:</label>
+                                <span id="dateOpen">@Model.DateOpened.Value.ToShortDateString()</span><br><br>
+                                <label class="fWeight-6">Date Closed:</label>
+                                @if (Model.DateClosed != null)
+                                {
+                                <span id="dateClose">@Model.DateClosed.Value.ToShortDateString()</span>
+
+                                <br>
+
+                                <br>
+                                }
+                                else
+                                {
+                                <span id=""></span>
+
+                                <br>
+
+                                <br>
+                                }
+                                </div>*@
+                            </div>
+                            <div class="row">
+                                <h4 class="card-title mt-4 mb-3">Custom Fields</h4>
+                                <div class="col-lg-6">
+                                    <label class="fWeight-6">Social Security No:</label><br>
+                                    <label class="fWeight-6">Gender:</label><br>
+                                    <label class="fWeight-6">Marital Status:</label><br>
+                                    <label class="fWeight-6">Spouce Name:</label>
+
+
+                                </div>
+                                <div class="col-lg-6">
+                                    <label class="fWeight-6">Mailing Address:</label><br>
+                                    <label class="fWeight-6">Position:</label><br>
+
+
+                                </div>
+                                @*<div class="col-lg-6">
+                                <label class="fWeight-6">Date Opened:</label>
+                                <span id="dateOpen">@Model.DateOpened.Value.ToShortDateString()</span><br><br>
+                                <label class="fWeight-6">Date Closed:</label>
+                                @if (Model.DateClosed != null)
+                                {
+                                <span id="dateClose">@Model.DateClosed.Value.ToShortDateString()</span>
+
+                                <br>
+
+                                <br>
+                                }
+                                else
+                                {
+                                <span id=""></span>
+
+                                <br>
+
+                                <br>
+                                }
+                                </div>*@
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">2</div>
+
+            </div>
+        </div>
+        <div class="col-lg-2" style="background-color:white;">
+            <h4 class="card-title mt-4 card-title-dash">Lead Information</h4>
+            @*<ul class="">
+            @if (Model.contact != null)
+            {
+            <li>
+            <h6 style="text-align: left"><b>@Model.contact.FirstName</b></h6>
+            <p style="text-align: left">@Model.contact.Email </p>
+            <p style="text-align: left">@Model.contact.CellPhone </p>
+            </li>
+            }
+            </ul>*@
+            <br>
+            <label style="font-weight:600">Name:</label><br>
+            <span>@Model.FirstName @Model.LastName</span><br><br>
+            <label style="font-weight:600">Status:</label><br>
+            <span>@Model.Status</span><br><br>
+            <label style="font-weight:600">Referral Source:</label><br>
+            <span>@Model.RefferelSource</span><br><br>
+            <label style="font-weight:600">Office:</label><br>
+            <span>@Model.Office</span><br><br>
+            <label style="font-weight:600">Referral Details:</label><br><br>
+            @*<span>@Model.LeadAttorney</span><br><br>*@
+            <label style="font-weight:600">Email Address:</label><br>
+            <span>@Model.Email</span><br><br>
+            <label style="font-weight:600">Phone Numbers:</label><br>
+            @if (Model.CellPhone != null)
+            {
+                <span>Cell: @Model.CellPhone</span>
+
+                <br>
+            }
+            @if (Model.HomePhone != null)
+            {
+                <span>Home: @Model.HomePhone</span>
+
+
+                <br>
+            }
+            @if (Model.WorkPhone != null)
+            {
+                <span>Work: @Model.WorkPhone</span>
+
+                <br>
+            }
+            <hr>
+
+            <span>Created at @Model.DateAdded.Value.ToShortDateString()</span><br>
+            <hr>
+            <button type="button" onclick="DidNotHire(@Model.Id)" class="btn btn-outline-danger btn-Close" style="padding-left: 3rem;padding-right: 2.8rem;">
+                Did Not Hire
+            </button>
+            <button type="button" onclick="openpopup(@Model.Id, 'Are you sure to delete Lead?', 'deletelead(@Model.Id)')" class="btn btn-outline-danger btn-Close mt-3" style="padding-left: 3rem;padding-right: 2.8rem;width:10.7rem">
+                Delete
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="ReasonModal" tabindex="-1" role="dialog" aria-labelledby="ReasonModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="margin-top:-10rem">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">Are you sure to mark this lead as Not Hired</h5>
+                <button type="button" onclick="CloseModal()" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-2">
+                    <div class="col-lg-8"></div>
+                    <div class="col-lg-4">
+                        <button class="btn btn-primary btn-sm" onclick="AddNewReason()" style="">Add new reason</button>
+                    </div>
+
+                </div>
+                <div class="row" style="display: -webkit-inline-box;">
+                    <label class="text-muted me-3">Reason</label>
+                    <div style="width: 22rem;">
+                        @if (ViewBag.HireReasons != null)
+                        {
+                            @Html.DropDownList("hireReasons", (IEnumerable<SelectListItem>)ViewBag.HireReasons, "--- Select Reason ---", new { @class = "form-control", Id = "reasonDropdown" })
+
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="CloseModal()" class="btn btn-danger" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save Reason</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="AddReasonModal" tabindex="-1" role="dialog" aria-labelledby="AddReasonModal" data-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="margin-top:-10rem">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">Add New Reason</h5>
+                <button type="button" onclick="CloseNewModal()" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Add New Reason</label>
+                    <input type="text" id="txtReason" class="form-control" placeholder="Add Reason" />
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="CloseNewModal()" class="btn btn-danger" data-dismiss="modal">Close</button>
+                <button type="button" onclick="AddReason()" class="btn btn-primary">Save New Reason</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    //$(function () {
+    //  $('#myTab li:last-child button').tab('show')
+    //})
+    $('#myTab button').on('click', function (event) {
+        event.preventDefault()
+        $(this).addClass("active");
+    });
+
+
+
+
+    var remoteServerURl = "";
+    var plan = null;
+    var token = "";
+    $(function () {
+        getRemoteServerURl();
+        token = localStorage.getItem('token');
+    });
+    function getRemoteServerURl() {
+        var ReceivedURL = GetURL();
+        remoteServerURl = ReceivedURL;
+    };
+
+    function CloseCase(id) {
+        token = localStorage.getItem('token');
+        $.ajax({
+            type: 'Delete',
+            url: `${remoteServerURl}api/Case/CloseCase?Id=` + id,
+            headers: { "Authorization": 'Bearer ' + token }
+        }).done(function (data) {
+            toastr.success("Case Closed Successfully");
+            setTimeout(function () {
+                window.location.href = '@Url.Action("ManageCases","Admin")'
+            }, 1000);
+        })
+    }
+
+    function deletelead(Id) {
+        token = localStorage.getItem('token');
+        $.ajax({
+            type: 'Delete',
+            url: `${remoteServerURl}api/Lead/DeleteLead?Id=` + Id,
+            headers: { "Authorization": 'Bearer ' + token },
+        }).done(function (data) {
+            closepopup();
+            toastr.success("lead deleted successfully");
+            setTimeout(function () {
+                window.location.href = '@Url.Action("ManageLead", "Admin")'
+            }, 1000);
+        })
+    }
+
+    function DidNotHire(Id) {
+        $("#ReasonModal").modal('toggle');
+
+        //token = localStorage.getItem('token');
+        //$.ajax({
+        //    type: 'Delete',
+        //    url: `${remoteServerURl}api/Lead/DeleteLead?Id=` + Id,
+        //    headers: { "Authorization": 'Bearer ' + token },
+        //}).done(function (data) {
+        //    closepopup();
+        //    toastr.success("lead deleted successfully");
+        //    setTimeout(function () {
+        //        window.location.href = '@Url.Action("ManageLead", "Admin")'
+        //    }, 1000);
+        //})
+    }
+    function AddReason() {
+        var getname = $("#txtReason").val();
+        var model = {
+            ReasonName: getname
+        };
+        token = localStorage.getItem('token');
+        $.ajax({
+            url: `${remoteServerURl}api/AttorneyAdmin/AddReason`,
+            headers: { "Authorization": 'Bearer ' + token },
+            type: "POST",
+            dataType: 'json',
+            data: JSON.stringify(model),
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                console.log(response);
+                toastr.success("Reason Added Sucessfully")
+                //window.location.href = '@Url.Action("ManageLead", "Admin")'
+                window.location.reload();
+            },
+            error: function (response) {
+                console.log(response);
+                if (response.responseText == 'Please Add Firm Details First') {
+                    window.location.href = '@Url.Action("AddFirm", "Admin", new { area= "Attorney" })';
+                }
+            }
+        });
+    }
+    function CloseModal() {
+        $("#ReasonModal").modal('hide');
+    }
+    function CloseNewModal() {
+        $("#AddReasonModal").modal('hide');
+    }
+    function AddNewReason() {
+        $("#AddReasonModal").modal('show');
+    }
+</script>
+

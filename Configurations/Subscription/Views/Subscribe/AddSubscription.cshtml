@@ -1,0 +1,53 @@
+﻿@model AbsolCase.Areas.Subscription.Models.Subscribe
+
+@{
+    ViewData["Title"] = "AddSubscription";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Add Subscription Plans</h2>
+<h4>Subscribe</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AddSubscription">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label">Title</label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="price" class="control-label">Price</label>
+                <input asp-for="price" class="form-control" />
+                <span asp-validation-for="price" class="text-danger"></span>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                   
+                        <label class="col-form-label">Type</label>
+                        
+                            <select class="form-control">
+                                <option>Per Week</option>
+                                <option>Per Month</option>
+                                <option>Per Year</option>
+
+                            </select>
+                       
+                   
+                </div>
+
+            </div>
+           <br />
+           <button type="submit" class="btn btn-lg btn-primary me-3" style="float:right">Submit</button>
+        </form>
+    </div>
+</div>
+
+<div>
+   @* <a asp-action="Index">Back to List</a>*@
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

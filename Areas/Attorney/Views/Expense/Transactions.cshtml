@@ -1,0 +1,47 @@
+﻿@model List<AbsolCase.Models.Transactions>
+@{
+    ViewBag.Title = "ExpenseTransactions";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Transactions</h4>
+        <div class="row">
+            <div class="col-12">
+                <div class="table-responsive">
+                    <table id="datatable" class="table dataTable no-footer" role="grid" aria-describedby="order-listing_info">
+                        <thead>
+                            <tr role="row">
+                                <th class="sorting_asc" tabindex="0" aria-controls="order-listing" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Order #: activate to sort column descending" style="width: 51.8281px;">Sr No.</th>
+                                <th class="sorting" tabindex="0" aria-controls="order-listing" rowspan="1" colspan="1" aria-label="Purchased On: activate to sort column ascending" style="width: 97.8438px;">Account Name</th>
+                                <th class="sorting" tabindex="0" aria-controls="order-listing" rowspan="1" colspan="1" aria-label="Purchased On: activate to sort column ascending" style="width: 97.8438px;">Invoice No</th>
+                                <th class="sorting" tabindex="0" aria-controls="order-listing" rowspan="1" colspan="1" aria-label="Purchased On: activate to sort column ascending" style="width: 97.8438px;">Amount</th>
+                                <th class="sorting" tabindex="0" aria-controls="order-listing" rowspan="1" colspan="1" aria-label="Customer: activate to sort column ascending" style="width: 67.6875px;">Payment Type</th>
+                                <th class="sorting" tabindex="0" aria-controls="order-listing" rowspan="1" colspan="1" aria-label="Customer: activate to sort column ascending" style="width: 67.6875px;">Opoening Balance</th>
+                                <th class="sorting" tabindex="0" aria-controls="order-listing" rowspan="1" colspan="1" aria-label="Purchased Price: activate to sort column ascending" style="width: 112.953px;">Closing Balance</th>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Count > 0)
+                            {
+                                int count = 0;
+                                @foreach (var transaction in Model)
+                                {
+                                    count++;
+                                    <tr class="odd">
+                                        <td class="sorting_1">@count</td>
+                                        <td>@(!string.IsNullOrEmpty(transaction.AccountName) ? transaction.AccountName : "N/A")</td>
+                                        <td>@(!string.IsNullOrEmpty(transaction.InvoiceNumber) ? transaction.InvoiceNumber : "N/A")</td>
+                                        <td>@(!string.IsNullOrEmpty(transaction.Amount) ? transaction.Amount : "N/A")</td>
+                                        <td>@transaction.transactionType</td>
+                                        <td>@(!string.IsNullOrEmpty(transaction.OpeningBalance) ? transaction.OpeningBalance : "0.00")</td>
+                                        <td>@(transaction.ClosingBalance != null ? transaction.ClosingBalance : "0.00")</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,255 @@
+﻿@using AbsolCase.Models
+@*@{
+    DocumentSign doc = new DocumentSign();
+}*@
+@{
+    @using Newtonsoft.Json;
+    @using Microsoft.AspNetCore.Http;
+    @inject IHttpContextAccessor httpContextAccessor;
+    string userdto = httpContextAccessor.HttpContext.Session.GetString("userData");
+    UserDto userDto = new UserDto();
+    bool canAccessMessages = false;
+    bool canAccessTimeLline = false;
+    bool canAccessCalendar = false;
+    bool canAccessReporting = false;
+    bool canAccessDocuments = false;
+    bool canAccessNotes = false;
+    if (!string.IsNullOrEmpty(userdto))
+    {
+        userDto = JsonConvert.DeserializeObject<UserDto>(userdto);
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Unlimited Messages").FirstOrDefault() != null)
+            canAccessMessages = true;
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Timeline").FirstOrDefault() != null)
+            canAccessTimeLline = true;
+
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Calendar Events").FirstOrDefault() != null)
+            canAccessCalendar = true;
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Reporting").FirstOrDefault() != null)
+            canAccessReporting = true;
+        if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Documents Handling").FirstOrDefault() != null)
+            canAccessDocuments = true;
+        if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Notes Handling").FirstOrDefault() != null)
+            canAccessNotes = true;
+    }
+}
+@{
+    ViewData["Title"] = "ManageDocumentSign";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+
+
+<link href="~/css/Packages.css" rel="stylesheet" type="text/css" />
+
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+
+<div class="row mb-1">
+    <div class="card col-md-12 col-lg-12 pull-right grid-margin">
+
+        <div class="card-block mt-3 ml-5">
+            <ul class="navbar dashboard-short-icon">
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;" @(!canAccessCalendar ? "onclick=ShowSubscriptionLimitation()" : "")>
+                    <a href="@(canAccessCalendar == true ? Url.Action("ManageEvents","Admin", new { area = "Attorney"}) : "#")" style="text-decoration:none;">
+                        <img src="~/images/dashboard/event.jpg" width="50" height="50" /><br />
+                        Event
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;" @(!canAccessDocuments ? "onclick=ShowSubscriptionLimitation()" : "")>
+                    <a href="@(canAccessDocuments == true ?  Url.Action("ManageDocuments","Admin", new { area = "Attorney"}) : "#")" style="text-decoration:none;">
+                        <img src="~/images/dashboard/document-removebg.png" width="50" height="50" /><br />
+                        Document
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("ManageTask", "Admin", new { area = "Attorney" })" style="text-decoration:none;">
+                        <img src="~/images/dashboard/task.png" width="50" height="50" /><br />
+                        Task
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("AddPotentialClient", "Admin", new { area = "Attorney" })" style="text-decoration:none;">
+                        <img src="~/images/dashboard/lead-removebg.png" width="50" height="50" /><br />
+
+                        Lead
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("AddContact", "Admin", new { area = "Attorney" })" style="text-decoration:none;" id="contactmodal">
+                        <img src="~/images/dashboard/contact-removebg.png" width="50" height="50" /><br />
+                        Contact
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("ManageCases", "Admin", new { area = "Attorney" })" style="text-decoration:none;" onclick="abc();">
+                        <img src="~/images/dashboard/briefcase-removebg.png" width="50" height="50" /><br />
+                        Case
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;" @(!canAccessMessages ? "onclick=ShowSubscriptionLimitation()" : "")>
+                    <a href="@(canAccessMessages == true ? Url.Action("Message","Admin", new { area = "Attorney"}) : "#")" style="text-decoration:none;">
+                        <img src="~/images/dashboard/message.png" width="50" height="50" /><br />
+                        Message
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box; ">
+                    <a href="@Url.Action("AddExpense", "Admin", new { area = "Attorney" })" style="text-decoration:none;">
+                        <img src="~/images/dashboard/expenses.png" width="50" height="50" /><br />
+                        Expense
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("AddReceipt", "Admin", new { area = "Attorney" })" style="text-decoration:none;">
+                        <img src="~/images/dashboard/invoice.jpg" width="50" height="50" /><br />
+                        Invoice
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;" @(!canAccessNotes ? "onclick=ShowSubscriptionLimitation()" : "")>
+                    <a href="@(canAccessNotes == true ? Url.Action("ManageNotes","Admin", new { area = "Attorney"}) : "#")" style="text-decoration:none;">
+                        <img src="~/images/dashboard/notes.png" width="50" height="50" /><br />
+                        Notes
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Document Sign</h4>
+            <p class="card-description">
+                Manage Document Signs
+            </p>
+            <div class="table-responsive">
+                <table id="datatable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>SR#</th>
+                            <th>
+                                Document Name
+                            </th>
+                            <th>
+                                Recipient Name
+                            </th>
+                            <th>
+                                Recipient Email
+                            </th>
+                            <th>
+                                Sign Status
+                            </th>
+                            <th>
+                                Sign Requested Date
+                            </th>
+                            <th>
+                                Sign Completed Date
+                            </th>
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+                    </thead>
+                    @{
+                        int i = 1;
+                    }
+                    <tbody>
+                        @if (Model != null && Model.Count > 0)
+                        {
+                            @foreach (var document in Model)
+                            {
+                                <tr>
+                                    <td>@i</td>
+                                    <td class="py-1">
+                                        @document.DocumentName
+                                    </td>
+                                    <td class="py-1">
+                                        @document.RecipientName
+                                    </td>
+                                    <td class="py-1">
+                                        @document.RecipientEmail
+                                    </td>
+                                    <td class="py-1">
+                                        @document.DocumentStatus
+                                    </td>
+                                    <td class="py-1">
+                                        @document.SignRequestedDate.ToString("dd-MM-yyyy")
+                                    </td>
+                                    @if (document.DocumentStatus == "completed")
+                                    {
+                                        <td class="py-1">
+                                            @document.SignCompletedDate.ToString("dd-MM-yyyy")
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td class="py-1">
+                                        </td>
+                                    }
+
+                                    <td>
+                                        <a href="@Url.Action("GetDocumentFromDocuSignApi", "Integrations", new { envelopeId = document.DocumentId, status = document.DocumentStatus })">View </a>
+                                        @*|  <a href="#" onclick="openpopup(@document.Id, 'Are you sure to delete document tag?', 'deletedocument(@document.Id)')">Delete</a>*@
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+
+    <script>
+        var remoteServerURl = "";
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            token = localStorage.getItem('token');
+        });
+
+        function getRemoteServerURl() {
+            //$.ajax({
+            //    type: 'GET',
+            //    url: '/common/getConfigurationValue',
+            //    data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+
+
+            //})
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+        };
+        function deletedocument(Id) {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'Delete',
+                url: `${remoteServerURl}api/ConfigManagement/DeleteDocumentTag?Id=` + Id,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                closepopup();
+                toastr.success("Document Tag Deleted Sucessfully");
+                setTimeout(function () {
+                    window.location.href = '@Url.Action("ManageDocumentTag", "Admin")'
+                }, 1000);
+            })
+        }
+        $(document).ready(function () {
+            $('#datatable').dataTable({
+                "columnDefs": [
+                    { "searchable": false, "targets": 2 }
+                ]
+            });
+        });
+    </script>
+}
+

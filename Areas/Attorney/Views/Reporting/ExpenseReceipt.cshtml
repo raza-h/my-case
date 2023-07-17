@@ -1,0 +1,138 @@
+﻿@using AbsolCase.Models
+@model Expense
+@{
+    ViewBag.Title = "ClientsReceipts";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <div class="col-md-2">
+    </div>
+    <div class="col-md-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Expense Receipt</h4>
+                <div class="form-group">
+                    <label for="exampleInputUsername1">Clients</label>
+                    <select id="ClientRecipt" name="Clients" class="form-control" aria-label="case">
+                        @*<option>Select</option>*@
+                    </select>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="exampleInputUsername1">Date From</label>
+                        <input class="form-control" id="DateFrom" type="date" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="exampleInputUsername1">Date To</label>
+                        <input class="form-control" id="DateTo" type="date" />
+                    </div>
+                </div>
+                <input type="submit" value="Gernate Receipt" onclick="GetExpenses()" class="btn btn-dark fr" />
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+    </div>
+</div>
+@section scripts {
+    <script>
+        var remoteServerURl = "";
+        var parentId = "";
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            parentId = $("#current-userid").val();
+            token = localStorage.getItem('token');
+        });
+        function getRemoteServerURl() {
+            //$.ajax({
+            //    type: 'GET',
+            //    url: '/common/getConfigurationValue',
+
+            //    data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+            //})
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+            GetClients();
+        }
+
+        function GetClients() {
+            token = localStorage.getItem('token');
+            parentId = $("#current-userid").val();
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/UserManagement/GetClientAccounts?ParentId=${parentId}`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                let options = "<option value='undefined'>Select</option>";
+                $.each(data, function (a, accounts) {
+                    options += "<option value='" + accounts.accountNumber + "'>" + accounts.name + "</option>";
+                });
+                $("#ClientRecipt").html(options);
+            })
+        }
+
+
+        function GetExpenses() {
+            var Expenses = [];
+            var CreatedBy = $("#current-userid").val();
+            var DateFrom = $('#DateFrom').val();
+            var DateTo = $('#DateTo').val();
+
+            if (DateFrom == null || DateFrom == "") {
+                alert('Please select Date From');
+                return;
+            }
+            if (DateTo == null || DateTo == "") {
+                alert('Please select Date To');
+                return;
+            }
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Expense/GetExpensesByDates`,
+                headers: { "Authorization": 'Bearer ' + token },
+                data: {
+                    CreatedBy: CreatedBy,
+                    DateFrom: DateFrom,
+                    DateTo: DateTo
+                }
+            }).done(function (data) {
+                if (data.length == 0) {
+                    toastr.error("No records found in given date range");
+                    return;
+                }
+                $.each(data, function (i, v) {
+                    Expenses.push({
+                        Id: v.id,
+                        Amount: v.amount,
+                        ClientName: v.clientName,
+                        CreatedDate: v.createdDate,
+                        PaymentDate: v.paymentDate,
+                        InvoiceNo: v.invoiceNo,
+                        PaymentType: v.paymentType,
+                        Description: v.description,
+                        CheckNumber: v.checkNumber,
+                        CheckTitle: v.checkTitle,
+                        CheckDate: v.checkDate,
+                        CheckAmount: v.checkAmount,
+                        CheckImagePath: v.checkImagePath,
+                        ExpenseTypeName: v.expenseTypeName,
+                    });
+                });
+                $.ajax({
+                    type: 'POST',
+                    ContentType: 'application/json; charset=utf-8',
+                    url: '@Url.Action("SetExpenseList", "Reporting")',
+                    data: { Expenses: Expenses }
+                }).done(function () {
+                    window.location.href = '@Url.Action("GenerateExpensesReceipt", "Reporting")'
+                });
+            });
+        }
+    </script>
+}

@@ -1,0 +1,494 @@
+﻿@model AbsolCase.Models.Firm
+@{
+    ViewBag.Title = "AddRole";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    string userId = ViewBag.UserId != null ? ViewBag.UserId : "";
+    int existingOfficeCount = 1;
+    if (Model != null && Model.FirmOffices != null && Model.FirmOffices.Count > 0)
+    {
+        existingOfficeCount = Model.FirmOffices.Count + 1;
+    }
+}
+
+<link href="~/assets/css/style.css" rel="stylesheet" />
+@if (TempData["response"] != null)
+{
+    <script>
+        $(document).ready(function () {
+
+            var success = '@((TempData["response"] != null).ToString())';
+            if (success == 'false' || success == false) {
+
+            } else {
+                toastr.info('@TempData["response"].ToString()');
+            }
+        });
+    </script>
+}
+
+
+
+<div class="col-lg-12 grid-margin stretch-card mt-3 ms-3 me-4 pe-4">
+    <input type="hidden" value="@existingOfficeCount" id="office-count" />
+    <input type="hidden" value="@userId" id="userid" />
+    <input type="hidden" value="@Model.Id" id="firmid">
+    <div class="card">
+        <div class="card-body">
+            <div class="panel-heading" style="margin-bottom:20px">Firm Details</div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">Firm Name</label>
+                    @Html.EditorFor(model => model.FirmName, new { htmlAttributes = new { @class = "form-control", @id = "firmname", placeholder = "Firm Name" } })
+                    @Html.ValidationMessageFor(model => model.FirmName, "please enter firm name", new { @class = "text-danger db", @id = "firmnamevalidation", @style = "display: none;" })
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">Owner Name</label>
+                    @Html.EditorFor(model => model.OwnerName, new { htmlAttributes = new { @class = "form-control", @id = "ownername", placeholder = "Owner Name" } })
+                    @Html.ValidationMessageFor(model => model.OwnerName, "please enter owner name", new { @class = "text-danger db", @id = "ownernamevalidation", @style = "display: none;" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">Firm Email</label>
+                    @Html.EditorFor(model => model.FirmEmail, new { htmlAttributes = new { @class = "form-control", @id = "firmemail", placeholder = "Firm Email" } })
+                    @Html.ValidationMessageFor(model => model.FirmName, "please enter valid email", new { @class = "text-danger db", @id = "firmemailvalidation", @style = "display: none;" })
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">Phone Number</label>
+                    @Html.EditorFor(model => model.FirmNumber, new { htmlAttributes = new { @class = "form-control", @id = "phonenumber", placeholder = "Phone Number" } })
+                    @Html.ValidationMessageFor(model => model.FirmNumber, "please enter valid phone number", new { @class = "text-danger db", @id = "phonenumbervalidation", @style = "display: none;" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">Tax ID</label>
+                    @Html.EditorFor(model => model.RegistrationNumber, new { htmlAttributes = new { @class = "form-control", @id = "registration", placeholder = "Tax Id" } })
+                    @Html.ValidationMessageFor(model => model.RegistrationNumber, "please enter Tax ID", new { @class = "text-danger db", @id = "registrationvalidation", @style = "display: none;" })
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">Website</label>
+                    @Html.EditorFor(model => model.FirmWebsite, new { htmlAttributes = new { @class = "form-control", @id = "website", placeholder = "Website" } })
+                    @Html.ValidationMessageFor(model => model.FirmWebsite, "please enter valid website", new { @class = "text-danger db", @id = "websitevalidation", @style = "display: none;" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">Number Of Employees</label>
+                    @Html.EditorFor(model => model.NumberofEmployees, new { htmlAttributes = new { @class = "form-control", @id = "employees", placeholder = "Number Of Employees" } })
+                    @Html.ValidationMessageFor(model => model.NumberofEmployees, "please enter no of employees", new { @class = "text-danger db", @id = "employeesvalidation", @style = "display: none;" })
+                </div>
+            </div>
+            <div id="officeFormSection">
+                <!--via ajax-->
+                @if (Model != null && Model.FirmOffices != null && Model.FirmOffices.Count > 0)
+                {
+                    int officeCount = 0;
+                    foreach (var office in Model.FirmOffices)
+                    {
+                        officeCount++;
+                        <button class="btn-danger" id="office-btn-@office.Id" style="margin-left:49.5rem" onclick="deleteOfficeOrAddress('office', @office.Id, 'office-group-@officeCount')">Delete Office</button>
+                        <fieldset class="border p-2" id="office-group-@officeCount" style="margin-bottom: 1.5rem;">
+                            <input type="hidden" id="officeid-@officeCount" value="@office.Id" />
+                            <legend class="w-auto" style="float: none; font-size:20px">Office Detail:</legend>
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <label for="exampleInputUsername1">Office Name</label>
+                                    <input class="form-control text-box single-line" id="officename-@officeCount" name="officename" placeholder="Office Name" type="text" value="@office.OfficeName">
+                                    <span class="field-validation-valid text-danger db" data-valmsg-for="OfficeName" data-valmsg-replace="false" id="officenamevalidation-@officeCount" style="display: none;">please enter office name</span>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="exampleInputUsername1">Phone Number</label>
+                                    <input class="form-control text-box single-line" id="phonenumber-@officeCount" name="PhoneNumber" placeholder="Phone Number" type="text" value="@office.PhoneNumber">
+                                    <span class="field-validation-valid text-danger db" data-valmsg-for="PhoneNumber" data-valmsg-replace="false" id="phonenumbervalidation-@officeCount" style="display: none;">please enter phone number</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                                    <label class="switch">
+                                        <input type="checkbox" id="isprimary-@officeCount" @(office.IsPrimary == true ? "checked" : "") value="@office.IsPrimary">
+                                        <span class="slider round"></span>
+                                    </label>
+                                    IsPrimary
+                                </div>
+                            </div>
+                            <div id="addressFormSection-@officeCount">
+                                <!--via ajax-->
+                                @if (office.firmOfficeAddresses != null && office.firmOfficeAddresses.Count > 0)
+                                {
+                                    int address = 0;
+                                    foreach (var officeAddress in office.firmOfficeAddresses)
+                                    {
+                                        address++;
+                                        <input type="hidden" class="address-counts" id="addform-@officeCount-@address" />
+                                        <input type="hidden" id="addressid-@officeCount-@address" value="@officeAddress.Id" />
+                                        <input type="hidden" id="officeid-@officeCount-@address" value="@officeAddress.FirmOfficeId" />
+                                        <button class="btn-danger" id="address-btn-@officeAddress.Id" style="margin-left:47.5rem" onclick="deleteOfficeOrAddress('address', @officeAddress.Id, 'address-form-@officeCount-@address')">Delete Address</button>
+                                        <fieldset class="border p-2" id="address-form-@officeCount-@address" style="margin-bottom: 1.5rem;">
+                                            <legend class="w-auto" style="float: none; font-size:20px">Office Address:</legend>
+                                            <div class="row">
+                                                <div class="form-group col-md-6">
+                                                    <label for="exampleInputUsername1">Address</label>
+                                                    <input class="form-control text-box single-line" id="address-@officeCount-@address" name="Address" placeholder="Address" type="text" value="@officeAddress.Address">
+                                                    <span class="field-validation-valid text-danger db" data-valmsg-for="Address" id="addressvalidation-@Model-@address" data-valmsg-replace="true"></span>
+
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="exampleInputUsername1">City</label>
+                                                    <input class="form-control text-box single-line" id="city-@officeCount-@address" name="City" placeholder="City" type="text" value="@officeAddress.City">
+                                                    <span class="field-validation-valid text-danger db" data-valmsg-for="City" id="cityvalidation-@officeCount-@address" data-valmsg-replace="true"></span>
+
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="form-group col-md-6 mt-4" id="statedropdown-@Model">
+                                                    @Html.DropDownList("State", new SelectList(ViewBag.States, "Code", "Name", officeAddress.State), new { @class = "form-control", @id = $"state-{officeCount}-{address}", @value = $"{officeAddress.State}" })
+                                                    <!--<select class="form-control states" aria-label="States" id="state-@officeCount-@address" value="@officeAddress.State">-->
+                                                    <!--via ajax-->
+                                                    <!--</select>-->
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="exampleInputUsername1">Zip Code</label>
+                                                    <input class="form-control text-box single-line" name="ZipCode" placeholder="Zip Code" value="@officeAddress.ZipCode" id="zipcode-@officeCount-@address">
+                                                    <span class="field-validation-valid text-danger db" id="zipcodevalidation-@officeCount-@address" data-valmsg-for="ZipCode" data-valmsg-replace="true"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="form-group col-md-6">
+                                                    <label for="exampleInputUsername1">Country</label>
+                                                    @Html.DropDownList("Country", new SelectList(ViewBag.Countries, "Id", "Name", officeAddress.Country), new { @class = "form-control", @id = $"country-{officeCount}-{address}", @value = $"{officeAddress.Country}" })
+                                                    <!--<select class="form-control country" value="@officeAddress.Country" id="country-@officeCount-@address" aria-label="ContactGroup">-->
+                                                    <!--via ajax-->
+                                                    <!--</select>-->
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    }
+                                }
+                            </div>
+                            <button onclick="loadOfficeAddressForm(@officeCount)">Add Address</button>
+                        </fieldset>
+                    }
+                }
+            </div>
+            <button onclick="loadOfficeForm()">Add Office</button>
+            @if (Model.Id > 0)
+            {
+                <button class="btn btn-dark fr" onclick="SaveFirm('update','savefirm')">Update Firm</button>
+            }
+            else
+            {
+                <button class="btn btn-dark fr" onclick="SaveFirm('', 'savefirm')">Save Firm</button>
+            }
+        </div>
+    </div>
+</div>
+@section scripts {
+
+
+    <script>
+
+
+        var deletedAddresses = [];
+        var deletedOffices = [];
+        fices = [];
+        var remoteServerURl = "";
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            token = localStorage.getItem('token');
+        });
+
+        function getRemoteServerURl() {
+            //$.ajax({
+            //    type: 'GET',
+            //    url: '/common/getConfigurationValue',
+            //    data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+            //})
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+        };
+        function deleteOfficeOrAddress(type, id, elementId) {
+            if (type == "office") {
+                deletedOffices.push(id);
+                $("#" + elementId).hide();
+                $("#office-btn-" + id).hide();
+            }
+            else {
+                deletedAddresses.push(id);
+                $("#" + elementId).hide();
+                $("#address-btn-" + id).hide();
+            }
+        }
+        function SaveFirm(update, fromMethod) {
+            if (fromMethod == 'savefirm') {
+                var isFormValid = true;
+                if ($("#firmemail").val() == "" || !validateEmail($("#firmemail").val())) {
+                    if ($("#firmemail").val() == "") {
+                        $("#firmemailvalidation").text('Please enter firm email');
+                    }
+                    else {
+                        $("#firmemailvalidation").text('Please enter valid email');
+                    }
+                    $("#firmemailvalidation").show();
+                    isFormValid = false;
+                }
+                else {
+                    $("#firmemailvalidation").hide();
+                }
+                if ($("#firmname").val() == "" || !validateFirmName($("#firmname").val())) {
+                    if ($("#firmname").val() == "") {
+                        $("#firmnamevalidation").text('Please enter firmname');
+                    }
+                    else {
+                        $("#firmnamevalidation").text('It should contain minimum three characters and only alphabets are allowed');
+                    }
+                    $("#firmnamevalidation").show();
+                    isFormValid = false;
+                }
+                else {
+                    $("#firmnamevalidation").hide();
+                }
+                if ($("#ownername").val() == "" || !validateOwnerName($("#ownername").val())) {
+                    if ($("#ownername").val() == "") {
+                        $("#ownernamevalidation").text('Please enter ownername');
+                    }
+                    else {
+                        $("#ownernamevalidation").text('It should contain minimum three characters and only alphabets are allowed');
+                    }
+                    $("#ownernamevalidation").show();
+                    isFormValid = false;
+                }
+                else {
+                    $("#ownernamevalidation").hide();
+                }
+                if ($("#website").val() != "" && !validateWebsite($("#website").val())) {
+                    $("#websitevalidation").show();
+                    isFormValid = false;
+                }
+                else {
+                    $("#websitevalidation").hide();
+                }
+                for (let i = 1; i <= $("[id^=office-group-]").length; i++) {
+                    for (let j = 1; j <= $("[id^=address-form-" + i + "]").length; j++) {
+                        var zipcode = $("#zipcode-" + i + "-" + j).val();
+                        debugger
+                        if (zipcode != "" && !validateZip(zipcode)) {
+                            $("#zipcodevalidation-" + i + "-" + j).show();
+                            isFormValid = false;
+                        }
+                        else {
+                            $("#zipcodevalidation-" + i + "-" + j).hide();
+                        }
+                    }
+                    var phonenumber = $("#phonenumber-" + i).val();
+                    if (phonenumber != "" && !validatePhone(phonenumber)) {
+                        $("#phonenumbervalidation-" + i).show();
+                        isFormValid = false;
+                    }
+                    else {
+                        $("#phonenumbervalidation-" + i).hide();
+                    }
+                    if ($("#officename-" + i).val() == "" || !validateFirmName($("#officename-" + i).val())) {
+                        if ($("#officename-" + i).val() == "") {
+                            $("#officenamevalidation-" + i).text("Enter office name");
+                        }
+                        else {
+                            $("#officenamevalidation-" + i).text("It should contain minimum three characters,avoid spaces and only alphabets are allowed");
+                        }
+                        $("#officenamevalidation-" + i).show();
+                        isFormValid = false;
+                    }
+                    else {
+                        $("#officenamevalidation-" + i).hide();
+                    }
+                }
+                if ($("#phonenumber").val() != "" && !validatePhone($("#phonenumber").val())) {
+                    $("#phonenumbervalidation").show();
+                    isFormValid = false;
+                }
+                else {
+                    $("#phonenumbervalidation").hide();
+                }
+                if (!isFormValid) {
+                    document.body.scrollTop = document.documentElement.scrollTop = 0;
+                    return;
+                }
+                openpopup('', 'Are you sure to save firm?', `SaveFirm('${update}', 'frompopup')`);
+            }
+            else {
+                var offices = [];
+                for (let i = 1; i <= $("[id^=office-group-]").length; i++) {
+                    var addresses = [];
+                    for (let j = 1; j <= $("[id^=address-form-" + i + "]").length; j++) {
+                        var address = {
+                            Id: $("#addressid-" + i + "-" + j).val(),
+                            Country: $("#country-" + i + "-" + j).val(),
+                            Address: $("#address-" + i + "-" + j).val(),
+                            State: $("#state-" + i + "-" + j).val(),
+                            City: $("#city-" + i + "-" + j).val(),
+                            ZipCode: $("#zipcode-" + i + "-" + j).val()
+                        };
+                        addresses.push(address);
+                    }
+                    var office = {
+                        FirmId: $("#firmid").val(),
+                        Id: $("#officeid-" + i).val(),
+                        OfficeName: $("#officename-" + i).val(),
+                        PhoneNumber: $("#phonenumber-" + i).val(),
+                        IsPrimary: $("#isprimary-" + i).is(':checked'),
+                        FirmOfficeAddresses: addresses
+                    }
+                    offices.push(office);
+                }
+                var Firm = {
+                    Id: $("#firmid").val(),
+                    FirmName: $("#firmname").val(),
+                    OwnerName: $("#ownername").val(),
+                    FirmEmail: $("#firmemail").val(),
+                    FirmNumber: $("#phonenumber").val(),
+                    RegistrationNumber: $("#registration").val(),
+                    FirmWebsite: $("#website").val(),
+                    NumberofEmployees: $("#employees").val(),
+                    UserId: $("#userid").val(),
+                    FirmOffices: offices,
+                    DeletedOffice: deletedOffices,
+                    DeletedAddresses: deletedAddresses
+                };
+                var apiurl = "";
+                if (update == "update")
+                    apiurl = `${remoteServerURl}api/Firm/UpdateFirm`;
+                else
+                    apiurl = `${remoteServerURl}api/Firm/AddFirm`;
+                token = localStorage.getItem('token');
+                $.ajax({
+                    url: apiurl,
+                    headers: { "Authorization": 'Bearer ' + token },
+                    type: "POST",
+                    data: JSON.stringify(Firm),
+                    contentType: "application/json; charset=utf-8",
+                    success: function (response) {
+                        closepopup();
+                        if (update == "update") {
+                            toastr.success("Firm Updated Successfully");
+                            window.setTimeout(function () { location.reload() }, 2000)
+                        }
+                        else {
+                            toastr.success("Firm Added Successfully");
+                            window.setTimeout(function () { location.reload() }, 2000)
+                        }
+
+                    },
+                    error: function (response) {
+                        toastr.error(response.responseText);
+                    }
+                });
+            }
+        }
+        function loadOfficeForm() {
+            var officeCount = $("#office-count").val();
+            var newValue = parseInt(officeCount) + 1;
+            $("#office-count").val(newValue);
+            $.ajax({
+                type: 'GET',
+                data: { count: officeCount },
+                url: "LoadOfficeForm"
+            }).done(function (data) {
+                $("#officeFormSection").append(data);
+            });
+        };
+        function loadOfficeAddressForm(officeId) {
+            var address = $("#office-group-" + officeId + " .address-counts").length;
+            address = parseInt(address) + 1;
+            $.ajax({
+                type: 'GET',
+                data: { office: officeId, address: address },
+                url: "LoadOfficeAddressForm"
+            }).done(function (data) {
+                $("#addressFormSection-" + officeId + "").append(data);
+                getcounties(officeId, address);
+                getStates(officeId, address);
+            });
+        }
+        function getcounties(officeId, address) {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Country/Get`,
+                headers: { "Authorization": 'Bearer ' + token },
+            }).done(function (data) {
+                let options = "<option value=0>Select Country</option>";
+                $.each(data, function (a, country) {
+                    options += "<option value='" + country.id + "'>" + country.name + "</option>";
+                });
+                $("#country-" + officeId + "-" + address).html(options);
+            })
+        };
+        function getStates(officeId, address) {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Country/GetStates`,
+                headers: { "Authorization": 'Bearer ' + token },
+            }).done(function (data) {
+                let options = "<option value=''>Select State</option>";
+                $.each(data, function (a, state) {
+                    options += "<option value='" + state.code + "'>" + state.name + "</option>";
+                });
+                $("#state-" + officeId + "-" + address).html(options);
+            })
+        };
+        setTimeout(function () {
+            $("#msgalert").hide();
+        }, 3500);
+
+        $(document).ready(function () {
+            $("#firmname").on("input", function () {
+                if ($('#firmname').val() == "" || !validateFirmName($("#firmname").val())) {
+                    if ($("#firmname").val() == "") {
+                        $("#firmnamevalidation").text('Please enter firmname');
+                    }
+                    else {
+                        $("#firmnamevalidation").text('It should contain minimum three characters and only alphabets are allowed');
+                    }
+                    $("#firmnamevalidation").show();
+                }
+                else {
+                    $("#firmnamevalidation").hide();
+                }
+            });
+
+            $("#ownername").on("input", function () {
+                if ($('#ownername').val() == "" || !validateFirmName($("#ownername").val())) {
+                    if ($("#ownername").val() == "") {
+                        $("#ownernamevalidation").text('Please enter ownername');
+                    }
+                    else {
+                        $("#ownernamevalidation").text('It should contain minimum three characters and only alphabets are allowed');
+                    }
+                    $("#ownernamevalidation").show();
+                }
+                else {
+                    $("#ownernamevalidation").hide();
+                }
+            });
+            $("#firmemail").on("input", function () {
+                if ($('#firmemail').val() == "" || !validateEmail($("#firmemail").val())) {
+                    if ($("#firmemail").val() == "") {
+                        $("#firmemailvalidation").text('Please enter firmemail');
+                    }
+                    else {
+                        $("#firmemailvalidation").text('Please enter valid email');
+                    }
+                    $("#firmemailvalidation").show();
+                }
+                else {
+                    $("#firmemailvalidation").hide();
+                }
+            });
+
+        });
+    </script>
+}

@@ -1,0 +1,101 @@
+﻿@model List<AbsolCase.Models.Message>
+
+@{
+    Layout = null;
+    Message firstMessage = Model.FirstOrDefault();
+    string contactName = firstMessage != null ? firstMessage.Contact : "";
+
+    @using Newtonsoft.Json;
+    @using Microsoft.AspNetCore.Http;
+    @inject IHttpContextAccessor httpContextAccessor;
+    string userdto = httpContextAccessor.HttpContext.Session.GetString("userData");
+    UserDto userDto = new UserDto();
+    string userId = "";
+    if (!string.IsNullOrEmpty(userdto))
+    {
+        userDto = JsonConvert.DeserializeObject<UserDto>(userdto);
+        userId = userDto.Id;
+    }
+}
+
+<div class="card-header msg_head">
+    <div class="d-flex bd-highlight">
+        <div class="img_cont" id="current-chat-user">
+            <img src="~/images/blank-profile.png" class="rounded-circle user_img" id="user-profile-image">
+        </div>
+        <div class="user_info" style="margin-top: 0%">
+            <span id="chat-with-name"></span><br />
+            <span id="contact-online"></span>
+        </div>
+    </div>
+</div>
+<div class="card-body msg_card_body" id="private-chat">
+    @if (Model != null && Model.Count > 0)
+    {
+        foreach (var message in Model)
+        {
+            int minutes = Convert.ToInt32((DateTime.Now - message.CreatedDate).TotalMinutes);
+            string dateTime = minutes < 525600 ? minutes < 1440 ? minutes < 60 ? minutes == 0 ? "Just now" : $"{minutes} Mins ago" : $"{minutes / 60} Hours ago" : $"{message.CreatedDate.ToString("MMM")} {message.CreatedDate.Day}" : $"{message.CreatedDate.ToString("MMM")} {message.CreatedDate.Year}";
+
+            if (message.SenderId == userId)
+            {
+                <div class="d-flex justify-content-end mb-4">
+                    <div class="msg_cotainer_send" style="min-width:110px;">
+                        @if (message != null && !string.IsNullOrEmpty(message.ImagePath))
+                        {
+                            <img src="@message.ImagePath" class="chat-image">
+
+                            <br />
+                        }
+                        @message.MessageText
+                        <span class="msg_time_send">@dateTime</span>
+                    </div>
+                    <div class="img_cont_msg">
+                        <img src="@userDto.ImagePath" class="rounded-circle user_img_msg">
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="d-flex justify-content-start mb-4">
+                    <div class="img_cont_msg">
+                        <img src="@message.UserImagePath" class="rounded-circle user_img_msg">
+                    </div>
+                    <div class="msg_cotainer" style="min-width:110px;">
+                        @if (message != null && !string.IsNullOrEmpty(message.ImagePath))
+                        {
+                            <img src="@message.ImagePath" class="chat-image">
+
+                            <br />
+                        }
+                        @message.MessageText
+                        <span class="msg_time">@dateTime</span>
+                    </div>
+                </div>
+            }
+        }
+    }
+</div>
+<div class="card-footer">
+    <div class="input-group">
+        <textarea name="" class="form-control type_msg" placeholder="Type your message..." id="message-text"></textarea>
+        <input type="file" id="message-file" name="image" accept="image/x-png,image/gif,image/jpeg" capture style="display:none" onchange="validateFileType()" />
+        <img onclick="pickImage()" src="~/images/camera-icon.jpg" id="upfile1" style="cursor: pointer; width: 35px; height: 35px; right: 50px; top: 8px;" />
+        <div class="input-group-append" style="cursor: pointer" onclick="reply('@userId')">
+            <img src="~/images/message-icon.jpg" style="cursor: pointer; width:40px; height:40px" />
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function validateFileType() {
+        var fileName = document.getElementById("message-file").value;
+        var idxDot = fileName.lastIndexOf(".") + 1;
+        var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+        if (extFile == "jpg" || extFile == "jpeg" || extFile == "png") {
+            //TO DO
+            toastr.success("Attachment Selected");
+        } else {
+            toastr.error("Only jpg/jpeg and png files are allowed!");
+        }
+    }
+</script>

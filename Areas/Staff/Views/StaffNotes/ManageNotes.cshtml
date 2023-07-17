@@ -1,0 +1,1007 @@
+﻿
+@{
+    @using AbsolCase.Models
+    @using Newtonsoft.Json;
+    @using Microsoft.AspNetCore.Http;
+    @inject IHttpContextAccessor httpContextAccessor;
+    string userdto = httpContextAccessor.HttpContext.Session.GetString("userData");
+    UserDto userDto = new UserDto();
+    if (!string.IsNullOrEmpty(userdto))
+    {
+        userDto = JsonConvert.DeserializeObject<UserDto>(userdto);
+    }
+}
+
+@{
+    ViewBag.Title = "ManageNotes";
+    Layout = "~/Views/Shared/_StaffLayout.cshtml";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<style>
+    .content-wrapper {
+        height: 81vh;
+    }
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    /* The Modal (background) */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    .modalEdit {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    .modalDetail {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    .modalCase {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    /* Modal Content */
+    .modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        margin-top: 44px;
+    }
+
+    .modal-content-Detail {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        margin-left: 234px;
+        margin-top: 44px;
+    }
+
+    .modal-content-case {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        margin-left: 234px;
+        margin-top: 44px;
+    }
+
+    /* The Close Button */
+    .closeAdd {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+        .closeAdd:hover,
+        .closeAdd:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .closeDetail {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+        .closeDetail:hover,
+        .closeDetail:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .closeCase {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+        .closeCase:hover,
+        .closeCase:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .closeTags {
+        color: white;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        margin-left: 10px;
+    }
+
+        .closeTags:hover,
+        .closeTags:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .closeCaseTags {
+        color: white;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        margin-left: 10px;
+    }
+
+    /* .closeCaseTags:hover,
+        .closeCaseTags:focus {
+            color: #000;
+            text-decoration: none;*/
+
+    /*}*/
+</style>
+<script>
+    $(document).ready(function () {
+        $('.summernote').summernote();
+    });
+</script>
+
+@*@if (TempData["response"] != null)
+    {
+        <div class="alert-danger" id="msgalert">
+            @TempData["response"].ToString()
+        </div>
+    }*@
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-10">
+
+                    <h4 class="card-title">Manage Notes</h4>
+                </div>
+                <div class="col-md-2">
+
+                    <a class="btn btn-info" id="myBtn">Personal Notes</a>
+
+                </div>
+            </div>
+            <p class="card-description">
+                You can manage your notes here .
+            </p>
+
+            <div class="table-responsive">
+                <table id="datatable" class="table table-striped  dt-responsive nowrap" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Ser No#</th>
+                            <th>
+                                Notes Tittle
+                            </th>
+
+                            <th>Date</th>
+                            <th>Action</th>
+
+
+                        </tr>
+                    </thead>
+                    @{
+                        int i = 1;
+                    }
+                    <tbody>
+                        @if (Model != null && Model.Count > 0)
+                        {
+                            @foreach (var notes in Model)
+                            {
+                                <tr>
+                                    <td>@i</td>
+                                    <td class="py-1">
+                                        @notes.NotesTittle
+                                    </td>
+
+                                    <td>@notes.CreatedDate</td>
+
+                                    <td>
+                                        <a href="#" onclick="EditNotes('@notes.Id')">Edit</a> |
+                                        <a href="#" onclick="openpopup(@notes.Id, 'Are you sure to delete note?', 'NotesDelete(@notes.Id)')">Delete</a> |
+                                        <a href="#" onclick="NotesDetail('@notes.Id')">View Details</a>|
+                                        <a href="#" onclick="DownLoadNotes('@notes.Id')">Download</a>
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div id="myModalDetail" class="modalDetail">
+                <div class="row w-100 mx-0">
+                    <div class="col-lg-10 mx-auto">
+
+                        <!-- Modal content -->
+                        <div class="modal-content-Detail">
+                            <div class="row">
+                                <div class="col-md-12 ml-auto">
+
+                                    <a href="#" class="closeDetail pull-right" onclick="CloseDetailModel()">&times;</a>
+                                </div>
+                            </div>
+                            <div id="contentofdetail">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h4 class="card-title">Note</h4>
+
+                                        @*<div class="form-group">
+                                                <label>Notes Tags</label>
+                                                <select id="notestagDetail" class="js-example-basic-single w-100 form-control">
+                                                </select>
+                                            </div>*@
+                                        <div id="ulCasetagnotesDetail"></div>
+                                        <div class="form-group">
+                                            <label>Notes Tittle</label>
+                                            <input id="PNotesTittlDeteail" class="form-control" />
+
+                                        </div>
+
+                                        <label>Description</label>
+                                        @*<div id="summernote"></div>*@
+                                        <textarea id="summernoteDetail"></textarea>
+                                        @*<div>
+                                                <span class="btn btn-info" onclick="insertNotes()">Add Notes</span>
+                                            </div>*@
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+
+
+
+            <div id="myModal" class="modal">
+                <div class="row w-100 mx-0">
+                    <div class="col-lg-10 mx-auto">
+
+                        <!-- Modal content -->
+                        <div class="modal-content">
+                            <div class="row">
+                                <div class="col-md-12 ml-auto">
+                                    <span class="closeAdd pull-right">&times;</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h4 class="card-title">Add Notes</h4>
+                                    <div class="form-group">
+                                        <label>Notes Tags</label>
+                                        <select id="notestag" class="js-example-basic-single w-100 form-control">
+                                        </select>
+                                    </div>
+                                    <div id="ultagnotes"></div>
+                                    <div class="form-group">
+                                        <label>Notes Tittle</label>
+                                        <input id="PNotesTittle" class="form-control" />
+                                        <div style="color:red ;display:none" id="StaffNotesTittle"></div>
+
+
+                                    </div>
+
+                                    <label>Description</label>
+                                    @*<div id="summernote"></div>*@
+                                    <textarea id="summernote"></textarea>
+                                    <div>
+                                        <span class="btn btn-info" onclick="insertNotes()">Add Notes</span>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="CasemyModal" class="modalCase">
+                <div class="row w-100 mx-0">
+                    <div class="col-lg-10 mx-auto">
+
+                        <!-- Modal content -->
+                        <div class="modal-content-case">
+                            <div class="row">
+                                <div class="col-md-12 ml-auto">
+                                    <span class="closeCase pull-right">&times;</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h4 class="card-title">Add Notes</h4>
+                                    <div class="form-group">
+                                        <label>Notes Tags</label>
+                                        <select id="notestagCase" class="js-example-basic-single w-100 form-control">
+                                        </select>
+                                    </div>
+                                    <div id="ulCasetagnotes"></div>
+                                    <div class="form-group">
+                                        <label>Case</label>
+                                        <select id="cases" class="js-example-basic-single w-100 form-control">
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Notes Tittle</label>
+                                        <input id="CaseNotesTittle" class="form-control" />
+
+
+                                    </div>
+
+                                    <label>Description</label>
+                                    <div id="Casesummernote" class="summernote"></div>
+                                    <div>
+                                        <span class="btn btn-info" onclick="insertNotes()">Add Notes</span>
+                                    </div>
+
+
+
+
+
+
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="ModelEdit" class="modalEdit">
+                <div class="row w-100 mx-0">
+                    <div class="col-lg-10 mx-auto">
+
+                        <!-- Modal content -->
+                        <div class="modal-content">
+                            <div class="row">
+                                <div class="col-md-12 ml-auto">
+                                    <a href="#" class="closeDetail pull-right" onclick="CloseEditModel()">&times;</a>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <input type="hidden" id="HidenIdForEdit" />
+                                <div class="col-md-12">
+                                    <h4 class="card-title">Edit Notes</h4>
+                                    <div class="form-group">
+                                        <label>Notes Tags</label>
+                                        <select id="notestagEdit" class="js-example-basic-single w-100 form-control">
+                                        </select>
+                                    </div>
+                                    <div id="ulCasetagnotesEdit"></div>
+                                    <div class="form-group">
+                                        <label>Notes Tittle</label>
+                                        <input id="PNotesTittlEdit" class="form-control" />
+                                    </div>
+
+                                    <label>Description</label>
+                                    @*<div id="summernote"></div>*@
+                                    <textarea id="summernoteEdit"></textarea>
+                                    <div>
+
+                                        <span class="btn btn-info" onclick="UpdateNotes()">Update</span>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+    <script>
+
+        $('#summernote').summernote({
+            placeholder: 'Description',
+            height: 100,
+            toolbar: [
+                // [groupName, [list of button]]
+                ['style', ['bold', 'italic', 'underline', 'clear']],
+                ['font', ['strikethrough', 'superscript', 'subscript']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']]
+            ]
+
+        });
+        $('#summernoteDetail').summernote({
+            placeholder: 'Description',
+            height: 100,
+            toolbar: [
+                // [groupName, [list of button]]
+                ['style', ['bold', 'italic', 'underline', 'clear']],
+                ['font', ['strikethrough', 'superscript', 'subscript']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']]
+            ]
+
+        }); $('#summernoteEdit').summernote({
+            placeholder: 'Description',
+            height: 100,
+            toolbar: [
+                // [groupName, [list of button]]
+                ['style', ['bold', 'italic', 'underline', 'clear']],
+                ['font', ['strikethrough', 'superscript', 'subscript']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']]
+            ]
+
+        });
+    </script>
+
+    <script>
+        $("#notestag").change(function () {
+
+            var text = $("#notestag option:selected").text();
+            if (text != "Select") {
+
+                $("#ultagnotes").append("<li class='btn btn-success'>" + $("#notestag option:selected").text() + "<span class='closeTags pull-right' onclick='DeleteItem(this)'>&times;</span></li > ");
+            }
+        });
+    </script>
+    <script>
+        $("#notestagEdit").change(function () {
+
+            var text = $("#notestagEdit option:selected").text();
+            if (text != "Select") {
+
+                $("#ulCasetagnotesEdit").append("<li class='btn btn-success'>" + $("#notestagEdit option:selected").text() + "<span class='closeTags pull-right' onclick='DeleteItem(this)'>&times;</span></li > ");
+            }
+        });
+    </script>
+    <script>
+        $("#notestagCase").change(function () {
+            var text = $("#notestagCase option:selected").text();
+
+            if (text != "Select") {
+
+                $("#ulCasetagnotes").append("<li class='btn btn-success'>" + $("#notestagCase option:selected").text() + "<span class='closeCaseTags pull-right' onclick='DeleteItem(this)'>&times;</span></li > ");
+            }
+
+        });
+    </script>
+    <script>
+        $("#noteCasestag").change(function () {
+            var text = $("#noteCasestag option:selected").text();
+
+            if (text != "Select") {
+
+                $("#ulCasetagnotes").append("<li class='btn btn-success'>" + $("#noteCasestag option:selected").text() + "<span class='closeCaseTags pull-right' onclick='DeleteItem(this)'>&times;</span></li > ");
+            }
+
+        });
+    </script>
+    @*$('#')
+        id="ultagnotes"*@
+
+    <script>
+
+        // Get the modal
+        var modalcase = document.getElementById("CasemyModal");
+
+        // Get the button that opens the modal
+        var btncase = document.getElementById("myBtnCase");
+
+        // Get the <span> element that closes the modal
+        var spancase = document.getElementsByClassName("closeCase")[0];
+
+        // When the user clicks the button, open the modal
+        btncase.onclick = function () {
+            modalcase.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        spancase.onclick = function () {
+            modalcase.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modalcase) {
+                modalcase.style.display = "none";
+            }
+        }
+    </script>
+    <script>
+
+        // Get the modal
+        var modalcase = document.getElementById("CasemyModal");
+
+        // Get the button that opens the modal
+        var btncase = document.getElementById("myBtnCase");
+
+        // Get the <span> element that closes the modal
+        var spancase = document.getElementsByClassName("closeCase")[0];
+
+        // When the user clicks the button, open the modal
+        btncase.onclick = function () {
+            modalcase.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        spancase.onclick = function () {
+            modalcase.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modalcase) {
+                modalcase.style.display = "none";
+            }
+        }
+    </script>
+
+    <script>
+
+        // Get the modal
+        var modal = document.getElementById("myModal");
+
+        // Get the button that opens the modal
+        var btn = document.getElementById("myBtn");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("closeAdd")[0];
+
+        // When the user clicks the button, open the modal
+        btn.onclick = function () {
+            modal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+    <script>
+        function DeleteItem(ctl) {
+
+            $(ctl).parents("li").remove();
+
+        }
+    </script>
+    <script>
+var remoteServerURl = "";
+        var plan = null;
+        var token = "";
+        $(function () {
+            $('#datatable').dataTable({
+                "columnDefs": [
+                    { "searchable": false, "targets": 3 }
+                ]
+            });
+        getRemoteServerURl();
+        token = localStorage.getItem('token');
+    });
+     function getRemoteServerURl() {
+    //$.ajax({
+    //type: 'GET',
+    //url: '/common/getConfigurationValue',
+    //data: { sectionName: "app", paramName: "remoteServerUrl" }
+    //}).done(function (response) {
+    //    remoteServerURl = response.parameter;
+    //    getTagNotes();
+    //    getEditNotesTag();
+    //    getCases();
+    //})
+
+         var ReceivedURL = GetURL();
+         remoteServerURl = ReceivedURL;
+         getTagNotes();
+         getEditNotesTag();
+         getCases();
+    };
+        function insertCaseNotes() {
+
+
+
+        var markupStr = $('#Casesummernote').summernote('code');
+
+        var NotesTagArray = new Array();
+            $("#ulCasetagnotes LI").each(function () {
+
+            var notesTag = {};
+            notesTag.name = $(this).text().substring(0, $(this).text().length - 1)
+
+            NotesTagArray.push(notesTag);
+        });
+        var notestittle = "";
+        var i;
+        for (i = 0; i < NotesTagArray.length; i++) {
+            if (NotesTagArray.length == 1) {
+                notestittle = NotesTagArray[i].name + ","
+            }
+            else if (i == 0)
+            {
+                notestittle = NotesTagArray[i].name
+
+            }
+            else {
+                notestittle = notestittle + "," + NotesTagArray[i].name  ;
+
+            }
+        }
+        var trimenotetagstr = notestittle.substring(0,notestittle.length - 1)
+        var model = {
+            NotesTittle: $('#CaseNotesTittle').val(),
+            NotesTag: trimenotetagstr,
+            UserId: '@userDto.Id',
+            CaseId: $("#cases option:selected").text(),
+
+        NotesDescripation: markupStr,
+        NotesType: "Case",
+  };
+                token = localStorage.getItem('token');
+            $.ajax({
+        url: `${remoteServerURl}api/Notes/AddNotes`,
+        headers: { "Authorization": 'Bearer ' + token },
+    type: "POST",
+    dataType: 'json',
+    data: JSON.stringify(model),
+    contentType: "application/json; charset=utf-8",
+        success: function (response) {
+
+    window.location.href='@Url.Action("ManageNotes", "StaffNotes")'
+    },
+    error: function (response) {
+    //window.location.href='@Url.Action("ManageNotes", "StaffNotes")'
+    }
+    });
+        };
+        function insertNotes() {
+            var notestittle = $('#PNotesTittle').val();
+            if (notestittle == "") {
+                document.getElementById("StaffNotesTittle").innerHTML = "Tittle is required";
+
+                $('#StaffNotesTittle').show();
+                return
+            }
+
+        var markupStr = $('#summernote').summernote('code');
+
+        var NotesTagArray = new Array();
+        $("#ultagnotes LI").each(function () {
+
+            var notesTag = {};
+            notesTag.name = $(this).text().substring(0, $(this).text().length - 1)
+
+            NotesTagArray.push(notesTag);
+        });
+        var notestittle = "";
+        var i;
+        for (i = 0; i < NotesTagArray.length; i++) {
+            if (NotesTagArray.length == 1) {
+                notestittle = NotesTagArray[i].name + ","
+            }
+            else if (i == 0)
+            {
+                notestittle = NotesTagArray[i].name
+
+            }
+            else {
+                notestittle = notestittle + "," + NotesTagArray[i].name  ;
+
+            }
+        }
+        var trimenotetagstr = notestittle.substring(0,notestittle.length - 1)
+        var model = {
+            NotesTittle: $('#PNotesTittle').val(),
+            NotesTag: trimenotetagstr,
+             UserId: '@userDto.Id',
+        NotesDescripation: markupStr,
+        NotesType: "Personal",
+  };
+                token = localStorage.getItem('token');
+            $.ajax({
+                url: `${remoteServerURl}api/Notes/AddNotesStaff`,
+        headers: { "Authorization": 'Bearer ' + token },
+    type: "POST",
+    dataType: 'json',
+    data: JSON.stringify(model),
+    contentType: "application/json; charset=utf-8",
+        success: function (response) {
+
+    window.location.href='@Url.Action("ManageNotes", "StaffNotes")'
+    },
+    error: function (response) {
+    //window.location.href='@Url.Action("ManageNotes", "StaffNotes")'
+    }
+    });
+        };
+
+    function getTagNotes() {
+            token = localStorage.getItem('token');
+        $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/ConfigManagement/GetNotesTagStaff`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                let options = "<option value='undefined'>Select</option>";
+                $.each(data, function (a, b) {
+                    options += "<option value='" + b.id + "'>" + b.notesTagName + "</option>";
+                });
+
+                $("#notestag").html(options);
+                $("#notestagCase").html(options);
+                $("#notestagEdit").html(options);
+            })
+        };
+        function getCases() {
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Case/GetCases`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                let options = "<option value='undefined'>Select</option>";
+                $.each(data, function (a, b) {
+                    options += "<option value='" + b.id + "'>" + b.caseName + "</option>";
+                });
+
+                $("#cases").html(options);
+
+            })
+        };
+        function getEditNotesTag() {
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/ConfigManagement/GetNotesTag`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                let options = "<option value='undefined'>Select</option>";
+                $.each(data, function (a, b) {
+                    options += "<option value='" + b.id + "'>" + b.notesTagName + "</option>";
+                });
+
+                $("#notestagEdit").html(options);
+            })
+        };
+    function NotesDetail(Id) {
+
+            token = localStorage.getItem('token');
+        $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Notes/GetNotesById`,
+                headers: { "Authorization": 'Bearer ' + token },
+                data: { Id: Id}
+            }).done(function (data) {
+                $('#PNotesTittlDeteail').val(data.notesTittle).attr('disabled', 'disabled');
+                var array = data.notesTag.split(',');
+                for (let i = 0; i < array.length; ++i) {
+                    if (array[i] != "" || array[i] != '') {
+                        $("#ulCasetagnotesDetail").empty();
+                        $("#ulCasetagnotesDetail").append("<li class='btn btn-success'>" + array[i] + "</li > ");
+                    }
+                };
+                $("#NotesId").val(data.id);
+                $("#summernoteDetail").summernote('code', data.notesDescripation);
+                $(".note-editable").attr('contenteditable', 'false');
+
+                // Get the modal
+                $('#myModalDetail').show();
+
+
+            })
+        };
+        function DownLoadNotes(Id) {
+          /*  var Id = $('#NotesId').val();*/
+
+
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Notes/GetNotesById`,
+                headers: { "Authorization": 'Bearer ' + token },
+                data: { Id: Id}
+            }).done(function (data) {
+                var model = {}
+                model.NotesTittle = data.notesTittle;
+                model.NotesDescripation = data.notesDescripation;
+                model.NotesTag = data.notesTag;
+
+                window.location.href = "@Url.Action("DownloadNotes", "StaffNotes")?NotesTag=" + data.notesTag + "&NotesTittle=" + data.notesTittle + "&NotesDescrpation=" + data.notesDescripation;
+
+                //window.location.href = "/con/ac/param1" +var+"&var2=+";
+                //window.location.href = "Attorney/Notes/DownloadNotes/param1" + NotesTittle +;
+
+
+                // Get the modal
+
+
+
+            })
+        };
+    function NotesDelete(Id) {
+
+            token = localStorage.getItem('token');
+        $.ajax({
+                type: 'Delete',
+                url: `${remoteServerURl}api/Notes/DeleteNotes?Id=${Id}`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                  window.location.href='@Url.Action("ManageNotes", "StaffNotes")'
+            })
+        };
+    function CloseDetailModel() {
+
+        $('#myModalDetail').hide();
+        $('.note-editable').attr('contenteditable', 'true');
+        };
+        function CloseEditModel() {
+
+            $('#ModelEdit').hide();
+        };
+
+        function EditNotes(Id) {
+            var id = Id;
+
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Notes/GetNotesById`,
+                headers: { "Authorization": 'Bearer ' + token },
+                data: { Id: Id }
+            }).done(function (data) {
+                $('#HidenIdForEdit').val(id);
+                $('#PNotesTittlEdit').val(data.notesTittle);
+                var array = data.notesTag.split(',');
+                for (let i = 0; i < array.length; ++i) {
+                    if (array[i] != "" || array[i] != '') {
+                        $("#ulCasetagnotesEdit").empty();
+                        $("#ulCasetagnotesEdit").append("<li class='btn btn-success'>" + array[i] + "<span class='closeTags pull-right' onclick='DeleteItem(this)'>&times;</span></li > ");
+                    }
+                }
+                $("#summernoteEdit").summernote('code', data.notesDescripation);
+
+                // Get the modal
+                $('#ModelEdit').show();
+
+
+            })
+        };
+          function UpdateNotes() {
+
+              var Id = $('#HidenIdForEdit').val();
+              var markupStr = $('#summernoteEdit').summernote('code');
+
+        var NotesTagArray = new Array();
+              $("#ulCasetagnotesEdit LI").each(function () {
+
+            var notesTag = {};
+            notesTag.name = $(this).text().substring(0, $(this).text().length - 1)
+
+            NotesTagArray.push(notesTag);
+        });
+        var notestittle = "";
+        var i;
+        for (i = 0; i < NotesTagArray.length; i++) {
+            if (NotesTagArray.length == 1) {
+                notestittle = NotesTagArray[i].name + ","
+            }
+            else if (i == 0)
+            {
+                notestittle = NotesTagArray[i].name
+
+            }
+            else {
+                notestittle = notestittle + "," + NotesTagArray[i].name  ;
+
+            }
+        }
+
+              var model = {
+                  Id: Id,
+                  NotesTittle: $('#PNotesTittlEdit').val(),
+                  NotesTag: notestittle,
+                  UserId: '@userDto.Id',
+        NotesDescripation: markupStr,
+
+  };
+                  token = localStorage.getItem('token');
+              $.ajax({
+        url: `${remoteServerURl}api/Notes/UpdateNotes`,
+        headers: { "Authorization": 'Bearer ' + token },
+    type: "POST",
+    dataType: 'json',
+    data: JSON.stringify(model),
+    contentType: "application/json; charset=utf-8",
+        success: function (response) {
+
+    window.location.href='@Url.Action("ManageNotes", "StaffNotes")'
+    },
+    error: function (response) {
+    //window.location.href='@Url.Action("ManageNotes", "StaffNotes")'
+    }
+    });
+        };
+
+    </script>
+}
+
+
+
+
+
+

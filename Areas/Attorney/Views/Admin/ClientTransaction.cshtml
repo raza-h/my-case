@@ -1,0 +1,94 @@
+﻿@model List<AbsolCase.Models.ClientTransaction>
+@{
+    ViewBag.Title = "ManageUser";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="col-md-12 grid-margin stretch-card ms-3 mt-3 me-5 pe-4">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Payment Against Client</h4>
+            <div class="row">
+                <div class="col-12">
+                    <div class="">
+                        <div id="order-listing_wrapper">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="">
+                                        <table id="datatable" class="table table-striped   nowrap" width="100%" cellspacing="0">
+                                            <thead>
+                                                <tr role="row">
+                                                    <th>Sr No.</th>
+                                                    <th>Client</th>
+                                                    <th>Invoice No</th>
+                                                    <th>Amount</th>
+                                                    <th>Check Number</th>
+                                                    <th>Check Date</th>
+                                                    <th>Action</th>
+                                            </thead>
+                                            <tbody>
+                                                @if (Model != null && Model.Count > 0)
+                                                {
+                                                    int count = 0;
+                                                    @foreach (var transaction in Model)
+                                                    {
+                                                        count++;
+                                                        <tr class="odd">
+                                                            <td class="sorting_1">@count</td>
+                                                            <td>@(!string.IsNullOrEmpty(transaction.ClientName) ? transaction.ClientName : "N/A")</td>
+                                                            <td>@(!string.IsNullOrEmpty(transaction.InvoiceNo) ? transaction.InvoiceNo : "N/A")</td>
+                                                            <td>@(!string.IsNullOrEmpty(transaction.Amount) ? transaction.Amount : "N/A")</td>
+                                                            <td>@(!string.IsNullOrEmpty(transaction.CheckNumber) ? transaction.CheckNumber : "N/A")</td>
+                                                            <td>@(transaction.CheckDate != null ? transaction.CheckDate.Value.ToShortDateString() : "N/A")</td>
+                                                            <td>@Html.ActionLink("Update", "UpdateReceipt", "Admin", new { Id = transaction.Id })</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        var remoteServerURl = "";
+        var plan = null;
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            token = localStorage.getItem('token');
+        });
+        function getRemoteServerURl() {
+            //$.ajax({
+            //type: 'GET',
+            //url: '/common/getConfigurationValue',
+            //data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+            //    getDecumentsTag();
+
+            //    getCases();
+
+
+            //})
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+        };
+
+        $(document).ready(function () {
+            $('#datatable').dataTable({
+                "columnDefs": [
+                    { "searchable": false, "targets": 6 }
+                ]
+            });
+        });
+    </script>
+    }

@@ -1,0 +1,30 @@
+﻿@model IEnumerable<AbsolCase.Models.AdminActivity>
+@{
+    Layout = null;
+}
+<thead>
+    <tr>
+        <th>SR#</th>
+        <th>Date &nbsp;</th>
+        <th>Time &nbsp;</th>
+        <th>Operation Name</th>
+        <th>Action Detail</th>
+    </tr>
+</thead>
+<tbody id="tbodyId">
+    @if (Model != null && Model.Count() > 0)
+    {
+        int count = 0;
+        @foreach (var user in Model)
+        {
+            count++;
+            <tr class="odd">
+                <td class="sorting_1">@count</td>
+                <td>@user.Date.ToString("yyyy-M-d")</td>
+                <td>@user.Date.ToString("hh:mm tt")</td>
+                <td>@user.OperationName</td>
+                <td>@user.ActionDetail</td>
+            </tr>
+        }
+    }
+</tbody>

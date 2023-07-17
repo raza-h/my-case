@@ -1,0 +1,159 @@
+﻿@model AbsolCase.Models.ContactUs
+@{
+    ViewBag.Title = "CMS";
+    Layout = "~/Views/Shared/_OuterLayout.cshtml";
+}
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="irstheme">
+
+    <title> Absol Case </title>
+    <link rel=" shortcut icon" href="~/images/favicon.png" />
+    <link href="~/assets/css/themify-icons.css" rel="stylesheet" />
+    <link href="~/assets/css/flaticon.css" rel="stylesheet" />
+    <link href="~/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/assets/css/animate.css" rel="stylesheet" />
+    <link href="~/assets/css/owl.carousel.css" rel="stylesheet" />
+    <link href="~/assets/css/owl.theme.css" rel="stylesheet" />
+    <link href="~/assets/css/slick.css" rel="stylesheet" />
+    <link href="~/assets/css/slick-theme.css" rel="stylesheet" />
+    <link href="~/assets/css/owl.transitions.css" rel="stylesheet" />
+    <link href="~/assets/css/jquery.fancybox.css" rel="stylesheet" />
+    <link href="~/assets/css/style.css" rel="stylesheet" />
+</head>
+
+<style>
+    .testimonials-contact-section {
+        background: none !important;
+    }
+
+        .testimonials-contact-section .contact-area h3,
+        .testimonials-contact-section-s2 .contact-area h3,
+        .testimonials-section-page .contact-area h3, .testimonials-contact-section .contact-area p,
+        .testimonials-contact-section .contact-area .icon, .testimonials-contact-section .contact-area ul li {
+            color: black;
+        }
+
+        .testimonials-contact-section .contact-form input,
+        .testimonials-contact-section-s2 .contact-form input,
+        .testimonials-section-page .contact-form input, .testimonials-contact-section .contact-form textarea,
+        .testimonials-contact-section-s2 .contact-form textarea, .testimonials-section-page .contact-form textarea {
+            border: 1px solid gray;
+        }
+
+        .testimonials-contact-section .contact-row .separator,
+        .testimonials-contact-section-s2 .contact-row .separator,
+        .testimonials-section-page .contact-row .separator {
+            background: gray;
+        }
+    textarea {
+        color: gray !important
+    }
+</style>
+
+<body>
+    <div class="page-wrapper">
+
+
+
+        <!-- start testimonials-contact-section -->
+        <section class="testimonials-contact-section section-padding">
+            <div class="container">
+                <div class="row contact-row">
+                    <div class="separator"></div>
+                    <div class="col col-md-6">
+                        <div class="contact-area">
+                            <h3>Are you interest to contact with us?</h3>
+                            <p>Raising a heavy fur muff that covered the whole of her lower arm towards the viewer. Gregor then turned to look out the window at the dull weather. </p>
+                            <ul>
+                                <li>
+                                    <div class="icon">
+                                        <i class="ti-mobile"></i>
+                                    </div>
+                                    <span>Our Phone:</span> 54562364769744, 8562364769744
+                                </li>
+                                <li>
+                                    <div class="icon">
+                                        <i class="ti-email"></i>
+                                    </div>
+                                    <span>Email Address:</span> demo@example.com,  example@demo.com
+                                </li>
+                                <li>
+                                    <div class="icon">
+                                        <i class="ti-time"></i>
+                                    </div>
+                                    <span>Office hour:</span> 9AM - 5PM
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col col-md-6">
+                        <div class="contact-form">
+                            @using (Html.BeginForm("AddContact", "Home", FormMethod.Post, new { area = "Public", @class = "forms-sample" }))
+                            {
+                                <div>
+                                    @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", placeholder = "Name*", @style = "color:gray" } })
+                                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger db" })
+
+                                </div>
+                                <div>
+                                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", placeholder = "Email*", @style = "color:gray" } })
+                                    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger db" })
+
+                                </div>
+                                <div>
+                                    @Html.EditorFor(model => model.PhoneNumber, new { htmlAttributes = new { @class = "form-control", placeholder = "Phone*", @style = "color:gray" } })
+                                    @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger db" })
+
+                                </div>
+                                <div>
+                                    @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control", placeholder = "Address*", @style = "color:gray" } })
+                                    @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger db" })
+
+                                </div>
+                                <div class="comment-area">
+                                    @Html.TextAreaFor(model => model.Comment, new { htmlAttributes = new { @class = "form-control", placeholder = "Comment*", id="text-Area" } })
+                                    @Html.ValidationMessageFor(model => model.Comment, "", new { @class = "text-danger db" })
+
+
+                                </div>
+                                <div class="submit-area">
+                                    <input type="submit" value=" Submit Now" class=" btn btn-danger" style="background:red"/>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- end testimonials-contact-section -->
+
+
+    </div>
+
+
+    <!-- All JavaScript files
+    ================================================== -->
+    <script src="~/assets/js/jquery.min.js"></script>
+    <script src="~/assets/js/bootstrap.min.js"></script>
+    <script src="~/assets/js/jquery-plugin-collection.js"></script>
+    <script src="~/assets/js/script.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('.supportclass').addClass('active');
+        });
+    </script>
+</body>

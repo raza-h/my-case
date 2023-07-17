@@ -1,0 +1,131 @@
+﻿@model IEnumerable<AbsolCase.Models.AdminActivity>
+
+@{
+    ViewBag.Title = "Add User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/css/Packages.css" rel="stylesheet" type="text/css" />
+
+
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Admin Activities</h4>
+            <div class="row" style="margin-bottom:10px">
+                <div class="col-md-6">
+                    <p class="card-description">Admin Logs</p>
+                </div>
+                <div class="col-md-3">
+                    <label for="exampleFormControlSelect1">From Date</label>
+                    <input type="date" onchange="searchByDateRange()" id="FromDate" class="form-control" />
+                    <div id="FromDateErr" style="color:red; display:none">From date is required</div>
+                </div>
+                <div class="col-md-3">
+                    <label for="exampleFormControlSelect1">To Date</label>
+                    <input type="date" onchange="searchByDateRange()" id="ToDate" class="form-control" />
+                    <div id="ToDateErr" style="color: red; display: none">To date is required</div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table id="datatable" class="table table-striped  dt-responsive nowrap" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>SR#</th>
+                            <th>Date &nbsp;</th>
+                            <th>Time &nbsp;</th>
+                            <th>Operation Name</th>
+                            <th>Action Detail</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyId">
+                        @if (Model != null && Model.Count() > 0)
+                        {
+                            int count = 0;
+                            @foreach (var user in Model)
+                            {
+                                count++;
+                                <tr class="odd">
+                                    <td class="sorting_1">@count</td>
+                                    <td>@user.Date.ToString("yyyy-M-d")</td>
+                                    <td>@user.Date.ToString("hh:mm tt")</td>
+                                    <td>@user.OperationName</td>
+                                    <td>@user.ActionDetail</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $('#datatable').dataTable();
+            $(".myInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#tbodyId tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+            var dtToday = new Date();
+            var month = dtToday.getMonth() + 1;
+            var day = dtToday.getDate();
+            var year = dtToday.getFullYear();
+            if (month < 10)
+                month = '0' + month.toString();
+            if (day < 10)
+                day = '0' + day.toString();
+            var maxDate = year + '-' + month + '-' + day;
+            $('#ToDate').attr('min', maxDate);
+        });
+    </script>
+    <script>
+        function searchByDateRange() {
+            if ($("#FromDate").val() == "") {
+                $("#FromDateErr").show();
+                toastr.error("Please Select Start Date First");
+                setTimeout(function () {
+                    window.location.reload();
+                }, 2000);
+                return false;
+            }
+            else
+                $("#FromDateErr").hide();
+
+            if ($("#ToDate").val() == "") {
+                $("#ToDateErr").show();
+                return false;
+            }
+            $("#ToDateErr").hide();
+            $.ajax({
+                type: "Get",
+                //url: "/Administration/Users/FilterByDates",
+                url:'@Url.Action("FilterByDates", "Users", new{ area="Administration"})',
+                data: { FromDate: $("#FromDate").val(), ToDate: $("#ToDate").val() },
+                success: function (data) {
+                    $('#datatable').DataTable().destroy();
+                    $("#datatable").html(data);
+                    $('#datatable').DataTable();
+                },
+                error: function (err) {
+                    console.log("error occured", err);
+                }
+            });
+        }
+    </script>
+    <script>
+        $("#FromDate").on('change', function () {
+            var maxDate = $("#FromDate").val();
+            $('#ToDate').attr('min', maxDate);
+        });
+    </script>
+}

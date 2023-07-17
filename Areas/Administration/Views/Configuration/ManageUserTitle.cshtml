@@ -1,0 +1,243 @@
+﻿@model List<AbsolCase.Models.UserTitle>
+
+@{
+    ViewBag.Title = "Manage User Title";
+    Layout = "~/Views/Shared/_SPLayout.cshtml";
+}
+
+<link href="~/css/Packages.css" rel="stylesheet" type="text/css" />
+
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+
+@*<a href="#"><Span class="btn btn-success btn-icon background bottom15" style="float:right" id="addtitle"><i class="mdi mdi-plus">Add New Title</i></Span></a>*@
+<div id="addtitlemodal" class="modal fade" tabindex="-1">
+    <input type="hidden" id="userid" />
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add User Title</h5>
+                <button type="button" class="close" data-dismiss="modal" onclick="closePop()">&times;</button>
+            </div>
+
+            <form asp-action="ManageUserTitle" method="post">
+                <div class="container">
+                    <div class="row mt-3">
+                        <div class="col-md-10">
+
+                            <label for="exampleInputUsername1">User Title</label>
+                            <input type="text" class="form-control" name="usertitle" id="nametitle" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="submit" value="Add" class="btn btn-dark mt-3" style="margin-left:300px" onclick="addUserTitle()" />
+                        </div>
+
+                    </div>
+                </div>
+
+                @*<button class="btn btn-light">Cancel</button>*@
+            </form>
+
+        </div>
+    </div>
+</div>
+<div id="editusertitle" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update User Title</h5>
+                <button type="button" class="close" data-dismiss="modal" onclick="closePopedit()">&times;</button>
+            </div>
+
+            <form asp-action="ManageUserTitle" method="post">
+                <div class="container">
+
+
+                    <div class="row">
+                        <div class="col-md-10">
+
+                            <label for="exampleInputUsername1">Update Title</label>
+                            <input type="text" class="form-control" name="usertitle" id="" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="submit" value="Update" class="btn btn-dark mt-3" style="margin-left:300px" />
+                        </div>
+
+                    </div>
+                </div>
+
+                @*<button class="btn btn-light">Cancel</button>*@
+            </form>
+
+        </div>
+    </div>
+</div>
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">UserTitles</h4>
+            <p class="card-description">
+                Manage UserTitles
+            </p>
+            <div class="table-responsive">
+                <table id="datatable" class="table table-striped  dt-responsive nowrap" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>SR#</th>
+                            <th>
+                                UserTitle
+                            </th>
+                            <th>
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Count > 0)
+                        {
+                            int count = 0;
+                            @foreach (var userTitle in Model)
+                            {
+                                count++;
+                                <tr>
+                                    <td>@count</td>
+                                    <td class="py-1">
+                                        @userTitle.UserTitleName
+                                    </td>
+                                    <td>
+                                        @Html.ActionLink("Edit", "UpdateUserTitle", "Configuration", new { Id = userTitle.Id }, new { @id = "Edit" }) |
+                                        <a href="#" onclick="openpopup(@userTitle.Id)">Delete</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<div id="myModall" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><b>Confirm!</b></h3>
+                <button type="button" class="close" data-dismiss="modal" onclick="closepopups()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:20px; text-align:center; color:black"><b>Are you sure to delete user title?</b></p>
+            </div>
+            <ul style="display:table;border-collapse:collapse; margin-bottom:20px">
+                <li onclick="closepopups()" style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="#" style="text-decoration: none; color: black">
+                        <img src="~/images/download (2).png" width="90" height="90" /><br />
+                        No
+                    </a>
+                </li>
+
+                <li onclick="deleteUserTitle()" style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="#" style="text-decoration: none; color: black">
+                         <img src="~/images/download.jpg" width="100" height="100" /><br />
+                        Yes
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts{
+    <script>
+        function deleteUserTitle(id) {
+            var id = $("#userid").val();
+            window.location.href = `DeleteUserTitle/${id}`
+        }
+        function openpopup(id) {
+            $("#myModall").modal('show');
+            $("#userid").val(id);
+        }
+        function closepopups() {
+            $("#myModall").modal('hide');
+
+        }
+         var remoteServerUrl = "";
+            $(function () {
+                getRemoteServerURl();
+            });
+
+            function getRemoteServerURl() {
+                //$.ajax({
+                //    type: 'GET',
+                //    url: '/common/getConfigurationValue',
+                //    data: { sectionName: "app", paramName: "remoteServerUrl" }
+                //}).done(function (response) {
+                //    remoteServerURl = response.parameter;
+
+                //})
+
+                var ReceivedURL = GetURL();
+                remoteServerURl = ReceivedURL;
+            }
+        function addUserTitle() {
+            var model = {
+                UserTitleName: $("#nametitle").val()
+            };
+
+            ;
+             $.ajax({
+                url: `${remoteServerURl}api/ConfigManagement/AddUserTitle`,
+                type: "POST",
+                dataType: 'json',
+                data: JSON.stringify(model),
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    window.location.href='@Url.Action("ManageUserTitle", "Configuration")'
+                },
+                error: function (response) {
+                    window.location.href='@Url.Action("ManageUserTitle", "Configuration")'
+                }
+            });
+        }
+        $(document).ready(function () {
+            $("#addtitle").click(function () {
+                $("#addtitlemodal").modal('show');
+            });
+            $("#editusertitle").click(function () {
+                $("#Edit").modal('show');
+            });
+        });
+        function closePop() {
+            $("#addtitlemodal").modal('hide');
+        }
+        function closePopedit() {
+            $("#editusertitle").modal('hide');
+            }
+        $(document).ready(function () {
+            $('#datatable').dataTable({
+                "columnDefs": [
+                    { "searchable": false, "targets": 2 }
+                ]
+            });
+        });
+
+    </script>
+
+}
+
+
+
+

@@ -1,0 +1,202 @@
+﻿@using AbsolCase.Models
+@model List<Message>
+
+@{
+    ViewBag.Title = "Messages";
+    Layout = "~/Views/Shared/_LayoutClientPortal.cshtml";
+    var archivedContacts = new List<Message>();
+    var unArchivedContacts = new List<Message>();
+    string display = "d-none";
+    if (Model != null && Model.Count > 0)
+    {
+        archivedContacts = Model.Where(x => x.IsArchived == true).ToList();
+        unArchivedContacts = Model.Where(x => x.IsArchived == false).ToList();
+        display = archivedContacts != null && archivedContacts.Count > 0 ? "" : "d-none";
+    }
+
+    @using Newtonsoft.Json;
+    @using Microsoft.AspNetCore.Http;
+    @inject IHttpContextAccessor httpContextAccessor;
+    string userdto = httpContextAccessor.HttpContext.Session.GetString("userData");
+    UserDto userDto = new UserDto();
+    string token = "";
+    string parentId = "";
+    if (!string.IsNullOrEmpty(userdto))
+    {
+        userDto = JsonConvert.DeserializeObject<UserDto>(userdto);
+        token = userDto.Token;
+        parentId = userDto.Id;
+    }
+}
+<script src="~/js/microsoft/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/microsoft/signalr/dist/browser/signalr.min.js"></script>
+<script src="~/js/message.js"></script>
+<link href="~/css/message.css" rel="stylesheet" />
+<div class="container-fluid h-100" style="padding: 0px !important">
+    <div class="row justify-content-center h-100">
+        <div class="col-md-2 col-xl-2 chat" style="padding-left:0px">
+            <div class="card mb-sm-3 mb-md-0 contacts_card">
+                <div class="card-header chat-header">
+                    <div class="row">
+                        <p style="font-size: 12px;padding: 0px;color: black;font-weight:bold;margin-left: 5px;">Please select user to start chat</p>
+                    </div>
+                </div>
+                <div class="card-body contacts_body">
+                    <ul class="contacts" id="userslist">
+                        <!--via ajax-->
+                    </ul>
+                </div>
+                <div class="card-footer"></div>
+            </div>
+        </div>
+        <div class="col-md-4 col-xl-4 chat" style="padding-left:0px">
+            <div class="card mb-sm-3 mb-md-0 contacts_card">
+                <div class="card-body contacts_body" id="message-contacts">
+                    <div class="d-flex bd-highlight c-pointer @display" id="archived-button" onclick="toggleArchiveSection()">
+                        <div class="img_cont">
+                            <img src="~/images/archive.png" class="rounded-circle user_img">
+                        </div>
+                        <div class="user_info" style="margin-top: 5px">
+                            <span>Archived contacts</span>
+                        </div>
+                    </div>
+                    <ul class="contacts d-none" id="archived-contacts">
+                        @if (archivedContacts != null && archivedContacts.Count > 0)
+                        {
+                            @foreach (var message in archivedContacts)
+                            {
+                                string contactType = message.IsGroupMessage ? "group" : "individual";
+                                string otherUserId = message.SenderId != userDto.Id ? message.SenderId : message.ReceiverId;
+                                int minutes = Convert.ToInt32((DateTime.Now - message.CreatedDate).TotalMinutes);
+                                string dateTime = minutes < 525600 ? minutes < 1440 ? minutes < 60 ? minutes == 0 ? "Just now" : $"{minutes} Mins ago" : $"{minutes / 60} Hours ago" : $"{message.CreatedDate.ToString("MMM")} {message.CreatedDate.Day}" : $"{message.CreatedDate.ToString("MMM")} {message.CreatedDate.Year}";
+                                <li class="contact c-pointer" onclick="loadChat(this)" id="contact-@message.Id">
+                                    <input type="hidden" id="contact-type" value="@contactType" />
+                                    <input type="hidden" id="other-userid" value="@otherUserId" />
+                                    <input type="hidden" id="groupid" value="@message.GroupId" />
+                                    <input type="hidden" id="senderid" value="@message.SenderId" />
+                                    <input type="hidden" id="receiverid" value="@message.ReceiverId" />
+                                    <input type="hidden" id="contact-name-user" value="@message.Contact" />
+                                    <div class="d-flex bd-highlight">
+                                        <div class="img_cont">
+                                            <img src="@message.UserImagePath" class="rounded-circle user_img">
+                                        </div>
+                                        <div class="user_info">
+                                            <span>@message.Contact</span>
+                                            <p class="@(message.UnreadCount > 0 ? "d-none" : "" )" style="margin-bottom: 0px" id="last-seen">@dateTime</p>
+                                            <p class="@(message.UnreadCount < 1 ? "fw-bold d-none" : "fw-bold" )" style="margin-bottom: 0px" id="unread-message">@(message.UnreadCount > 0 ? message.UnreadCount == 1 ? $"{message.UnreadCount} Unread message" : $"{message.UnreadCount} Unread messages" : "")</p>
+                                        </div>
+                                        <div style="margin-left: auto; align-self: center;"><button onclick="toggleArchive(event, '@message.SenderId', '@message.ReceiverId', 'unArchive', '@message.GroupId', '@message.Id')" class="btn" style="border: 1px solid black; color: black !important; ">UnArchive</button></div>
+                                    </div>
+                                </li>
+                            }
+                        }
+                    </ul>
+                    <ul class="contacts" id="unarchived-contacts">
+                        @if (unArchivedContacts != null && unArchivedContacts.Count > 0)
+                        {
+                            foreach (var message in unArchivedContacts)
+                            {
+                                string contactType = message.IsGroupMessage ? "group" : "individual";
+                                string otherUserId = message.SenderId != userDto.Id ? message.SenderId : message.ReceiverId;
+                                int minutes = Convert.ToInt32((DateTime.Now - message.CreatedDate).TotalMinutes);
+                                string dateTime = minutes < 525600 ? minutes < 1440 ? minutes < 60 ? minutes == 0 ? "Just now" : $"{minutes} Mins ago" : $"{minutes / 60} Hours ago" : $"{message.CreatedDate.ToString("MMM")} {message.CreatedDate.Day}" : $"{message.CreatedDate.ToString("MMM")} {message.CreatedDate.Year}";
+                                <li class="contact c-pointer" onclick="loadChat(this)" id="contact-@message.Id">
+                                    <input type="hidden" id="contact-type" value="@contactType" />
+                                    <input type="hidden" id="other-userid" value="@otherUserId" />
+                                    <input type="hidden" id="groupid" value="@message.GroupId" />
+                                    <input type="hidden" id="senderid" value="@message.SenderId" />
+                                    <input type="hidden" id="receiverid" value="@message.ReceiverId" />
+                                    <input type="hidden" id="contact-name-user" value="@message.Contact" />
+                                    <div class="d-flex bd-highlight">
+                                        <div class="img_cont">
+                                            <img src="@message.UserImagePath" class="rounded-circle user_img">
+                                        </div>
+                                        <div class="user_info">
+                                            <span>@message.Contact</span>
+                                            <p class="@(message.UnreadCount > 0 ? "d-none" : "" )" style="margin-bottom: 0px" id="last-seen">@dateTime</p>
+                                            <p class="@(message.UnreadCount < 1 ? "fw-bold d-none" : "fw-bold" )" style="margin-bottom: 0px" id="unread-message">@(message.UnreadCount > 0 ? message.UnreadCount == 1 ? $"{message.UnreadCount} Unread message" : $"{message.UnreadCount} Unread messages" : "")</p>
+                                        </div>
+                                        <div style="margin-left: auto; align-self: center;"><button onclick="toggleArchive(event, '@message.SenderId', '@message.ReceiverId', 'archive', '@message.GroupId', '@message.Id')" class="btn" style="border: 1px solid black; color: black !important; ">Archive</button></div>
+                                    </div>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+                <div class="card-footer"></div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-6 chat" style="padding-left:0px">
+            <div class="card users-chat">
+                <!--via ajax-->
+            </div>
+        </div>
+    </div>
+</div>
+<div id="group-modal" class="modal fade" tabindex="-1" style="z-index:1050 !important">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <input type="text" class="form-control" id="groupname" name="GroupName" placeholder="Enter group name" />
+                <button type="button" class="close" data-dismiss="modal" onclick="closepopups()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group row">
+                    <label class="col-sm-3">Group profile</label>
+                    <div class="col-sm-9">
+                        <input type="file" class="form-control" id="group-image" name="Image" accept="image/*" value="UploadScreenSHot" style="width:96%;">
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    <label for="exampleInputUsername1" style="font-weight: bold">Select users to add in group</label>
+                    <select class="js-example-basic-multiple form-control" id="chat-contacts" name="users[]" multiple="multiple">
+                        <!--via ajax-->
+                    </select>
+                </div>
+            </div>
+            <div>
+                <button class="btn btn-dark fr" onclick="addGroup('@parentId')">Save Group</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        var remoteServerURl = "";
+        $(function () {
+            getRemoteServerURl();
+        });
+
+        function getRemoteServerURl() {
+            //$.ajax({
+            //    type: 'GET',
+            //    url: '/common/getConfigurationValue',
+            //    data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+            //    getUsers();
+            //})
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+            getUsers();
+        }
+
+        function getUsers() {
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/UserManagement/GetUsersAgainstClientOrStaff?userId=@parentId&&userType=Client`,
+                headers: { "Authorization": 'Bearer ' + '@token' }
+            }).done(function (data) {
+                let users = "";
+                $.each(data, function (a, user) {
+                    users += `<li class="c-pointer" onclick="initiateChat('${user.firstName} ${user.lastName != null ? user.lastName : ''}', '@parentId', '${user.id}', '${remoteServerURl}${user.imagePath}')"><div class="d-flex bd-highlight"><div class="user_info"><span id="contact-name">${user.firstName} ${user.lastName != null ? user.lastName : ''}</span></div></div></li>`;
+                });
+
+                $("#userslist").html(users);
+            })
+        }
+    </script>
+}

@@ -1,0 +1,59 @@
+	/*
+  	Flaticon icon font: Flaticon
+  	Creation date: 12/01/2019 07:38
+  	*/
+
+@font-face {
+  font-family: "Flaticon";
+  src: url("../fonts/Flaticon.eot");
+  src: url("../fonts/Flaticond41d.eot?#iefix") format("embedded-opentype"),
+       url("../fonts/Flaticon.woff") format("woff"),
+       url("../fonts/Flaticon.ttf") format("truetype"),
+       url("../fonts/Flaticon.svg#Flaticon") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: "Flaticon";
+    src: url("../fonts/Flaticon.svg#Flaticon") format("svg");
+  }
+}
+
+[class^="flaticon-"]:before, [class*=" flaticon-"]:before,
+[class^="flaticon-"]:after, [class*=" flaticon-"]:after {   
+  font-family: Flaticon;
+        font-size: 20px;
+font-style: normal;
+margin-left: 20px;
+}
+
+.flaticon-magnifying-glass:before { content: "\f100"; }
+.flaticon-magnifying-glass-1:before { content: "\f101"; }
+.flaticon-magnifying-glass-browser:before { content: "\f102"; }
+.flaticon-shopping-cart:before { content: "\f103"; }
+.flaticon-shopping-bag:before { content: "\f104"; }
+.flaticon-left:before { content: "\f105"; }
+.flaticon-right:before { content: "\f106"; }
+.flaticon-play-button:before { content: "\f107"; }
+.flaticon-play-button-1:before { content: "\f108"; }
+.flaticon-play-button-2:before { content: "\f109"; }
+.flaticon-thief:before { content: "\f10a"; }
+.flaticon-robber:before { content: "\f10b"; }
+.flaticon-jail:before { content: "\f10c"; }
+.flaticon-terrorist:before { content: "\f10d"; }
+.flaticon-wounded:before { content: "\f10e"; }
+.flaticon-balance:before { content: "\f10f"; }
+.flaticon-credit-card:before { content: "\f110"; }
+.flaticon-laptop:before { content: "\f111"; }
+.flaticon-couple:before { content: "\f112"; }
+.flaticon-royal-crown-outline-for-a-prince:before { content: "\f113"; }
+.flaticon-suitcase:before { content: "\f114"; }
+.flaticon-standard:before { content: "\f115"; }
+.flaticon-thief-1:before { content: "\f116"; }
+.flaticon-robber-1:before { content: "\f117"; }
+.flaticon-thief-2:before { content: "\f118"; }
+.flaticon-briefcase:before { content: "\f119"; }
+.flaticon-payment:before { content: "\f11a"; }
+.flaticon-credit-card-1:before { content: "\f11b"; }

@@ -1,0 +1,66 @@
+﻿@model List<AbsolCase.Models.CaseDetail>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_StaffLayout.cshtml";
+}
+<style>
+    .content-wrapper {
+        height: 81vh;
+    }
+</style>
+<div class="col-md-12 grid-margin grid-margin-md-0 stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Your Cases</h4>
+            <div class="table-responsive">
+                @if (Model != null && Model.Count > 0)
+                {
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="pt-1 ps-0">
+                                    Concerned Lawyer/Person
+                                </th>
+                                <th class="pt-1">
+                                    Case Name
+                                </th>
+                                <th class="pt-1">
+                                    Case Number
+                                </th>
+                                <th class="pt-1">
+                                    Case Stage 
+                                </th>
+                                <th class="pt-1">
+                                    Conflict Notes
+                                </th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var usercase in Model)
+                            {
+                            <tr>
+                                <td class="py-1 ps-0">
+                                    <div class="d-flex align-items-center">
+                                        <img src="../../images/faces/face1.jpg" alt="profile">
+                                        <div class="ms-3">
+                                            <p class="mb-0">@usercase.LeadAttorney</p>
+                                            <p class="mb-0 text-muted text-small">@usercase.Office</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td> @usercase.CaseName </td>
+                                <td> @usercase.CaseNumber </td>
+                                <td>
+                                    <label class="badge badge-success">@usercase.CaseStage</label>
+                                </td>
+                                <td> @(!string.IsNullOrEmpty(usercase.ConflictCheckNotes) ? usercase.ConflictCheckNotes : "N/A")</td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+</div>

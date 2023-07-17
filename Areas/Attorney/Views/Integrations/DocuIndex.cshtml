@@ -1,0 +1,88 @@
+﻿@{
+    ViewData["Title"] = "DocuIndex";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<link href="~/css/lite.min.css" rel="stylesheet" />
+<script src="~/assets/js/lite.min.js"></script>
+<style>
+    
+    
+</style>
+
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <h4 class="card-title">DocuSign Integration</h4>
+                </div>
+                <div class="col-lg-2">
+                    <button id="connect-btn" class="btn btn-warning">Connect</button>
+                    @*<button id="connected-btn" class="btn btn-success" disabled>Connected</button>*@
+                </div>
+            </div>
+            <p class="card-description">
+                You can manage your DocuSign Integration here .
+            </p>
+            @*<div class="row">
+            <div class="col-lg-10"></div>
+            <div class="col-lg-2">
+            <button class="btn btn-secondary">Connect</button>
+            </div>
+            </div>*@
+            <div class="row" style="background-color:#f4f4f4">
+                <div class="col-lg-2"></div>
+                <div class="col-lg-8">
+                    <img src="~/images/docusign.png" />
+                </div>
+                <div class="col-lg-2"></div>
+            </div>
+            </div>
+    </div>
+</div>
+
+@section scripts{
+
+    <script src="~/assets/js/lite.min.js"></script>
+    <script>
+
+        var remoteServerURl = "";
+        var userId = $("#current-userid").val();
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            token = localStorage.getItem('token');
+        });
+        function getRemoteServerURl() {
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+            //$("#connected-btn").hide();
+        }
+
+        //$(document).ready(function () {
+        //    $("#connected-btn").hide();
+        //    var Getcode = cms.login.providers.getParameterByName("code");
+        //    console.log(Getcode);
+
+        //    $.ajax({
+        //        type: "Get",
+        //        url: '@Url.Action("OutlookAccess", "OutlookIntegration")',
+        //        data: { code: Getcode },
+        //        success: function (data) {
+
+        //        },
+        //        error: function (data) {
+
+        //            console.log("error");
+        //        },
+        //    });
+        //});
+
+        $("#connect-btn").click(function () {
+            window.location.href = "https://account-d.docusign.com/oauth/auth?response_type=code&scope=signature%20impersonation&client_id=776af63d-ca72-46f3-b5fb-1515cca41d7b&redirect_uri=http://localhost:25601/Attorney/Integrations/Token";
+        });
+
+    </script>
+}

@@ -1,0 +1,40 @@
+﻿@model AbsolCase.Models.AspNetUsers
+
+@{
+    ViewBag.Title = "Add User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/css/Packages.css" rel="stylesheet" type="text/css" />
+
+
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<div class="col-lg-6">
+    <div class="card mb-5 mb-lg-0">
+        <div class="card-body">
+            <h5 class="card-title text-muted text-uppercase text-center">Plus</h5>
+            <h6 class="card-price text-center">$199<span class="period">/month</span></h6>
+            <hr>
+            <ul class="fa-ul">
+                <li><span class="fa-li"><i class="fas fa-check"></i></span><strong>Document Management</strong></li>
+                <li><span class="fa-li"><i class="fas fa-check"></i></span>Calendering</li>
+                <li><span class="fa-li"><i class="fas fa-check"></i></span>Unlimited Public Projects</li>
+                <li><span class="fa-li"><i class="fas fa-check"></i></span>Community Access</li>
+                <li><span class="fa-li"><i class="fas fa-check"></i></span>Unlimited Private Projects</li>
+                <li><span class="fa-li"><i class="fas fa-check"></i></span>Dedicated Phone Support</li>
+                <li><span class="fa-li"><i class="fas fa-check"></i></span>Free Subdomain</li>
+                <li class="text-muted">
+                    <span class="fa-li"><i class="fas fa-times"></i></span>Monthly Status
+                    Reports
+                </li>
+            </ul>
+           @* <div class="d-grid">
+                <a href="@Url.Action("AddService","Service")#features" class="btn btn-primary text-uppercase">Add Service</a>
+            </div>*@
+        </div>
+    </div>
+</div>

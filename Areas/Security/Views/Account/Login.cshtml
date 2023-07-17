@@ -1,0 +1,130 @@
+﻿@model AbsolCase.Models.LoginUser
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Absol Case</title>
+    <!-- plugins:css -->
+    <link href="~/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../../vendors/feather/feather.css">
+    <link rel="stylesheet" href="../../vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="../../vendors/ti-icons/css/themify-icons.css">
+    <link rel="stylesheet" href="../../vendors/typicons/typicons.css">
+    <link rel="stylesheet" href="../../vendors/simple-line-icons/css/simple-line-icons.css">
+    <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="../../css/vertical-layout-light/style.css">
+    <!-- endinject -->
+    <link rel=" shortcut icon" href="~/images/favicon.png" />
+    <style>
+        .eye-icon {
+            cursor: pointer;
+            position: relative;
+            float: right;
+            display: flex;
+            margin-top: -33px;
+            margin-right: 15px;
+        }
+        .logindiv {
+            margin-top: 11rem;
+        }
+        .loginimgdiv {
+            margin-top: 6rem;
+        }
+        @@media only screen and (max-width: 767px) {
+            .loginimgmedia {
+                    display: none;
+            }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6 loginimgdiv loginimgmedia">
+                    <img src="~/images/loginImg.jpg" alt="Image" class="img-fluid">
+                </div>
+                <div class="col-md-6 contents logindiv">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="mb-4">
+                                <h3>Sign In</h3>
+                            </div class="container-fluid">
+                            <form action="Login" method="post" Class="pt-3">
+                                <div class="form-group first">
+                                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control form-control-lg", placeholder = "Email*" } })
+                                    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger db" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.PasswordFor(model => model.Password, new { @class = "form-control form-control-lg", placeholder = "****" })
+                                    <i class="fa fa-eye eye-icon"></i>
+                                    @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger db" })
+                                </div>
+                                <div class="mt-3">
+                                    <input type="submit" value="SIGN IN" class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" />
+                                </div>
+                                <div class="my-2 d-flex justify-content-between align-items-center">
+                                    <a href="~/Security/Account/forgetpassword" class="auth-link">Forgot password?</a>
+                                </div>
+                                <br />
+                                <div>
+                                    <p class="normal text-black">
+                                        Don't have an account?
+                                        <a href="~/Public/Subscription">Sign Up.</a>
+                                    </p>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<!-- container-scroller -->
+<!-- plugins:js -->
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+<script src="../../vendors/js/vendor.bundle.base.js"></script>
+<!-- endinject -->
+<!-- Plugin js for this page -->
+<script src="../../vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+<!-- End plugin js for this page -->
+<!-- inject:js -->
+<script src="../../js/off-canvas.js"></script>
+<script src="../../js/hoverable-collapse.js"></script>
+<script src="../../js/template.js"></script>
+<script src="../../js/settings.js"></script>
+<script src="../../js/todolist.js"></script>
+<script>
+    $(function () {
+        $(".eye-icon").click(function () {
+            if ($("#Password").attr("type") == "password") {
+                $(".eye-icon").removeClass("fa-eye");
+                $(".eye-icon").addClass("fa-eye-slash");
+                $("#Password").attr("type", "text");
+            }
+            else {
+                $(".eye-icon").removeClass("fa-eye-slash");
+                $(".eye-icon").addClass("fa-eye");
+                $("#Password").attr("type", "password");
+            }
+        });
+    });
+</script>
+<!-- endinject -->
+@section scripts {
+    <script src="~/js/account/account.js"></script>
+}
+

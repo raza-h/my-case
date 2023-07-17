@@ -1,0 +1,326 @@
+﻿@{
+    @using AbsolCase.Models
+    @using Newtonsoft.Json;
+    @using Microsoft.AspNetCore.Http;
+    @inject IHttpContextAccessor httpContextAccessor;
+    string userdto = httpContextAccessor.HttpContext.Session.GetString("userData");
+    UserDto userDto = new UserDto();
+    if (!string.IsNullOrEmpty(userdto))
+    {
+        userDto = JsonConvert.DeserializeObject<UserDto>(userdto);
+    }
+}
+@model AbsolCase.Models.Contact
+@{
+    ViewData["Title"] = "ViewContact";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<style>
+    .btn-Custom:hover span {
+        color: white !important;
+    }
+
+    .btn-Close:hover {
+        color: white !important;
+    }
+
+    .btn-Close {
+        color: red !important;
+        border: 1px solid red;
+        border-radius: 19px !important;
+    }
+
+    .box {
+        float: left;
+        height: 20px;
+        width: 20px;
+        margin-bottom: 15px;
+        border: 1px solid black;
+        clear: both;
+    }
+
+    .color1 {
+        background-color: rgb(105, 182, 214);
+    }
+
+    .color2 {
+        background-color: rgb(102, 16, 81);
+    }
+
+    .color3 {
+        background-color: rgb(191, 216, 225);
+    }
+
+    .color4 {
+        background-color: rgb(220, 190, 212);
+    }
+
+    .fWeight-6 {
+        font-weight: 600;
+        font-size: 14px;
+    }
+</style>
+<div class="container-fluid mb-5 p-4">
+
+
+    <div class="row">
+        <div class="col-lg-6" style="display:inline-flex">
+            @*<img src="~/images/dashboard/briefcase-removebg.png" width="50" height="50" /><br />*@
+            @*<i class="fas fa-3x fa-suitcase" aria-hidden="true"></i>*@
+            <i class="fa fa-user-circle fa-5" style="font-size:3rem" aria-hidden="true"></i>
+            <h4 style="margin-left:1rem;">@Model.FirstName @Model.LastName (Client)</h4>
+        </div>
+        <div class="col-lg-3">
+        </div>
+        @*<div class="col-lg-3">
+            <a href="#" style="text-decoration:none;color:#484848;">
+                <i class="fa fa-print" aria-hidden="true"></i>
+                Print
+            </a>
+            <button type="button" class="btn btn-outline-dark btn-Custom btn-lg" style="margin-left:1rem;width: 8rem;border-radius: 15px;">
+                <span onclick="location.href" style="color:#484848">Edit</span>
+            </button>
+        </div>*@
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-lg-2" style="background-color:#dfe3e8;margin-bottom:-55px;border-radius: 1rem;">
+            <h4 class="card-title mt-4 card-title-dash">Contact Info</h4>
+            <ul class="">
+                @*@if (Model != null)
+                {*@
+                <li>
+                    @*<h6 style="text-align: left"><b>@Model.contact.FirstName</b></h6>
+                    <p style="text-align: left">@Model.contact.Email </p>
+                    <p style="text-align: left">@Model.contact.CellPhone </p>*@
+                    @*<h6 style="text-align: left"><b></b></h6>
+                    <p style="text-align: left">@Model.contact.Email </p>
+                    <p style="text-align: left">@Model.contact.CellPhone </p>*@
+                </li>
+                @*}*@
+            </ul>
+            <label style="font-weight:600">Active Cases:</label><br>
+            @*<span>@Model.DateOpened.Value.ToShortDateString()</span><br><br>*@
+            <span>Accident Case</span><br><br>
+            <label style="font-weight:600">Closed Cases:</label><br>
+            @*<span>@Model.PracticeAreaName</span><br><br>*@
+            <span>No Linked Case</span><br><br>
+            <label style="font-weight:600">Account Balance:</label><br>
+            <span>$ 0.00</span><br><br>
+            @*<span>@Model.CaseStage</span><br><br>*@
+            <label style="font-weight:600">Created:</label><br>
+            <span>@Model.BirthDate</span><br><br>
+
+            <button type="button" onclick="DeleteContact(@Model.ContactId)" class="btn btn-outline-danger ps-5 pe-5 btn-Close">Delete Contact</button>
+        </div>
+        <div class="col-lg-7">
+            <div class="row">
+                <h4 class="card-title mt-4 mb-3">Contact Information</h4>
+                <div class="col-lg-6">
+                    <label class="fWeight-6">Name:</label>
+                    <span id="caseName">@Model.FirstName @Model.LastName</span><br><br>
+                    <label class="fWeight-6">Company:</label>
+                    <span id="caseNo"></span><br><br>
+                    <label class="fWeight-6">Job Title:</label>
+                    <span id="caseNo">@Model.JobTitle</span><br><br>
+                    <label class="fWeight-6">Group:</label>
+                    <span id="caseNo">@Model.ContactGroupName</span><br><br>
+
+                </div>
+                <div class="col-lg-6">
+                    <label class="fWeight-6">Email Addresses:</label>
+                    <span id="dateOpen">@Model.Email</span><br><br>
+
+                </div>
+            </div>
+            <hr style="width:90rem;" />
+            <div class="row">
+                <div class="col-lg-6">
+                    <h4 class="card-title mt-4 mb-3">Phone Numbers</h4>
+                    <label class="fWeight-6">Home:</label>
+                    <span id="caseName">@Model.HomePhone</span><br><br>
+                    <label class="fWeight-6">Work:</label>
+                    <span id="caseNo">@Model.WorkPhone</span><br><br>
+                    <label class="fWeight-6">Cell:</label>
+                    <span id="caseNo">@Model.CellPhone</span><br><br>
+                    <label class="fWeight-6">Fax:</label>
+                    <span id="caseNo">@Model.FaxNumber</span><br><br>
+
+                </div>
+                <div class="col-lg-6">
+                    <h4 class="card-title mt-4 mb-3">Address & TimeZone</h4>
+                    @*<label class="fWeight-6">Email Addresses:</label>*@
+                    <span id="dateOpen">@Model.Address</span><br><br>
+                    <span id="dateOpen">@Model.Address2</span><br><br>
+                    <span id="dateOpen">@Model.ZipCode</span><br><br>
+
+                </div>
+            </div>
+            <hr style="width:90rem;" />
+            <div class="row">
+                <div class="col-lg-12">
+                    <h4 class="card-title mt-4 mb-3">Other Information</h4>
+                    <label class="fWeight-6">Birthday:</label>
+                    <span id="caseName">@Model.BirthDate</span><br><br>
+                    <label class="fWeight-6">License:</label>
+                    <span id="caseNo">@Model.DrivingLicense</span><br><br>
+                    <label class="fWeight-6">Website:</label>
+                    <span id="caseNo">@Model.Website</span><br><br>
+                </div>
+
+            </div>
+            <hr style="width:90rem;" />
+            <div class="row">
+                @*<div class="col-lg-12">*@
+                    <h4 class="card-title mt-4 mb-3">Custom Fields</h4>
+                    @if (Model.customField != null && Model.customField.Count > 0)
+                    {
+                        @foreach (var item in Model.customField)
+                        {
+                            if (item.CustomFieldType == "Text")
+                            {
+                                <div class="form-group col-md-4">
+                                    <label for="exampleInputUsername1">@item.CustomFieldName</label>
+                                    @if (Model.cfieldValue != null && Model.cfieldValue.Count > 0)
+                                    {
+                                        @foreach (var itemm in Model.cfieldValue)
+                                        {
+                                            if(item.FieldId== itemm.FieldID)
+                                            {
+                                            <input type="text" class="form-control" value="@itemm.Value" id="@("custom-"+ item.FieldId)" disabled />
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                    <input type="text" class="form-control" id="@("custom-"+ item.FieldId)" disabled />
+                                    }
+                                </div>
+                            }
+                            else if (item.CustomFieldType == "Currency")
+                            {
+                                <div class="form-group col-md-4">
+                                    <label for="exampleInputUsername1">@item.CustomFieldName</label>
+                                    <span style="display:flex">
+                                        $
+                                        @if (Model.cfieldValue != null && Model.cfieldValue.Count > 0)
+                                        {
+                                            @foreach (var itemm in Model.cfieldValue)
+                                            {
+                                                if (item.FieldId == itemm.FieldID)
+                                                {
+                                                <input type="number" class="form-control" value="@itemm.Value" id="@("custom-"+ item.FieldId)" style="margin-left:2%" disabled />
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                        <input type="number" class="form-control" id="@("custom-"+ item.FieldId)" style="margin-left:2%" disabled />
+                                        }
+                                        
+                                    </span>
+                                </div>
+                            }
+                            else if (item.CustomFieldType == "Date")
+                            {
+                                <div class="form-group col-md-4">
+                                    <label for="exampleInputUsername1">@item.CustomFieldName</label>
+                                    @if (Model.cfieldValue != null && Model.cfieldValue.Count > 0)
+                                    {
+                                        @foreach (var itemm in Model.cfieldValue)
+                                        {
+                                            if (item.FieldId == itemm.FieldID)
+                                            {
+                                                <input type="date" class="form-control" value="@itemm.Value" id="@("custom-"+ item.FieldId)" disabled/>
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                    <input type="date" class="form-control" id="@("custom-"+ item.FieldId)" disabled />
+                                    }
+                                    
+                                </div>
+                            }
+                            else if (item.CustomFieldType == "True/False")
+                            {
+                                <div class="form-group col-md-4">
+                                    <label for="exampleInputUsername1">@item.CustomFieldName</label>
+
+                                    <div class="form-group">
+                                        <label for="exampleInputUsername1">True</label>
+                                    <input type="radio" value="true" checked name="rad" id="@("True-"+ item.FieldId)" disabled />
+                                        <label for="exampleInputUsername1">False</label>
+                                    <input type="radio" value="false" name="rad" id="@("False-"+ item.FieldId)" disabled />
+                                    </div>
+
+                                </div>
+                            }
+                            else if (item.CustomFieldType == "Number")
+                            {
+                                <div class="form-group col-md-4">
+                                    <label for="exampleInputUsername1">@item.CustomFieldName</label>
+                                    @if (Model.cfieldValue != null && Model.cfieldValue.Count > 0)
+                                    {
+                                        @foreach (var itemm in Model.cfieldValue)
+                                        {
+                                            if (item.FieldId == itemm.FieldID)
+                                            {
+                                            <input type="number" class="form-control" value="@itemm.Value" id="@("custom-"+ item.FieldId)" disabled />
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <input type="number" class="form-control" id="@("custom-"+ item.FieldId)" disabled/>
+                                    }
+                                    
+                                </div>
+                            }
+                        }
+                    }
+                @*</div>*@
+
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+    //$(function () {
+    //  $('#myTab li:last-child button').tab('show')
+    //})
+    $('#myTab button').on('click', function (event) {
+        event.preventDefault()
+        $(this).addClass("active");
+    });
+
+
+
+
+    var remoteServerURl = "";
+    var plan = null;
+    var token = "";
+    $(function () {
+        getRemoteServerURl();
+        token = localStorage.getItem('token');
+    });
+    function getRemoteServerURl() {
+        var ReceivedURL = GetURL();
+        remoteServerURl = ReceivedURL;
+    };
+
+    function DeleteContact(id) {
+        token = localStorage.getItem('token');
+        $.ajax({
+            type: 'Delete',
+            url: `${remoteServerURl}api/Contact/Delete?Id=` + id,
+            headers: { "Authorization": 'Bearer ' + token }
+        }).done(function (data) {
+            toastr.success("Contact Deleted Successfully");
+            setTimeout(function () {
+                window.location.href = '@Url.Action("ManageContact","Admin")'
+            }, 1000);
+        })
+    }
+</script>

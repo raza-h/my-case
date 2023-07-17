@@ -1,0 +1,51 @@
+﻿@model AbsolCase.Models.NotesTag
+@{
+    ViewBag.Title = "AddAdminNoteTag";
+    Layout = "~/Views/Shared/_SPLayout.cshtml";
+}
+
+
+
+@if (TempData["response"] != null)
+{
+    <script>
+    $(document).ready(function () {
+
+        var success = '@((TempData["response"] != null).ToString())';
+         if (success == 'false' || success == false) {
+
+        } else {
+             toastr.info('@TempData["response"].ToString()');
+        }
+    });
+    </script>
+}
+
+
+
+<div class="col-md-6 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Add Admin Note Tag</h4>
+
+            @using (Html.BeginForm("AddAdminNotesTag", "Configuration", FormMethod.Post, new { @class = "forms-sample" }))
+            {
+                <div class="form-group">
+                    <label for="exampleInputUsername1">Notes Tag Name<span style="font-weight:bolder;font-size:18px;color:red">*</span></label>
+                    @Html.EditorFor(model => model.NotesTagName, new { htmlAttributes = new { @class = "form-control", placeholder = "Notes Tag" } })
+                    @Html.ValidationMessageFor(model => model.NotesTagName, "", new { @class = "text-danger db" })
+
+                </div>
+
+
+                <input type="submit" value="Create" class="btn btn-dark fr" />
+                @*<button class="btn btn-light">Cancel</button>*@
+            }
+        </div>
+    </div>
+</div>
+<script>
+    setTimeout(function () {
+        $("#msgalert").hide();
+    }, 3500);
+</script>

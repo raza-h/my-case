@@ -1,0 +1,320 @@
+﻿@using AbsolCase.Models
+@model AbsolCase.Models.AspNetUsers
+@{
+    ViewBag.Title = "ViewCustomerDetail";
+    Layout = "~/Views/Shared/_SPLayout.cshtml";
+}
+<style>
+    @@media print {
+        body * {
+            visibility: hidden;
+        }
+
+        .print-container, .print-container * {
+            visibility: visible;
+        }
+
+        .print-container {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+        }
+    }
+</style>
+<div class="row">
+    <div class="row">
+    <div class="col-lg-12">
+            <a href="@Url.Action("ApprovedCustomer","Users",new{area="Administration"})" class="btn btn-lg btn-warning" style="text-decoration:none;padding-left:1rem;padding-right:1rem;">Back</a>
+
+    </div>
+
+    </div>
+    <div class="col-md-5 grid-margin grid-margin-md-0 stretch-card">
+        <div class="card">
+            <div class="card-body text-center">
+                <div>
+                    <img src="~/images/faces/face1.jpg" class="img-lg rounded-circle mb-2" alt="profile image">
+                    <h4>@Model.FirstName</h4>
+                    <p class="text-muted mb-0">@Model.RoleName</p>
+
+                </div>
+
+                <div class="border-top pt-3">
+                    <div class="row">
+
+                        <div class="col-4">
+                            <h6>@Model.VerificationStatus</h6>
+                            <p>Verified?</p>
+                        </div>
+                        <div class="col-4">
+                            @if(Model.VerificationStatus==VerificationStatus.Approved){
+                                <h6>Yes</h6>
+                            }else{
+                                <h6>No</h6>
+                            }
+                            <p>Login Access</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top pt-3">
+                    <h6>Verification Status</h6>
+                    <div class="row ml-4">
+
+                        @if (Model.VerificationStatus.ToString() == "Pending")
+                        {
+                            <div class="col-3" style="margin-left:100px;">
+                                <a href="#" style="text-decoration:none" id="PendingApprove">Approve</a>
+                            </div>
+                            <div class="col-3">
+                                <a href="#" style="text-decoration:none" id="PendingReject">Reject</a>
+                            </div>
+                        }
+
+                        else if (Model.VerificationStatus.ToString() == "Rejected")
+                        {
+                            <div class="col-3" style="margin-left:100px;">
+                                <a href="#" style="text-decoration:none">Approve</a>
+                            </div>
+                            <div class="col-3">
+                                <a href="#" style="text-decoration:none">Delete</a>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7 grid-margin grid-margin-md-0 stretch-card">
+        <div class="card">
+            <div class="card-body">
+
+                <h4 class="card-title">Customer Detail</h4>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="pt-1 ps-0">
+                                    Customer Email
+                                </th>
+                                <th class="pt-1">
+                                    @Model.Email
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="py-1 ps-0">
+                                    <div class="d-flex align-items-center">
+
+                                        <div class="ms-3">
+                                            <p class="mb-0">Full Name</p>
+                                            <p class="mb-0 text-muted text-small">@Model.FirstName @Model.LastName</p>
+                                        </div>
+                                    </div>
+                                </td>
+
+
+                            </tr>
+
+                            <tr>
+                                <td class="py-1 ps-0">
+                                    <div class="d-flex align-items-center">
+
+                                        <div class="ms-3">
+                                            <p class="mb-0">Role Name</p>
+                                            <p class="mb-0 text-muted text-small">@Model.RoleName</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <p class="mb-0">Address</p>
+                                    <p class="mb-0 text-muted text-small">@Model.Address</p>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        
+        <div class="col-md-7 container-fluid w-100">
+            <button class="btn btn-primary mt-4 ms-2" onclick="window.print();"><i class="ti-printer me-1"></i>Print</button>
+        </div>
+        <div class="col-md-7 grid-margin grid-margin-md-0 stretch-card print-container">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Payment Detail</h4>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="pt-1 ps-0">
+                                        Payment Type
+                                    </th>
+                                    <th class="pt-1">
+                                        Bank Transfer
+                                    </th>
+
+                                    <th>
+                                        @*<button type="button" class="btn btn-primary" onclick="window.print();">Download</button>*@
+                                        @*<button type="button" class="btn btn-primary" onclick="download()">Download</button>*@
+                                    </th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="py-1 ps-0">
+                                        <div class="d-flex align-items-center">
+
+                                            <div class="ms-3">
+                                                <p class="mb-0">Plan Name</p>
+                                                <p class="mb-0 text-muted text-small">Pro</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p class="mb-0">Price</p>
+                                        <p class="mb-0 text-muted text-small">$49</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="py-1 ps-0">
+                                        <div class="d-flex align-items-center">
+
+                                            <div class="ms-3">
+                                                <p class="mb-0">Payment Date</p>
+                                                <p class="mb-0 text-muted text-small">08/10/2021</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+
+    <script src="~/lib/axios/axios.js"></script>
+    <script>
+        ///var folder = "/images/dashboard/clock.jpg";
+        var folder = "images/dashboard/clock.jpg";
+        function download() {
+            axios({
+                url: folder,
+                method: 'GET',
+                responseType: 'blob'
+            })
+                .then((response) => {
+                    const url = window.URL
+                        .createObjectURL(new Blob([response.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', 'image.jpg');
+                    document.body.appendChild(link);
+                    link.click();
+                })
+        }
+
+    </script>
+    <script>
+        $(function () {
+            $('#PendingReject').click(function (e) {
+                e.preventDefault();
+
+                var answer = confirm('Do you want to Reject This User');
+                showLoader();
+
+                if (answer == false) {
+                    return false
+                }
+                var status = "Rejected";
+
+                var id = '@Model.Id';
+
+
+                //var url = "/Administration/Users/ChangeStatus";
+                var url =  '@Url.Action("ChangeStatus", "Users", new { area="Administration" })';
+                if (answer) {
+                    $.ajax({
+                        type: 'POST',
+
+                        url: url,
+                        data: {
+                            Id:id,
+                            Status: status
+
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            hideLoader();
+                            //window.location.href = "@Url.Action("generatePDF","Users",new { @area="Adminitration"})";
+                            window.location.href = "@Url.Action("PendingCustomer","Users",new { @area="Administration"})";
+
+
+                        },
+                        error: function (xhr, status, error) {
+
+                            var errorMessage = xhr.status + ': ' + xhr.statusText
+                        },
+                    });
+                }
+            });
+        });
+        $(function () {
+            $('#PendingApprove').click(function (e) {
+                e.preventDefault();
+
+                var answer = confirm('Do you want to Approve This User');
+                showLoader();
+
+                if (answer == false) {
+                    return false
+                }
+                var status = "Approved";
+
+                var id = '@Model.Id';
+
+
+                //var url = "/Administration/Users/ChangeStatus";
+                var url =  '@Url.Action("ChangeStatus", "Users", new { area="Administration" })';
+                if (answer) {
+                    $.ajax({
+                        type: 'POST',
+
+                        url: url,
+                        data: {
+                            Id:id,
+                            Status: status
+
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            hideLoader();
+                            //window.location.href = "@Url.Action("generatePDF","Users",new { @area="Adminitration"})";
+                            window.location.href = "@Url.Action("PendingCustomer","Users",new { @area="Administration"})";
+
+                        },
+                        error: function (xhr, status, error) {
+
+                            var errorMessage = xhr.status + ': ' + xhr.statusText
+                        },
+                    });
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,65 @@
+﻿@model List<AbsolCase.Models.Transactions>
+@{
+    ViewBag.Title = "Customer Transactions";
+    Layout = "~/Views/Shared/_SPLayout.cshtml";
+}
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">All Transactions</h4>
+        <div class="table-responsive">
+            <table id="datatable" class="table table-striped  dt-responsive nowrap" width="100%" cellspacing="0">
+                <thead>
+                    <tr role="row">
+                        <th>Sr No.</th>
+                        <th>Account Name</th>
+                        <th>Account Number</th>
+                        <th>Invoice Number</th>
+                        <th>Transaction Type</th>
+                        <th>Credit</th>
+                        <th>Debit</th>
+                        <th>ClosingBalance</th>
+
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        int count = 0;
+                        @foreach (var transaction in Model)
+                        {
+                            count++;
+                            <tr class="odd">
+                                <td class="sorting_1">@count</td>
+                                <td>@(!string.IsNullOrEmpty(transaction.AccountName) ? transaction.AccountName : "N/A")</td>
+                                <td>@(!string.IsNullOrEmpty(transaction.AccountNumber) ? transaction.AccountNumber : "N/A")</td>
+                                <td>@(!string.IsNullOrEmpty(transaction.InvoiceNumber) ? transaction.InvoiceNumber : "N/A")</td>
+                                <td>@transaction.Paymenttype</td>
+                                @if (transaction.AccountName == "Sales")
+                                {
+                                    <td>0.00</td>
+                                }
+                                else
+                                {
+                                    <td>@(!string.IsNullOrEmpty(transaction.Amount) ? transaction.Amount : "0.00")</td>
+                                }
+                                @if (transaction.AccountName == "Sales")
+                                {
+                                    <td>@(!string.IsNullOrEmpty(transaction.Amount) ? transaction.Amount : "0.00")</td>
+                                }
+                                else
+                                {
+                                    <td>0.00</td>
+                                }
+                                <td>@(!string.IsNullOrEmpty(transaction.ClosingBalance) ? transaction.ClosingBalance : "0.00")</td>
+                                @*<td>@(!string.IsNullOrEmpty(transaction.Credit)? transaction.Credit :"0.00")</td>
+                        <td>@(!string.IsNullOrEmpty(transaction.Debit)? transaction.Debit :"0.00")</td>*@
+                                @*<td>@(!string.IsNullOrEmpty(transaction.ClosingBalance) ? transaction.ClosingBalance : "0.00")</td>*@
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+

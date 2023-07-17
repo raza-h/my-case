@@ -1,0 +1,487 @@
+﻿@model AbsolCase.Models.SignupDto
+@using Microsoft.AspNetCore.Hosting;
+@using Microsoft.Extensions.Configuration;
+@using AbsolCase.Utility;
+@inject IWebHostEnvironment _env;
+@inject IConfiguration _config;
+@{
+    ViewBag.Title = "BillingMethod";
+    var apiBaseUrl = CommonMethods.GetApiBaseURL(_env, _config);/* + "api/";*/
+}
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<link href="~/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+<link rel="shortcut icon" href="~/images/favicon.png" />
+<style>
+    .eye-icon {
+        cursor: pointer;
+        position: relative;
+        float: right;
+        display: flex;
+        margin-top: -25px;
+        margin-right: 15px;
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.css" integrity="sha256-He3QEBKoL/nMXlVsoM7S2C2kjFQqS5L+mgA+F8LpG+U=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" integrity="sha256-R91pD48xW+oHbpJYGn5xR0Q7tMhH4xOrWn1QqMRINtA=" crossorigin="anonymous" />
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link href="~/assets/css/style.css" rel="stylesheet" />
+<script src="~/js/site.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
+
+
+<!-- Required meta tags -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Register</title>
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title text-center">Register YourSelf</h4>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">First Name</label>
+                    @Html.EditorFor(model => model.userSignupDto.FirstName, new { htmlAttributes = new { @class = "form-control", placeholder = "First Name" } })
+                    @Html.ValidationMessageFor(model => model.userSignupDto.FirstName, "Please enter firstname", new { @class = "text-danger db", @id = "fname-validation", @style = "display:none" })
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">Last Name</label>
+                    @Html.EditorFor(model => model.userSignupDto.LastName, new { htmlAttributes = new { @class = "form-control", placeholder = "Last Name" } })
+                    @Html.ValidationMessageFor(model => model.userSignupDto.LastName, "Please enter lastname", new { @class = "text-danger db", @id = "lname-validation", @style = "display:none" })
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">Email</label>
+                    @Html.EditorFor(model => model.userSignupDto.Email, new { htmlAttributes = new { @class = "form-control", placeholder = "Email" } })
+                    @Html.ValidationMessageFor(model => model.userSignupDto.Email, "please enter valid email", new { @class = "text-danger db", @id = "email-validation", @style = "display:none" })
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">UserTitle</label>
+                    <select class="form-control" name="userTitle" id="userTitle">
+                        <!--via ajax-->
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">Password</label>
+                    @Html.EditorFor(model => model.userSignupDto.Password, new { htmlAttributes = new { @class = "form-control", placeholder = "Set Password", Type = "password" } })
+                    <i class="fa fa-eye eye-icon" id="password-eye" onclick="toggleEyeIcon('password-eye','userSignupDto_Password')"></i>
+                    @Html.ValidationMessageFor(model => model.userSignupDto.Password, "Password must contain at least six characters, one number, both lower and uppercase letters and a special character", new { @class = "text-danger db", @id = "password-validation", @style = "display:none" })
+
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">Confirm Password</label>
+                    @Html.EditorFor(model => model.userSignupDto.ConfirmPassword, new { htmlAttributes = new { @class = "form-control", placeholder = "Confirm Password", @id = "cpassword" } })
+                    <i class="fa fa-eye eye-icon" id="confirm-eye" onclick="toggleEyeIcon('confirm-eye','cpassword')"></i>
+                    @Html.ValidationMessageFor(model => model.userSignupDto.ConfirmPassword, "password and confirm password doesn't match", new { @class = "text-danger db", @id = "cpassword-validation", @style = "display:none" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                </div>
+                <div class="form-group col-md-6 col-lg-6 col-sm-12" style="border-style:solid;border-color:lightgray;height:150px;width:100%;">
+                    <p style="color:darkgreen">Your Selected Package</p>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Package Name</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><p class="card-title text-muted text-uppercase" id="PlanName"></p></td>
+                                <td>     <p class="card-price" id="priceRange"></p></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-6">
+            </div>
+            <div class="col-md-6">
+                <p>Payment Form</p>
+                <article class="card">
+                    <div class="card-body">
+                        <div id="tabs">
+                            <ul class="nav bg-light nav-pills rounded nav-fill mb-3" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="pill" href="#nav-tab-card">
+                                        <i class="fa fa-credit-card "></i> Credit Card
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="pill" href="#nav-tab-paypal">
+                                        <i class="fab fa-paypal"></i>  Paypal
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="pill" href="#nav-tab-bank">
+                                        <i class="fa fa-university"></i>  Bank Transfer
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="nav-tab-card">
+                                <div class="form-group">
+                                    <label for="username">Full name (on the card)</label>
+                                    <input type="text" class="form-control validd" name="username" id="cardUserName" placeholder="">
+                                </div> <!-- form-group.// -->
+
+                                <div class="form-group">
+                                    <label for="cardNumber">Card number</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control validd" name="cardNumber" id="cardNumber" placeholder="">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text text-muted">
+                                                <i class="fab fa-cc-visa"></i>   <i class="fab fa-cc-amex"></i>
+                                                <i class="fab fa-cc-mastercard"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div> <!-- form-group.// -->
+
+                                <div class="row">
+                                    <div class="col-sm-8">
+                                        <div class="form-group">
+                                            <label><span class="hidden-xs">Expiration</span> </label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control validd" id="cardExpirationMonth" placeholder="MM" name="">
+                                                <input type="number" class="form-control validd" id="cardExpirationYear" placeholder="YY" name="">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label data-toggle="tooltip" title="" data-original-title="3 digits code on back side of the card">CVV <i class="fa fa-question-circle"></i></label>
+                                            <input type="number" id="cardExpirationCVV" class="form-control validd">
+                                        </div> <!-- form-group.// -->
+                                    </div>
+                                </div> <!-- row.// -->
+                                <button class="subscribe btn btn btn-dark fr btn-block mb-3" id="submit-button-Credit" disabled>Proceed</button>
+
+                            </div> <!-- tab-pane.// -->
+                            <div class="tab-pane fade" id="nav-tab-paypal">
+                                <p>Paypal is easiest way to pay online</p>
+                                <p>
+                                    <button class="btn btn-primary" onclick="registerUser()">Proceed to Paypal</button>
+                                </p>
+                            </div>
+
+                            <div class="tab-pane fade" id="nav-tab-bank">
+                                <strong>You Can Register your Self Without Making the Payments</strong><br />
+                                <div class="row" style="margin-left: 0px !important">
+                                </div>
+                                <div class="row mt-2" style="margin-left: 0px !important">
+                                    <div class="form-group">
+                                        <a class="btn btn-primary" id="submit-button" style="float:right; cursor:pointer; color:white" onclick="registerUser()">Proceed</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div> <!-- col.// -->
+        </div>
+    </div>
+</div>
+<script>
+    var remoteServerURl = "";
+    var plan = null;
+    $(function () {
+        getRemoteServerURl();
+        console.log(remoteServerURl + `api/PricePlan/GetPricePlanById?id=${3}`);
+        $("#userSignupDto_FirstName").on("input", function () {
+            if ($("#userSignupDto_FirstName").val() == "") {
+                $("#fname-validation").show();
+            }
+            else {
+                $("#fname-validation").hide();
+            }
+        });
+        $("#userSignupDto_LastName").on("input", function () {
+            if ($("#userSignupDto_LastName").val() == "") {
+                $("#lname-validation").show();
+            }
+            else {
+                $("#lname-validation").hide();
+            }
+        });
+        $("#userSignupDto_Email").on("input", function () {
+            if ($("#userSignupDto_Email").val() == "" || !validateEmail($("#userSignupDto_Email").val())) {
+                $("#email-validation").show();
+            }
+            else {
+                $("#email-validation").hide();
+            }
+        });
+        $("#userSignupDto_Password").on("input", function () {
+            if ($("#userSignupDto_Password").val() == "" || !validatePassword($("#userSignupDto_Password").val())) {
+                $("#password-validation").show();
+            }
+            else {
+                $("#password-validation").hide();
+            }
+        });
+        $("#cpassword").on("input", function () {
+            if ($("#userSignupDto_Password").val() != $("#cpassword").val()) {
+                isFormValid = false
+                $("#cpassword-validation").show();
+            }
+            else {
+                $("#cpassword-validation").hide();
+            }
+        });
+    });
+    $("#registerForm").submit(function (event) {
+        event.preventDefault();
+        registerUser();
+    })
+    function getRemoteServerURl() {
+        //$.ajax({
+        //    type: 'GET',
+        //    url: '/common/getConfigurationValue',
+        //    data: { sectionName: "app", paramName: "remoteServerUrl" }
+        //}).done(function (response) {
+        //    remoteServerURl = response.parameter;
+        //    getUserTitles();
+        //    getPricePlan();
+        //})
+        var ReceivedURL = GetURL();
+        remoteServerURl = ReceivedURL;
+        getUserTitles();
+        getPricePlan();
+    }
+
+    function getUserTitles() {
+        $.ajax({
+            type: 'GET',
+            url: remoteServerURl + `api/ConfigManagement/GetUserTitles`
+        }).done(function (data) {
+            let options = "<option value=0>Select</option>";
+            $.each(data, function (a, b) {
+                options += "<option value='" + b.id + "'>" + b.userTitleName + "</option>";
+            });
+            $("#userTitle").html(options);
+        })
+    }
+
+    function getPricePlan() {
+        var url = window.location.pathname;
+        var id = url.substring(url.lastIndexOf('/') + 1);
+        $.ajax({
+            type: 'GET',
+            url: remoteServerURl + `api/PricePlan/GetPricePlanById?id=${id}`
+        }).done(function (data) {
+            console.log(data);
+            plan = data;
+            $("#PlanName").text(data.planName);
+            $("#priceRange").text(data.priceRange);
+            $("#timeRange").text(data.timeRange);
+        })
+    }
+    function checkUser() {
+        var email = $("#userSignupDto_Email").val();
+        var data = new FormData();
+        data.append("email", email);
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("CheckUserExistance", "Subscription")',
+            data: data,
+            dataType: "json",
+            processData: false,
+            contentType: false,
+            async: false,
+            cache: false,
+            success: function (result) {
+                if (result == "Already exists") {
+                    toastr.error('Email Already Exists');
+                    isFormValid = false;
+                    window.setTimeout(function () { location.reload() }, 1000);
+                }
+
+            },
+            error: function () {
+                console.log('Failed ');
+            }
+        });
+
+    }
+    function registerUser() {
+        checkUser();
+        var isFormValid = true;
+        var email = $("#userSignupDto_Email").val();
+        var password = $("#userSignupDto_Password").val();
+
+
+        if ($("#userSignupDto_FirstName").val() == '') {
+            isFormValid = false;
+            $("#fname-validation").show();
+        }
+        else {
+            $("#fname-validation").hide();
+        }
+        if ($("#userSignupDto_LastName").val() == '') {
+            isFormValid = false;
+            $("#lname-validation").show();
+        }
+        else {
+            $("#lname-validation").hide();
+        }
+        if (email == '' || !validateEmail(email)) {
+            isFormValid = false;
+            $("#email-validation").show();
+        }
+        else {
+            $("#email-validation").hide();
+        }
+        if (password == '' || !validatePassword(password)) {
+            isFormValid = false;
+            $("#password-validation").show();
+        }
+        else {
+            $("#password-validation").hide();
+        }
+        if ($("#userSignupDto_Password").val() != $("#cpassword").val()) {
+            isFormValid = false
+            $("#cpassword-validation").show();
+        }
+        else {
+            $("#cpassword-validation").hide();
+        }
+        if (!isFormValid) {
+            document.body.scrollTop = document.documentElement.scrollTop = 0;
+            return;
+        }
+        var model = new FormData();
+        var selectedFile = $("#file");
+        let activeTab = $("#tabs a.active").attr('href');
+        let card = null;
+        let payPal = null;
+        let paymentType = 1;
+        if (activeTab == '#nav-tab-card') {
+            card = {
+                fullName: $("#cardUserName").val(),
+                cardNumber: $("#cardNumber").val(),
+                expirationMonth: $("#cardExpirationMonth").val(),
+                expirationYear: $("#cardExpirationYear").val(),
+                cvv: $("#cardExpirationCVV").val()
+            }
+            paymentType = 2;
+        } else if (activeTab == "#nav-tab-paypal") {
+            paymentType = 1;
+        } else {
+            paymentType = 3;
+        }
+
+        var url = window.location.pathname;
+        var id = url.substring(url.lastIndexOf('/') + 1);
+
+        var userSignupDto = {
+            firstName: $("#userSignupDto_FirstName").val(),
+            lastName: $("#userSignupDto_LastName").val(),
+            email: $("#userSignupDto_Email").val(),
+            password: $("#userSignupDto_Password").val(),
+            confirmPassword: $("#userSignupDto_Password").val(),
+            roleName: "Customer",
+            userTitleId: parseInt($("#userTitle").val())
+        };
+        var pricePlanId = parseInt(id);
+        var paymentInfoDto = {
+            paymentType: paymentType
+        };
+        for (let key in userSignupDto) {
+            model.append(`UserSignupDto[${key}]`, userSignupDto[key]);
+        }
+        for (let payment in paymentInfoDto) {
+            model.append(`PaymentInfoDto[${payment}]`, paymentInfoDto[payment]);
+        }
+        //"/cms-qa/Public/Subscription/PayWithPaypal" : "/cms-qa/Public/Subscription/RegisterCustomerWithBank";
+        model.append("PricePlanId", pricePlanId);
+        var apiUrl = paymentType == 1 ? "@Url.Action("PayWithPaypal", "Subscription")" : "@Url.Action("RegisterCustomerWithBank", "Subscription")";
+        showLoader();
+        $.ajax({
+            url: apiUrl,
+            type: "post",
+            data: model,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                hideLoader();
+                if (response.responseText == "Email already exists.") {
+                    toastr.error(response.responseText);
+                    return false;
+                }
+                if (paymentType == 1)
+                    window.location.href = '@Url.Action("PaymentWithPaypal", "Subscription")';
+                //"/Public/Subscription/PaymentWithPaypal";
+                else if (paymentType == 3) {
+                    window.location.href = '@Url.Action("BillingMethod", "Subscription")';
+                    //"/Public/Subscription/BillingMethod";
+                    /*alert("Your Application has been submitted You Will received Invoice after approval.");*/
+                }
+            },
+            error: function (response) {
+                hideLoader();
+                toastr.error("Error while while adding user");
+            }
+        })
+    }
+
+
+    $(document).ready(
+        function () {
+            $('.validd').bind('change', function (e) {
+                if ($('#cardUserName').val().length > 0 &&
+                    $('#cardNumber').val().length > 0 &&
+                    $('#cardExpirationMonth').val().length > 0 &&
+                    $('#cardExpirationYear').val().length > 0 &&
+                    $('#cardExpirationCVV').val().length > 0) {
+                    $("#submit-button-Credit").attr("disabled", false);
+                }
+                else {
+                    $("#submit-button-Credit").attr("disabled", true);
+                }
+            });
+        });
+    function toggleEyeIcon(eyeId, passId) {
+        if ($("#" + passId).attr("type") == "password") {
+            $("#" + eyeId).removeClass("fa-eye");
+            $("#" + eyeId).addClass("fa-eye-slash");
+            $("#" + passId).attr("type", "text");
+        }
+        else {
+            $("#" + eyeId).removeClass("fa-eye-slash");
+            $("#" + eyeId).addClass("fa-eye");
+            $("#" + passId).attr("type", "password");
+        }
+    };
+
+    function GetURL() {
+        var URL = "@apiBaseUrl";
+        //var URL = "https://localhost:44318/";
+        //var URL = "http://38.17.51.206:8010/";
+        return URL;
+    }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" integrity="sha256-yNbKY1y6h2rbVcQtf0b8lq4a+xpktyFc3pSYoGAY1qQ=" crossorigin="anonymous"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>

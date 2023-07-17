@@ -1,0 +1,59 @@
+﻿@model List<AbsolCase.Models.PaymentInfoDto>
+@{
+    ViewBag.Title = "Financial Details";
+    Layout = "~/Views/Shared/_SPLayout.cshtml";
+}
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Customer Invoices</h4>
+        <div class="table-responsive">
+            <table id="datatable" class="table table-striped  dt-responsive nowrap" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Sr No.</th>
+                        <th>Invoice No.</th>
+                        <th>Package Name</th>
+                        <th>Price</th>
+                        <th>Transaction Date</th>
+                        <th>Email</th>
+                        <th>Action</th>
+
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        int count = 0;
+                        @foreach (var payment in Model)
+                        {
+                            count++;
+                            <tr class="odd">
+                                <td class="sorting_1">@count</td>
+                                <td>@payment.InvoiceNo</td>
+                                <td>@payment.PlanName</td>
+                                <td>@payment.Price</td>
+                                <td>@Html.FormatValue("dd/MM/yyyy", payment.PaymentDate.ToString("dd/MM/yyyy"))</td>
+                                <td>@payment.Email</td>
+                                <td>
+                                    @Html.ActionLink("View Detail", "PaymentDetail", "Finance", new { paymentId = payment.Id })
+                                </td>
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script>
+    $(document).ready(function () {
+    $('#datatable').dataTable({
+    "columnDefs": [
+    { "searchable": false, "targets": 6 }
+    ]
+    });
+    });
+    </script>
+}

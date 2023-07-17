@@ -1,0 +1,147 @@
+﻿@model AbsolCase.Models.UserSignupDto
+
+@{
+    ViewBag.Title = "Add User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Add User </h4>
+        <form class="form-sample" method="post" enctype="multipart/form-data">
+            <p class="card-description">
+                Personal info
+            </p>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3">First Name</label>
+                        <div class="col-sm-9">
+                            @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control", placeholder = "First Name", } })
+                            @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger db" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3">Last Name</label>
+                        <div class="col-sm-9">
+                            @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control", placeholder = "Last Name", } })
+                            @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger db" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3">Email</label>
+                        <div class="col-sm-9">
+                            @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", placeholder = "Email", } })
+                            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger db" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3">Contact No.</label>
+                        <div class="col-sm-9">
+                            @Html.EditorFor(model => model.PhoneNumber, new { htmlAttributes = new { @class = "form-control", placeholder = "Contact No.", } })
+                            @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger db" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3">Role</label>
+                        <div class="col-sm-9">
+                            @Html.DropDownList("RoleName", new SelectList(ViewBag.RolesList), new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.RoleName, "", new { @class = "text-danger db" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3">Rate</label>
+                        <div class="col-sm-9">
+                            @Html.EditorFor(model => model.Rate, new { htmlAttributes = new { @class = "form-control", placeholder = "Case Rate", } })
+                            @Html.ValidationMessageFor(model => model.Rate, "", new { @class = "text-danger db" })
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <p class="card-description">
+                Address
+            </p>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3">Address </label>
+                        <div class="col-sm-9">
+                            @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control", placeholder = "Address" } })
+                            @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger db" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3">State</label>
+                        <div class="col-sm-9">
+                            @Html.EditorFor(model => model.State, new { htmlAttributes = new { @class = "form-control", placeholder = "State" } })
+                            @Html.ValidationMessageFor(model => model.State, "", new { @class = "text-danger db" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3">City</label>
+                        <div class="col-sm-9">
+                            @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control", placeholder = "City" } })
+                            @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger db",id="validatecity" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3">Postal code</label>
+                        <div class="col-sm-9">
+                            @Html.EditorFor(model => model.PostCode, new { htmlAttributes = new { @class = "form-control", placeholder = "Postal Code" } })
+                            @Html.ValidationMessageFor(model => model.PostCode, "", new { @class = "text-danger db",id="validatepostcode" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="submit" value="Submit" class="btn btn-lg btn-primary me-3" style="float:right" />
+        </form>
+    </div>
+</div>
+@section scripts{ 
+<script>
+    setTimeout(function () {
+        $("#msgalert").hide();
+    }, 3500);
+</script>
+<script>
+    $("#PostCode").on('input', function () {
+        debugger
+        var regex = //;
+        if ($("#PostCode").val() != "" && !$("#PostCode").val().match(regex)) {
+            $("#validatepostcode").text("");
+            $("#validatepostcode").show();
+        }
+        else {
+            $("#validatepostcode").hide();
+        }
+    });
+</script>
+}

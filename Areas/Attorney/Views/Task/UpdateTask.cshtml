@@ -1,0 +1,334 @@
+﻿@using AbsolCase.Models
+@model Tasks
+@{
+    ViewBag.Title = "AddTask";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<link href="~/assets/css/style.css" rel="stylesheet" />
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+                <h4 class="card-title text-center">Update Task Details</h4>
+                <input type="hidden" id="update-taskid" value="@Model.Id" />
+                <input type="hidden" id="update-taskfirmid" value="@Model.FirmId" />
+                <div class="row">
+                    <p style="font-weight:bold">Please select what is this task for:</p>
+                    <div class="form-group col-md-3">
+                        <input type="radio" id="staff" name="task_for" value="Staff" @(!string.IsNullOrEmpty(Model.StaffId) ? "checked" : "")>
+                        <label for="staff" style="margin-right:20px">Staff</label>
+                        <input type="radio" id="client" name="task_for" value="Client" @(!string.IsNullOrEmpty(Model.ClientId) ? "checked" : "")>
+                        <label for="client">Client</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6" id="staffdropdown" @(string.IsNullOrEmpty(Model.StaffId) ? "style=display:none;" : "")>
+                        <label>Staff</label>
+                        <select id="stafflist" class="form-control" aria-label="case">
+                            <!--via ajax-->
+                        </select>
+                        <span class="text-danger" id="staff-validation" style="display:none">Please select staff.</span>
+                    </div>
+                    <div class="form-group col-md-6" id="clientdropdown" @(string.IsNullOrEmpty(Model.ClientId) ? "style=display:none;" : "")>
+                        <label>Client</label>
+                        <select id="clientlist" class="form-control" aria-label="case">
+                            <!--via ajax-->
+                        </select>
+                        <span class="text-danger" id="client-validation" style="display:none">Please select client.</span>
+                    </div>
+                    <div class="form-group col-md-6" id="casedropdown">
+                        <label>Case</label>
+                        <select id="caseslist" class="form-control" aria-label="case">
+                            <option>Please select staff or client to have cases list</option>
+                            <!--via ajax-->
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="TaskName">Task Name</label>
+                        <input type="text" class="form-control" id="taskname" name="Name" value="@Model.Name" />
+                        <span class="text-danger" id="taskname-validation" style="display:none">Please enter task name</span>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Due Date</label>
+                        @Html.TextBoxFor(expression: model => model.DueDate, format: "{0:yyyy-MM-dd}", htmlAttributes: new { placeholder = "dd.MM.yyyy", @class = "form-control form-control-sm", type = "date", @id = "duedate" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label>Status</label>
+                        <select class="form-control" id="status" aria-label="status" name="status">
+                            <option value="1" @(Model.Status == AbsolCase.Models.TaskStatus.Active ? "selected" : "")>Active</option>
+                            <option value="2" @(Model.Status == AbsolCase.Models.TaskStatus.InProgress ? "selected" : "")>In Progress</option>
+                            <option value="3" @(Model.Status == AbsolCase.Models.TaskStatus.Completed ? "selected" : "")>Completed</option>
+                            <option value="4" @(Model.Status == AbsolCase.Models.TaskStatus.OnHold ? "selected" : "")>OnHold</option>
+                            <option value="5" @(Model.Status == AbsolCase.Models.TaskStatus.Dismissed ? "selected" : "")>Dismissed</option>
+                            <option value="6" @(Model.Status == AbsolCase.Models.TaskStatus.Closed ? "selected" : "")>Closed</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Priority</label>
+                        <select class="form-control" id="priority" aria-label="Priority" name="Priority">
+                            <option value="NoPriority" @(Model.Priority == AbsolCase.Models.Priority.NoPriority ? "selected" : "")>No Priority</option>
+                            <option value="Low" @(Model.Priority == AbsolCase.Models.Priority.Low ? "selected" : "")>Low</option>
+                            <option value="Medium" @(Model.Priority == AbsolCase.Models.Priority.Medium ? "selected" : "")>Medium</option>
+                            <option value="High" @(Model.Priority == AbsolCase.Models.Priority.High ? "selected" : "")>High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Description</label>
+                        <input type="text" class="form-control" name="Description" id="description" value="@Model.Description" />
+                    </div>
+                </div>
+                <button class="btn btn-dark fr" onclick="UpdateTask('form')">Update Task</button>
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    <script>
+        setTimeout(function () {
+            $("#msgalert").hide();
+        }, 3500);
+
+        $("#stafflist").change(function () {
+            getCases("staff");
+            $("#clientlist").prop("selectedIndex", 0);
+        });
+        $("#clientlist").change(function () {
+            getCases("client");
+            $("#stafflist").prop("selectedIndex", 0);
+        });
+        $('input:radio[name="task_for"]').change(
+            function () {
+                if ($("#staff").is(':checked')) {
+                    $("#clientdropdown").hide();
+                    $("#staffdropdown").show();
+                }
+                else {
+                    $("#staffdropdown").hide();
+                    $("#clientdropdown").show();
+                }
+            });
+
+        function showMoreInformation() {
+            $("#companyinfo").toggle('hide');
+        }
+
+        var remoteServerURl = "";
+        var parentId = "";
+        var token = "";
+        $(function () {
+            $("#stafflist").change(function () {
+                if ($("#stafflist").val() == "") {
+                    $("#staff-validation").show();
+                }
+                else {
+                    $("#staff-validation").hide();
+                }
+            });
+            $("#clientlist").change(function () {
+                if ($("#clientlist").val() == "") {
+                    $("#client-validation").show();
+                }
+                else {
+                    $("#client-validation").hide();
+                }
+            });
+            $("#taskname").on("input", function () {
+                if ($("#taskname").val() == "") {
+                    $("#taskname-validation").show();
+                }
+                else {
+                    $("#taskname-validation").hide();
+                }
+            });
+            getRemoteServerURl();
+            parentId = $("#current-userid").val();
+            token = localStorage.getItem('token');
+        });
+
+        function getRemoteServerURl() {
+            //$.ajax({
+            //    type: 'GET',
+            //    url: '/common/getConfigurationValue',
+            //    data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+
+            //    getStaff();
+            //    getClients();
+            //    setTimeout(function () {
+            //    if ($("#staff").prop("checked")) {
+            //        getCases("staff", "yes");
+            //    }
+            //    else {
+            //        getCases("client", "yes");
+            //        }
+            //    }, 300);
+            //})
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+            getStaff();
+            getClients();
+            setTimeout(function () {
+                if ($("#staff").prop("checked")) {
+                    getCases("staff", "yes");
+                }
+                else {
+                    getCases("client", "yes");
+                }
+            }, 300);
+        }
+        function getStaff() {
+                token = localStorage.getItem('token');
+                parentId = $("#current-userid").val();
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/UserManagement/GetStaff?ParentId=${parentId}&&userType=Staff`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                let options = "<option value=''>Select Staff</option>";
+                $.each(data, function (a, leads) {
+                    options += "<option value='" + leads.id + "'>" + leads.firstName  + "</option>";
+                });
+
+                $("#stafflist").html(options);
+                $("#stafflist").val('@Model.StaffId');
+            })
+        }
+        function getClients() {
+                token = localStorage.getItem('token');
+            parentId = $("#current-userid").val();
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/UserManagement/GetStaff?ParentId=${parentId}&&userType=Client`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                let options = "<option value=''>Select Client</option>";
+                $.each(data, function (a, leads) {
+                    options += "<option value='" + leads.id + "'>" + leads.firstName  + "</option>";
+                });
+
+                $("#clientlist").html(options);
+                $("#clientlist").val('@Model.ClientId');
+            })
+        }
+
+        function getCases(type, initial = "") {
+                var url = "";
+                var userId = "";
+            if (type == "staff") {
+                userId = $("#stafflist").val();
+                    url = `${remoteServerURl}api/Case/GetCasesByStaffId?userId=` + userId;
+                }
+            else {
+                userId = $("#clientlist").val();
+                    url = `${remoteServerURl}api/Case/GetCasesByClientId?userId=` + userId;
+                }
+
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: url,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                let options = "<option value=''>Select Case</option>";
+                $.each(data, function (a, cases) {
+                    options += "<option value='" + cases.id + "'>" + cases.caseName  + "</option>";
+                });
+
+                $("#caseslist").html(options);
+                if (initial == "yes") {
+                    $("#caseslist").val('@Model.CaseId');
+                }
+            })
+        }
+
+        function UpdateTask(fromPage) {
+            if (fromPage == "form") {
+                var isFormValid = true;
+                var ClientId = "";
+                var StaffId = "";
+                if ($("#stafflist").is(":visible")) {
+                    StaffId = $("#stafflist").val();
+                    if (StaffId == "") {
+                        isFormValid = false;
+                        $("#staff-validation").show();
+                    }
+                    else {
+                        $("#staff-validation").hide();
+                    }
+                }
+                else {
+                    ClientId = $("#clientlist").val();
+                    if (ClientId == "") {
+                        isFormValid = false;
+                        $("#client-validation").show();
+                    }
+                    else {
+                        $("#client-validation").hide();
+                    }
+                }
+                if ($("#taskname").val() == "") {
+                    isFormValid = false;
+                    $("#taskname-validation").show();
+                }
+                else {
+                    $("#taskname-validation").hide();
+                }
+                if (!isFormValid) {
+                    $('html, body').animate({ scrollTop: 0 }, 100);
+                    return;
+                }
+                openpopup('', 'Are you sure to Update task?', "UpdateTask('frompopup')");
+            }
+            else {
+                var task = {
+                    Id: $("#update-taskid").val(),
+                    FirmId: $("#update-taskfirmid").val(),
+                    Name: $("#taskname").val(),
+                    DueDate: $("#duedate").val(),
+                    Status: $("#status").val(),
+                    Priority: $("#priority").val(),
+                    Description: $("#description").val(),
+                    CaseId: $("#caseslist").val(),
+                    ClientId: $("#clientlist").val(),
+                    StaffId: $("#stafflist").val(),
+                };
+                    token = localStorage.getItem('token');
+                $.ajax({
+                    url: `${remoteServerURl}api/Task/UpdateTask`,
+                    headers: { "Authorization": 'Bearer ' + token },
+                    type: "POST",
+                    data: JSON.stringify(task),
+                    contentType: "application/json; charset=utf-8",
+                    success: function (response) {
+                        closepopup();
+                        toastr.success(response);
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("ManageTask", "Task")'
+                        }, 1000);
+                    },
+                    error: function (response) {
+                        toastr.error(response.responseText);
+                    }
+                });
+            }
+        }
+    </script>
+ }

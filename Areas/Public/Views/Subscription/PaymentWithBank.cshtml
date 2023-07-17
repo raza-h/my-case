@@ -1,0 +1,58 @@
+﻿@model AbsolCase.Models.PricePlan
+@{
+    ViewBag.Title = "Verify";
+    Layout = null;
+}
+
+<link href="~/css/bootstrap.css" rel="stylesheet" />
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+};
+@if (ViewBag.Payment != null && ViewBag.Payment == "success")
+{
+    <h4 style="text-align:center;color:brown;">Thank you for uploading the screen shot of your bank transaction, We will review your screen shot and will inform you through given email</h4>
+}
+else
+{
+    <h4 style="text-align:center;color:brown;">Thank you for choosing CMS, Please Pay $@ViewBag.Price for joining CMS, and upload the screen shot of your bank transaction</h4>
+    <div class="col-md-4 col-sm-12 " style="border-style:solid;border-color:lightgray;height:280px;margin-left:30%;">
+        <form method="post" enctype="multipart/form-data" action="PaymentWithBank">
+            <div class="summary">
+                <h3 class="headerFont forecolorpurple ng-isolate-scope" portal-translate="true"><b>From Bank</b></h3>
+                <strong>Account No:  IBAN PK00 6546 89327632</strong>
+                <div class="row" style="margin-left: 0px !important">
+
+                    <label>Upload Screen Shot of Online Transaction</label>
+
+                    <input type="file" class="form-control" id="file" name="file" accept="image/*" value="UploadScreenSHot" style="width:96%;" />
+                </div>
+                <div class="row mt-2" style="margin-left: 0px !important">
+                    <div class="form-group">
+                        <input class="btn btn-primary" value="Upload Online Invoice" type="submit" id="submit-button" style="cursor:pointer; margin-top:20px;" />
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+}
+@section scripts{
+    <script src="~/Scripts/bootstrap.js"></script>
+    <script src="~/vendors/chart.js/Chart.min.js"></script>
+    <script src="~/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('input:file').change(
+                function () {
+                    if ($(this).val()) {
+                        $("#submit-button").attr('disabled', false);
+                    }
+                });
+        });
+        var model = new FormData();
+        var selectedFile = $("#file");
+    </script>
+
+}

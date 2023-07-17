@@ -1,0 +1,105 @@
+﻿@model List<AbsolCase.Models.AspNetUsers>
+@{
+    ViewBag.Title = "ManageUser";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Register Users</h4>
+        <div class="table-responsive">
+            <table id="datatable" class="table table-striped  dt-responsive nowrap" width="100%" cellspacing="0">
+                <thead>
+                    <tr role="row">
+                        <th>Sr No.</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Phone number</th>
+                        <th>Role</th>
+                        <th>Block/UnBlock</th>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        int count = 0;
+                        @foreach (var user in Model)
+                        {
+                            count++;
+                            <tr class="odd">
+                                <td class="sorting_1">@count</td>
+                                <td>@user.FirstName</td>
+                                <td>@user.LastName</td>
+                                <td>@user.Email</td>
+                                <td>@user.PhoneNumber</td>
+                                <td>@user.RoleName</td>
+                                <td>
+                                    @if (Model.ElementAt(0).CurrentUserEmail != user.Email)
+                                    {
+                                        <label class="switch">
+                                            <input type="checkbox" id="block-user" @(user.Status ? "checked" : "") onclick="ToggleUserBlock(this, '@user.Id')">
+                                            <span class="slider round"></span>
+                                        </label>
+                                    }
+                                    else
+                                    {
+                                        <p>Owner Attorney</p>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        var remoteServerURl = "";
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            token = localStorage.getItem('token');
+        });
+        function getRemoteServerURl() {
+            @*$.ajax({
+                type: 'GET',
+                url: '@Url.Action("getConfigurationValue", "common")',
+                data: { sectionName: "app", paramName: "remoteServerUrl" }
+            }).done(function (response) {
+                remoteServerURl = response.parameter;
+            })*@
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+        }
+
+        function ToggleUserBlock(event, userId) {
+            Status = $(event).prop('checked');
+            showLoader();
+                token = localStorage.getItem('token');
+            $.ajax({
+                url: `${remoteServerURl}api/UserManagement/ToggleUserBlock?UserId=${userId}&&Status=${Status}`,
+                headers: { "Authorization": 'Bearer ' + token },
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    hideLoader();
+                    toastr.success(response);
+                },
+                error: function (response) {
+                    hideLoader();
+                    if ($(event).prop('checked'))
+                        $(event).prop('checked', false);
+                    else
+                        $(event).prop('checked', true);
+                    toastr.error(response.responseText);
+                }
+            });
+            }
+    </script>
+}
+

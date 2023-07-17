@@ -1,0 +1,42 @@
+﻿@model int;
+@{ 
+    var address = ViewBag.Address;
+}
+<input type="hidden" class="address-counts" id="addform-@Model-@address" /> 
+<fieldset class="border p-2" id="address-form-@Model-@address" style="margin-bottom: 1.5rem;">
+    <legend class="w-auto" style="float: none; font-size:20px">Office Address:</legend>
+    <div class="row">
+        <div class="form-group col-md-6">
+            <label for="exampleInputUsername1">Address</label>
+            <input class="form-control text-box single-line" id="address-@Model-@address" name="Address" placeholder="Address" type="text" value="">
+            <span class="field-validation-valid text-danger db" data-valmsg-for="Address" id="addressvalidation-@Model-@address" data-valmsg-replace="true"></span>
+
+        </div>
+        <div class="form-group col-md-6">
+            <label for="exampleInputUsername1">City</label>
+            <input class="form-control text-box single-line" id="city-@Model-@address" name="City" placeholder="City" type="text" value="">
+            <span class="field-validation-valid text-danger db" data-valmsg-for="City" id="cityvalidation-@Model-@address" data-valmsg-replace="true"></span>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-md-6 mt-4" id="statedropdown-@Model">
+            <select class="form-control states" aria-label="States" id="state-@Model-@address">
+                <!--via ajax-->
+            </select>
+        </div>
+        <div class="form-group col-md-6">
+            <label for="exampleInputUsername1">Zip Code</label>
+            <input class="form-control text-box single-line" id="zipcode-@Model-@address" name="ZipCode" placeholder="Zip Code" type="number" value="">
+            <span  class="field-validation-valid text-danger db" data-valmsg-for="ZipCode" data-valmsg-replace="true" id="zipcodevalidation-@Model-@address" style="display:none">Enter valid zip code e.g It should match 12345 or 12345-6789.</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-md-6">
+            <label for="exampleInputUsername1">Country</label>
+            <select class="form-control country" id="country-@Model-@address" aria-label="ContactGroup">
+                <!--via ajax-->
+            </select>
+        </div>
+    </div>
+</fieldset>

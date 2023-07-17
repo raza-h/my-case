@@ -1,0 +1,418 @@
+﻿@model AbsolCase.Models.Company
+@{
+    ViewBag.Title = "AddCompany";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<link href="~/assets/css/style.css" rel="stylesheet" />
+<style>
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title text-center">Register Your Company</h4>
+            @*<p class="card-description">
+                    Basic form layout
+                </p>*@
+            @using (Html.BeginForm("", "", FormMethod.Post, new { @class = "forms-sample" }))
+            {
+
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Name</label>
+                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", placeholder = "Name" } })
+                        @Html.ValidationMessageFor(model => model.Name, "please enter company name", new { @class = "text-danger db", @id = "companynamevalidation", @style = "display: none;" })
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Email</label>
+                        @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", placeholder = "Email" } })
+                        @Html.ValidationMessageFor(model => model.Email, "please enter valid email", new { @class = "text-danger db", @id = "companyemailvalidation", @style = "display: none;" })
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="examplepInutUsername1">Website</label>
+                        @Html.EditorFor(model => model.Website, new { htmlAttributes = new { @class = "form-control", placeholder = "Website" } })
+                        @Html.ValidationMessageFor(model => model.Website, "please enter valid website", new { @class = "text-danger db", @id = "websitevalidation", @style = "display: none;" })
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Main Phone</label>
+                        @Html.EditorFor(model => model.MainPhone, new { htmlAttributes = new { @class = "form-control", placeholder = "Main Phone" } })
+                        @Html.ValidationMessageFor(model => model.MainPhone, "", new { @class = "text-danger db", @id = "mainphonevalidation", @style = "display: none;" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Fax Number</label>
+                        @Html.EditorFor(model => model.FaxNumber, new { htmlAttributes = new { @class = "form-control", placeholder = "Fax Number" } })
+                        @Html.ValidationMessageFor(model => model.FaxNumber, "Please enter valid fax number", new { @class = "text-danger db", @id = "faxnumbervalidation", @style = "display: none;" })
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Address</label>
+                        @Html.EditorFor(model => model.Address1, new { htmlAttributes = new { @class = "form-control", placeholder = "Address 1" } })
+                        @Html.ValidationMessageFor(model => model.Address1, "", new { @class = "text-danger db" })
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Address 2</label>
+                        @Html.EditorFor(model => model.Address2, new { htmlAttributes = new { @class = "form-control", placeholder = "Address 2" } })
+                        @Html.ValidationMessageFor(model => model.Address2, "", new { @class = "text-danger db" })
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">City</label>
+                        @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control", placeholder = "City" } })
+                        @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger db", id = "cityvalidation" })
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">State</label>
+                        @Html.EditorFor(model => model.State, new { htmlAttributes = new { @class = "form-control", placeholder = "State" } })
+                        @Html.ValidationMessageFor(model => model.State, "", new { @class = "text-danger db", id = "statevalidation" })
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Zip Code</label>
+                        @Html.EditorFor(model => model.ZipCode, new { htmlAttributes = new { @class = "form-control", placeholder = "Zip Code" } })
+                        @Html.ValidationMessageFor(model => model.ZipCode, "", new { @class = "text-danger db" })
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Country</label>
+                        <select id="Country" class="form-control" aria-label="ContactGroup">
+                        </select>
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Private Notes</label>
+                        @Html.EditorFor(model => model.PrivateNotes, new { htmlAttributes = new { @class = "form-control", placeholder = "Private Notes" } })
+                        @Html.ValidationMessageFor(model => model.PrivateNotes, "", new { @class = "text-danger db" })
+                    </div>
+                </div>
+                @* <button type="submit" value="Cancel" class="btn btn-dark fr" onclick="clearcompanyfields()"/>*@
+                <input type="button" value="Register" class="btn btn-dark fr" onclick="insertCompany('insertcompany')" />
+                @*<button class="btn btn-light">Cancel</button>*@
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+
+    <script>
+        $(document).ready(function () {
+            $("#FaxNumber").on("input", function () {
+                if ($(this).val() != "" && !validatePhone($("#FaxNumber").val())) {
+                    if ($("#FaxNumber").val() == "") {
+                        $("#faxnumbervalidation").text('Please enter faxnumber');
+                    }
+                    else {
+                        $("#faxnumbervalidation").text('Please enter valid faxnumber');
+                    }
+                    $("#faxnumbervalidation").show();
+                }
+                else {
+                    $("#faxnumbervalidation").hide();
+                }
+            });
+            $("#MainPhone").on("input", function () {
+                if ($(this).val() == "" || !validatePhone($("#MainPhone").val())) {
+                    if ($("#MainPhone").val() == "") {
+                        $("#mainphonevalidation").text('Please enter phone number');
+                    }
+                    else {
+                        $("#mainphonevalidation").text('Please enter valid phone number');
+                    }
+                    $("#mainphonevalidation").show();
+                }
+                else {
+                    $("#mainphonevalidation").hide();
+                }
+            });
+            $("#Website").on("input", function () {
+                if ($(this).val() == "" || !validateWebsite($("#Website").val())) {
+                    if ($("#Website").val() == "") {
+                        $("#websitevalidation").text('Please enter website');
+                    }
+                    else {
+                        $("#websitevalidation").text('Please enter valid website');
+                    }
+                    $("#websitevalidation").show();
+                }
+                else {
+                    $("#websitevalidation").hide();
+                }
+            });
+            $("#Email").on("input", function () {
+                if ($(this).val() == "" || !validateEmail($("#Email").val())) {
+                    if ($("#Email").val() == "") {
+                        $("#companyemailvalidation").text('Please enter email');
+                    }
+                    else {
+                        $("#companyemailvalidation").text('Please enter valid email');
+                    }
+                    $("#companyemailvalidation").show();
+                }
+                else {
+                    $("#companyemailvalidation").hide();
+                }
+            });
+            $("#State").on("input", function () {
+                if ($("#State").val() != "" && !validateState($("#State").val())) {
+                    if ($("#State").val() == "") {
+                        $("#statevalidation").text('Please enter state');
+                    }
+                    else {
+                        $("#statevalidation").text('Please enter valid state');
+                    }
+                    $("#statevalidation").show();
+                }
+                else {
+                    $("#statevalidation").hide();
+                }
+            });
+            $("#City").on("input", function () {
+                
+                if ($("#City").val() != "" && !validateCity($("#City").val())) {
+                    if ($("#City").val() == "") {
+                        $("#cityvalidation").text('Please enter city');
+                    }
+                    else {
+                        $("#cityvalidation").text('Please enter valid city');
+                    }
+                    $("#cityvalidation").show();
+                }
+                else {
+                    $("#cityvalidation").hide();
+                }
+            });
+            $("#Name").on("input", function () {
+                
+                if ($("#Name").val().length == "" || $("#Name").val().length <3) {
+                    $("#companynamevalidation").text("Minimum three characters are required.");
+                    $("#companynamevalidation").show();
+                }
+                else {
+                    $("#companynamevalidation").hide();
+                }
+            });
+
+
+        });
+
+    function getValue() {
+
+
+    }
+        var remoteServerUrl = "";
+        var token = "";
+    $(function () {
+        getRemoteServerURl();
+        token = localStorage.getItem('token');
+    });
+
+        function getRemoteServerURl() {
+            //$.ajax({
+            //    type: 'GET',
+            //    url: '/common/getConfigurationValue',
+            //    data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+            //    getcounties();
+            //})
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+            getcounties();
+        }
+        function insertCompany(fromMethod) {
+            debugger;
+
+            if (fromMethod == 'insertcompany') {
+                var email = $("#Email").val();
+                var MainPhone = $("#MainPhone").val();
+                var isFormValid = true;
+                if ($("#Name").val().length == "" || $("#Name").val().length < 3) {
+                    $("#companynamevalidation").text("Enter Company Name");
+                    $("#companynamevalidation").show();
+                    isFormValid = false;
+                }
+                else {
+                    $("#companynamevalidation").hide();
+                }
+                if ($("#FaxNumber").val() != "" && !validatePhone($("#FaxNumber").val())) {
+                    if ($("#FaxNumber").val() == "") {
+                        $("#faxnumbervalidation").text('Please enter faxnumber');
+                    }
+                    else {
+                        $("#faxnumbervalidation").text('Please enter valid faxnumber');
+                    }
+                    $("#faxnumbervalidation").show();
+                    isFormValid = false;
+                }
+                else {
+                    $("#faxnumbervalidation").hide();
+                }
+                if ($("#Website").val() == "" && !validateWebsite($("#Website").val())) {
+                    if ($("#Website").val() == "") {
+                        $("#websitevalidation").text('Please enter website');
+                    }
+                    else {
+                        $("#websitevalidation").text('Please enter valid website');
+                    }
+                    $("#websitevalidation").show();
+                    isFormValid = false;
+                }
+                else {
+                    $("#websitevalidation").hide();
+                }
+                if (MainPhone == "" || !validatePhone(MainPhone)) {
+                    if (MainPhone == "") {
+                        $("#mainphonevalidation").text('Please enter main phone');
+                    }
+                    else {
+                        $("#mainphonevalidation").text('Please enter valid main phone');
+                    }
+                    $("#mainphonevalidation").show();
+                    isFormValid = false;
+                }
+                else {
+                    $("#mainphonevalidation").hide();
+                }
+
+                if ($("#State").val() != "" && !validateState($("#State").val())) {
+                    if ($("#State").val() == "") {
+                        $("#statevalidation").text('Please enter state');
+                    }
+                    else {
+                        $("#statevalidation").text('Please enter valid state');
+                    }
+                    $("#statevalidation").show();
+                    isFormValid = false;
+                }
+                else {
+                    $("#statevalidation").hide();
+                }
+                if (email == "" || !validateEmail(email)) {
+                    if (email == "") {
+                        $("#companyemailvalidation").text('Please enter email address');
+                    }
+                    else {
+                        $("#companyemailvalidation").text('Please enter valid email address');
+                    }
+                    $("#companyemailvalidation").show();
+                    isFormValid = false;
+                }
+                else {
+                    $("#companyemailvalidation").hide();
+                }
+                if ($("#City").val() != "" && !validateCity($("#City").val())) {
+                    if ($("#City").val() == "") {
+                        $("#cityvalidation").text('Please enter city');
+                    }
+                    else {
+                        $("#cityvalidation").text('Please enter valid city');
+                    }
+                    $("#cityvalidation").show();
+                    isFormValid = false;
+                }
+                else {
+                    $("#cityvalidation").hide();
+                }
+                if (!isFormValid) {
+                    document.body.scrollTop = document.documentElement.scrollTop = 0;
+                    return;
+                }
+                openpopup('', 'Are you sure to add company?', "insertCompany('frompopup')");
+            }
+            else {
+                showLoader();
+                var company = {
+                    Name: $("#Name").val(),
+                    Email: $("#Email").val(),
+                    Website: $("#Website").val(),
+                    MainPhone: $("#MainPhone").val(),
+                    FaxNumber: $("#FaxNumber").val(),
+                    Address1: $("#Address1").val(),
+                    Address2: $("#Address2").val(),
+                    City: $("#City").val(),
+                    State: $("#State").val(),
+                    ZipCode: $("#ZipCode").val(),
+                    Country: $("#Country").val(),
+                    PrivateNotes: $("#PrivateNotes").val(),
+                };
+
+
+                    token = localStorage.getItem('token');
+                $.ajax({
+                    url: `${remoteServerURl}api/CompanyManagement/Add`,
+                    headers: { "Authorization": 'Bearer ' + token },
+                    type: "POST",
+                    data: JSON.stringify(company),
+                    contentType: "application/json; charset=utf-8",
+                    success: function (response) {
+                        hideLoader();
+                        toastr.success("Company added Successfully");
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("ManageCompany","Company")';
+                        }, 500);
+                    },
+                    error: function (response) {
+                        hideLoader();
+                        toastr.error(response.responseText);
+                    }
+                });
+            }
+        }
+        function getcounties() {
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Country/Get`,
+                headers: { "Authorization": 'Bearer ' + token },
+            }).done(function (data) {
+                let options = "<option value=0>Select Country</option>";
+                $.each(data, function (a, country) {
+                    options += "<option value='" + country.id + "'>" + country.name + "</option>";
+                });
+
+                $("#Country").html(options);
+            })
+        }
+
+    function clearcompanyfields() {
+        $("Name").val("");
+        $("Email").val("");
+        $("Website").val("");
+        $("MainPhone").val("");
+        $("FaxNumber").val("");
+        $("Address1").val("");
+        $("Address2").val("");
+        $("City").val("");
+        $("State").val("");
+        $("ZipCode").val("");
+        }
+
+    </script>
+
+
+}

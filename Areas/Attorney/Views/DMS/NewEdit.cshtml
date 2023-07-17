@@ -1,0 +1,141 @@
+﻿@*@using iSynergy.Resources.App_Resources*@
+@{
+    ViewBag.Title = "Edit category";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<section class="box" style="border-left: 3px solid #e77512;">
+    <header class="panel_header">
+        @*<h2 class="title pull-left">@AppResource.Edit @AppResource.Folders</h2>*@
+        <h2 class="title pull-left">Edit Folders</h2>
+    </header>
+    <form id="folderForm">
+        <div class="content-body">
+            <div class="row">
+                <div class="col-xs-12">
+
+                    <div class="form-horizontal">
+                        <h4>Document Folder</h4>
+                        <hr />
+
+                        @{
+                            if (ViewBag.MainFolderId != null)
+                            {
+                                <div class="form-group">
+                                    @*<label type="text" class="control-label col-md-2" id="">@AppResource.Folder_Name</label>*@
+                                    <label type="text" class="control-label col-md-2" id="">Folder_Name</label>
+                                    <div class="col-md-10">
+                                        <input type="text" name="main" class="form-control" id="main" value="@ViewBag.MainFolderName" />
+                                        <input type="hidden" id="mainId" value="@ViewBag.MainFolderId" />
+                                    </div>
+                                </div>
+                            }
+
+
+                            if (ViewBag.SubFolder1Id != null)
+                            {
+                                <div class="form-group">
+                                    <label type="text" class="control-label col-md-2" id="">Sub-1 Folder Name</label>
+                                    <div class="col-md-10">
+                                        <input type="text" name="sub1" class="form-control" id="sub1" value="@ViewBag.Sub1FolderName" />
+                                        <input type="hidden" id="sub1Id" value="@ViewBag.SubFolder1Id" />
+                                    </div>
+                                </div>
+                            }
+                            if (ViewBag.SubFolder2Id != null)
+                            {
+                                <div class="form-group">
+                                    <label type="text" class="control-label col-md-2" id="">Sub-2 Folder Name</label>
+                                    <div class="col-md-10">
+                                        <input type="text" name="sub2" class="form-control" id="sub2" value="@ViewBag.Sub2FolderName" />
+                                        <input type="hidden" id="sub2Id" value="@ViewBag.SubFolder2Id" />
+                                    </div>
+                                </div>
+                            }
+                            if (ViewBag.SubFolder3Id != null)
+                            {
+                                <div class="form-group">
+                                    <label type="text" class="control-label col-md-2" id="">Sub-3 Folder Name</label>
+                                    <div class="col-md-10">
+                                        <input type="text" name="sub3" class="form-control" id="sub3" value="@ViewBag.Sub3FolderName" />
+                                        <input type="hidden" id="sub3Id" value="@ViewBag.SubFolder3Id" />
+                                    </div>
+                                </div>
+                            }
+
+                        }
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                @*<input type="submit" value="@AppResource.Save" class="btn btn-default" />*@
+                                <input type="submit" value="Save" class="btn btn-default" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        @*@Html.ActionLink(AppResource.Back_to_List, "NewIndex")*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+<script src="~/Content/cryptonia_theme/assets/js/jquery-1.11.2.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<link href="~/Content/toastr/toastr.min.css" rel="stylesheet" />
+<script src="~/Content/toastr/toastr.min.js"></script>
+<script>
+    $("#folderForm").validate({
+        rules: {
+            main: "required",
+            sub1: "required",
+            sub2: "required",
+            sub3: "required",
+        },
+        messages: {
+            main: "Category Name is Required",
+            sub1: "Sub-1 Folder Name is Required",
+            sub2: "Sub-2 Folder Name is Required",
+            sub3: "Sub-3 Folder Name is Required",
+        },
+        submitHandler: function (form) {
+
+            var record = {};
+            record = new FormData();
+            record.append("mainId", $("#mainId").val());
+            record.append("sub1Id", $("#sub1Id").val());
+            record.append("sub2Id", $("#sub2Id").val());
+            record.append("sub3Id", $("#sub3Id").val());
+            record.append("mainName", $("#main").val());
+            record.append("sub1Name", $("#sub1").val());
+            record.append("sub2Name", $("#sub2").val());
+            record.append("sub3Name", $("#sub3").val());
+            $.ajax(
+                {
+                    type: "POST",
+                    url: '@Url.Action("NewEditSave", "Folders")',
+                    data: record,
+                    async: false,
+                    dataType: "json",
+                    processData: false,
+                    contentType: false,
+                    success: function (result) {
+                        debugger;
+                        if (result != null) {
+                            if (result == 'alreadyexist') {
+                                toastr.error("Data Already Exist", 'Error', toastr.options.positionClass = 'toast-top-right');
+                            }
+                            if (result == 'success') {
+                                window.location.href = '@Url.Action("NewIndex","Categories")';
+                                toastr.success("Data Update Successfully", 'Success', toastr.options.positionClass = 'toast-top-right');
+                            }
+                        }
+                    },
+                    error: function () {
+                        alert('Failed to receive the Data');
+                        console.log('Failed ');
+                    }
+                });
+        }
+    });
+</script>
+

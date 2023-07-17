@@ -1,0 +1,111 @@
+﻿@model AbsolCase.Models.AspNetUsers
+
+@{
+    ViewBag.Title = "Add User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+
+<section class="pricing py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Free Tier -->
+            <div class="col-lg-6">
+                <div class="card mb-5 mb-lg-0">
+                    <div class="card-body">
+                        <h5 class="card-title text-muted text-uppercase text-center">Basic</h5>
+                        <h6 class="card-price text-center">$49<span class="period">/Week</span></h6>
+                        <hr>
+                        <ul class="fa-ul">
+                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Document Management</li>
+                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Calendering</li>
+                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Case Status Report</li>
+                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Customer Support</li>
+                            <li class="text-muted">
+                                <span class="fa-li"><i class="fas fa-times"></i></span>Financial Reports
+                            </li>
+                            <li class="text-muted">
+                                <span class="fa-li"><i class="fas fa-times"></i></span>Legal Invoicing
+                                
+                            </li>
+                            <li class="text-muted">
+                                <span class="fa-li"><i class="fas fa-times"></i></span>Collecting Payment
+                            </li>
+                            <li class="text-muted">
+                                <span class="fa-li"><i class="fas fa-times"></i></span>Compare MyCase
+                            </li>
+                        </ul>
+                       @* <div class="d-grid">
+                            <a href="@Url.Action("AddService","Service")#features" class="btn btn-primary text-uppercase">Add Service</a>
+                        </div>*@
+                    </div>
+                </div>
+            </div>
+            <!-- Plus Tier -->
+            <!--<div class="col-lg-4">
+                <div class="card mb-5 mb-lg-0">
+                    <div class="card-body">
+                        <h5 class="card-title text-muted text-uppercase text-center">Plus</h5>
+                        <h6 class="card-price text-center">$250<span class="period">/month</span></h6>
+                        <hr>
+                        <ul class="fa-ul">
+                            <li><span class="fa-li"><i class="fas fa-check"></i></span><strong>Document Management</strong></li>
+                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Calendering</li>
+                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Unlimited Public Projects</li>
+                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Community Access</li>
+                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Unlimited Private Projects</li>
+                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Dedicated Phone Support</li>
+                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Free Subdomain</li>
+                            <li class="text-muted">
+                                <span class="fa-li"><i class="fas fa-times"></i></span>Monthly Status
+                                Reports
+                            </li>
+                        </ul>
+                        <div class="d-grid">
+                            <a href="@Url.Action("AddService","Service")#features" class="btn btn-primary text-uppercase">Add Service</a>
+                        </div>
+                    </div>
+                </div>
+            </div>-->
+            <!-- Pro Tier -->
+            <!--<div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title text-muted text-uppercase text-center">Pro</h5>
+                        <h6 class="card-price text-center">$999<span class="period">/month</span></h6>
+                        <hr>
+                        <ul class="fa-ul">
+                            <li>
+                                <span class="fa-li"><i class="fas fa-check"></i></span><strong>Unlimited Users</strong>
+                            </li>
+                            <li><span class="fa-li"><i class="fas fa-check"></i></span>150GB Storage</li>
+                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Unlimited Public Projects</li>
+                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Community Access</li>
+                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Unlimited Private Projects</li>
+                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Dedicated Phone Support</li>
+                            <li>
+                                <span class="fa-li"><i class="fas fa-check"></i></span><strong>Unlimited</strong> Free
+                                Subdomains
+                            </li>
+                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Monthly Status Reports</li>
+                        </ul>
+                        <div class="d-grid">
+                            <a href="@Url.Action("AddService","Service")#features" class="btn btn-primary text-uppercase">Add Service</a>
+                        </div>
+                    </div>
+                </div>
+            </div>-->
+        </div>
+    </div>
+</section>
+<script>
+    setTimeout(function () {
+        $("#msgalert").hide();
+    }, 3500);
+</script>

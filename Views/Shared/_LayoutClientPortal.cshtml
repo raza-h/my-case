@@ -1,0 +1,219 @@
+﻿@{
+    @using Newtonsoft.Json;
+    @using Microsoft.AspNetCore.Http;
+    @inject IHttpContextAccessor httpContextAccessor;
+    @using Microsoft.AspNetCore.Hosting;
+    @using Microsoft.Extensions.Configuration;
+    @using AbsolCase.Utility;
+    @inject IWebHostEnvironment _env;
+    @inject IConfiguration _config;
+    string userdto = httpContextAccessor.HttpContext.Session.GetString("userData");
+    UserDto userDto = new UserDto();
+    bool canAccessMessages = false;
+    bool canAccessTimeLline = false;
+    bool canAccessCalendar = false;
+    bool canAccessDocuments = false;
+    bool canAccessNotes = false;
+    if (!string.IsNullOrEmpty(userdto))
+    {
+        userDto = JsonConvert.DeserializeObject<UserDto>(userdto);
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Unlimited Messages").FirstOrDefault() != null)
+            canAccessMessages = true;
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Timeline").FirstOrDefault() != null)
+            canAccessTimeLline = true;
+
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Calendar Events").FirstOrDefault() != null)
+            canAccessCalendar = true;
+        if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Documents Handling").FirstOrDefault() != null)
+            canAccessDocuments = true;
+        if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Notes Handling").FirstOrDefault() != null)
+            canAccessNotes = true;
+    }
+    var apiBaseUrl = CommonMethods.GetApiBaseURL(_env, _config);/* + "api/";*/
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>
+        Absol Case
+    </title>
+    <!-- plugins:css -->
+
+    <link href="~/css/disc.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/bootstrap-icons.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="~/vendors/feather/feather.css">
+    <link rel="stylesheet" href="~/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="~/vendors/ti-icons/css/themify-icons.css">
+    <link rel="stylesheet" href="~/vendors/typicons/typicons.css">
+    <link rel="stylesheet" href="~/vendors/simple-line-icons/css/simple-line-icons.css">
+    <link rel="stylesheet" href="~/vendors/css/vendor.bundle.base.css">
+
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="~/vendors/datatables.net-bs4/dataTables.bootstrap4.css">
+    <link rel="stylesheet" href="~/js/select.dataTables.min.css">
+    <!-- End plugin css for this page -->
+    @*<script src="~/lib/jquery-validation/dist/jquery-1.8.0.js"></script>*@
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <!-- inject:css -->
+    <link rel="stylesheet" href="~/css/vertical-layout-light/style.css">
+    <!-- endinject -->
+    <link href="~/assets/css/appdefault.css" rel="stylesheet" />
+    <link href="~/css/case.css" rel="stylesheet" />
+    <link href="~/vendors/jquery-toast-plugin/jquery.toast.min.css" rel="stylesheet" />
+    <link href="~/css/toastr.css" rel="stylesheet" />
+    <link href="~/css/toastr.min.css" rel="stylesheet" />
+    <link rel=" shortcut icon" href="~/images/favicon.png" />
+    @RenderSection("styles", false)
+    <style>
+        .dataTables_wrapper .dataTable thead .sorting:after, .dataTables_wrapper .dataTable thead .sorting_asc:after, .dataTables_wrapper .dataTable thead .sorting_desc:after, .dataTables_wrapper .dataTable thead .sorting_asc_disabled:after, .dataTables_wrapper .dataTable thead .sorting_desc_disabled:after {
+            display: none
+        }
+
+        .dataTables_wrapper .dataTable thead .sorting:before, .dataTables_wrapper .dataTable thead .sorting_asc:before, .dataTables_wrapper .dataTable thead .sorting_desc:before, .dataTables_wrapper .dataTable thead .sorting_asc_disabled:before, .dataTables_wrapper .dataTable thead .sorting_desc_disabled:before {
+            display: none
+        }
+
+        #datatable_previous {
+            border-color: #010001eb;
+            background-color: #efefef;
+        }
+
+        #datatable_next {
+            border-color: #010001eb;
+            background-color: #efefef;
+        }
+    </style>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+
+</head>
+<body>
+    <div id="myModall" class="modal fade" tabindex="-1" style="z-index: 1111">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title"><b>Confirm!</b></h3>
+                    <button type="button" class="close" data-dismiss="modal" onclick="closepopup()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p style="font-size:20px; text-align:center; color:black" ;><b id="confirmation-text"></b></p>
+                </div>
+                <ul style="display:table;border-collapse:collapse; margin-bottom:20px">
+                    <li onclick="closepopup()" style="display: table-cell;text-align:center; box-sizing: border-box;">
+                        <a href="#" style="text-decoration:none;">
+                            <img src="~/images/download (2).png" width="90" height="90" /><br />
+                            <p style="font-size:15px; text-align:center; color:black"><b>No</b></p>
+                        </a>
+                    </li>
+                    <li id="btn-yes" onclick="" style="display: table-cell;text-align:center; box-sizing: border-box;">
+                        <a href="#" style="text-decoration:none;">
+                            <img src="~/images/download.jpg" width="100" height="100" /><br />
+                            <p style="font-size:15px; text-align:center; color:black"><b>Yes</b></p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: black">
+        <div class="container-fluid">
+            <input type="hidden" value="@userDto.Id" id="current-userid" />
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse1">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse1">
+                <div class="navbar-nav">
+                    <a href="@Url.Action("index","PortalHome")" class="nav-item nav-link c-white">Home</a>
+                    <a href="@(canAccessMessages == true ?  Url.Action("Messages","Messages", new { area = "ClientPortal"}) : "#")" class="nav-item nav-link c-white" @(!canAccessMessages ? "onclick=ShowSubscriptionLimitation()": "")>Message</a>
+                    <a href="@(canAccessDocuments == true ?  Url.Action("ManageDocuments","ClientDocuments", new { area = "ClientPortal"}) : "#")" class="nav-item nav-link c-white" @(!canAccessDocuments ? "onclick=ShowSubscriptionLimitation()": "")>Documents</a>
+                    <a href="@(canAccessCalendar == true ?  Url.Action("ManageEvents","ClientEvent", new { area = "ClientPortal"}) : "#")" class="nav-item nav-link c-white" @(!canAccessCalendar ? "onclick=ShowSubscriptionLimitation()": "")>Events</a>
+                    <a href="@(canAccessNotes == true ? Url.Action("ManageNotes","ClientNotes", new { area = "ClientPortal"}) : "#")" class="nav-item nav-link c-white" @(!canAccessNotes ? "onclick=ShowSubscriptionLimitation()": "")>Notes</a>
+                    <a href="@Url.Action("Tasks","Tasks")" class="nav-item nav-link c-white">Tasks</a>
+                    <a href="@Url.Action("index","Billing")" class="nav-item nav-link c-white">Billing</a>
+                    <a href="@(canAccessTimeLline == true ? Url.Action("TimeLine","Timeline", new { area = "ClientPortal"}) : "#")" class="nav-item nav-link c-white" @(!canAccessTimeLline ? "onclick=ShowSubscriptionLimitation()": "")>TimeLine</a>
+                </div>
+                <div class="navbar-nav" style="margin-left:auto">
+                    <a href="@Url.Action("Logout","Account", new { area = "Security" })" class="nav-item nav-link navbar-right c-white">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="d-none" id="user-profile-layout">
+        <a class="nav-link" id="UserDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <img class="img-xs rounded-circle" src="@userDto.ImagePath" alt="Profile image">
+        </a>
+    </div>
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="home-tab">
+
+                    <div class="tab-content tab-content-basic">
+                        <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview">
+                            @RenderBody()
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Powered by <a href="https://www.ab-sol.com/" target="_blank">Absolute solutions</a></span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Copyright © @DateTime.Now.Year.ToString();. All rights reserved Absol Case.</span>
+        </div>
+    </footer>
+
+    <script src="~/js/toastr.min.js"></script>
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await Component.InvokeAsync("Notyf")
+    <!-- Plugin js for this page -->
+    <script src="~/Scripts/bootstrap.js"></script>
+    <script src="~/vendors/chart.js/Chart.min.js"></script>
+    <script src="~/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+    <script src="~/vendors/progressbar.js/progressbar.min.js"></script>
+    <!-- Plugin js for this page-->
+    <script src="~/vendors/datatables.net/jquery.dataTables.js"></script>
+    <script src="~/vendors/datatables.net-bs4/dataTables.bootstrap4.js"></script>
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="~/js/off-canvas.js"></script>
+    <script src="~/js/hoverable-collapse.js"></script>
+    <script src="~/js/settings.js"></script>
+    <script src="~/js/todolist.js"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page-->
+    <script src="~/js/dashboard.js"></script>
+    <script src="~/js/Chart.roundedBarCharts.js"></script>
+    <script src="~/vendors/js/vendor.bundle.base.js"></script>
+    <script src="~/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("scripts", required: false)
+    <script src="~/assets/js/dataTables.min.js"></script>
+    
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable();
+            localStorage.setItem("token", '@userDto.Token');
+        });
+        function toggleIcon() {
+            $('body').toggleClass("sidebar-icon-only");
+        }
+        function ShowSubscriptionLimitation() {
+            toastr.error("Your attorney's subscription does not allow access to this page, To use this feature, ask your attorney to have a look on another plans.");
+        }
+        function GetURL() {
+            var URL = "@apiBaseUrl";
+            //var URL = "https://localhost:44318/";
+            //var URL = "http://38.17.51.206:8010/";
+            return URL;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+﻿@model AbsolCase.Models.AspNetUsers
+
+@{
+    ViewBag.Title = "Add User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/css/Packages.css" rel="stylesheet" type="text/css" />
+
+
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Services</h4>
+            <p class="card-description">
+                Available Services
+            </p>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>SR#</th>
+                            <th>
+                                Name
+                            </th>
+                           
+                            <th>
+                                Action
+                            </th>
+                            
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td class="py-1">
+                                Document Management
+                            </td>
+
+                            <td>
+                                <a href="#">Edit |</a>
+                                <a href="">Delete </a>
+                            </td>
+
+
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td class="py-1">
+                                Calendering
+                            </td>
+
+                            <td>
+                                <a href="#">Edit |</a>
+                                <a href="">Delete </a>
+
+                            </td>
+
+
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td class="py-1">
+                                Case Status Report
+                            </td>
+
+                            <td>
+                                <a href="#">Edit |</a>
+                                <a href="">Delete </a>
+
+                            </td>
+
+
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td class="py-1">
+                                Work Flows
+                            </td>
+
+                            <td>
+                                <a href="#">Edit |</a>
+                                <a href="">Delete </a>
+
+                            </td>
+
+
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td class="py-1">
+                                Customer Support
+                            </td>
+
+                            <td>
+                                <a href="#">Edit |</a>
+                                <a href="">Delete </a>
+
+                            </td>
+
+
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td class="py-1">
+                                QuickBook Integration
+                            </td>
+
+                            <td>
+                                <a href="#">Edit |</a>
+                                <a href="">Delete |</a>
+
+                            </td>
+
+
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td class="py-1">
+                                Financial Reports
+                            </td>
+
+                            <td>
+                                <a href="#">Edit |</a>
+                                <a href="">Delete </a>
+
+                            </td>
+
+
+                        </tr>
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

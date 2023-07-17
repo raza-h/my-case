@@ -1,0 +1,65 @@
+﻿@model List<AbsolCase.Models.AspNetRoles>
+@{
+    ViewBag.Title = "ManageRoles";
+    Layout = "~/Views/Shared/_SPLayout.cshtml";
+}
+
+@if (TempData["response"] != null)
+{
+    <div class="alert-success" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<div>
+    <a href="@Url.Action("AddRole","Role")"><Span class="btn btn-success btn-icon background bottom15"><i class="mdi mdi-plus">Add New Role</i></Span></a>
+
+</div>
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">All Roles</h4>
+        <div class="row">
+            <div class="col-12">
+                <div class="table-responsive">
+                                <table id="datatable" class="table table-striped  dt-responsive nowrap" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr role="row">
+
+                                            <th>
+                                                Sr No.
+                                            </th>
+                                            <th>
+                                                Name
+                                            </th>
+                                            <th>
+                                                Action
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    @{int i = 1;}
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td>@i</td>
+                                                <td>@item.Name</td>
+                                                <td>
+                                                    <a><i class="mdi mdi-briefcase-edit-outline"></i></a>&nbsp;&nbsp;&nbsp; <a> <i class="mdi mdi-trash-can"></i></a>
+                                                </td>
+                                            </tr>
+                                            i++;
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+       
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+
+<script>
+    setTimeout(function () {
+        $("#msgalert").hide();
+    }, 3500);
+</script>

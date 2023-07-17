@@ -1,0 +1,205 @@
+﻿@model AbsolCase.Models.ClientTransaction
+
+@{
+    ViewBag.Title = "Add Receipt";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<style>
+    .col-form-label {
+        padding-top: 0px !important;
+    }
+</style>
+<div class="col-md-12 grid-margin stretch-card ms-3 mt-3 pe-4 me-3">
+    <div class="card">
+        <div class="card-body">
+            <form class="form-sample" method="post" enctype="multipart/form-data">
+                <p style="font-weight: bold; font-size: 20px; margin-bottom: 1rem">
+                    Generate reciept against client payment
+                </p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <div class="col-sm-9">
+                                <label class="col-sm-9 col-form-label" id="InvoiceNum" style="font-weight: bold">Invoice# </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <div class="col-sm-9">
+                                <label id="last-amount" style="font-weight: bold">Client last paid amount: </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Client</label>
+                            <div class="col-sm-9">
+                                @Html.DropDownList("ContactId", ViewBag.Clients as SelectList,"Select client", new { @class = "form-control", @id = "clientId" })
+                                @Html.ValidationMessageFor(model => model.ContactId, "", new { @class = "text-danger db" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Amount</label>
+                            <div class="col-sm-9">
+                                @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control", placeholder = "Amount", } })
+                                @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger db" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Payment Type</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" name="PaymentType" id="paymentType">
+                                    <option value="1">Cash</option>
+                                    <option value="2">Bank</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Notes</label>
+                            <div class="col-sm-9">
+                                @Html.EditorFor(model => model.Note, new { htmlAttributes = new { @class = "form-control", placeholder = "Notes" } })
+                                @Html.ValidationMessageFor(model => model.Note, "", new { @class = "text-danger db" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <fieldset class="border p-2" id="bank-group" style="margin-bottom: 1.5rem; display:none">
+                    <legend class="w-auto" style="float: none; font-size:20px">Bank check:</legend>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Check Title</label>
+                                <div class="col-sm-9">
+                                    @Html.EditorFor(model => model.CheckTitle, new { htmlAttributes = new { @class = "form-control", placeholder = "Check Title", } })
+                                    @Html.ValidationMessageFor(model => model.CheckTitle, "", new { @class = "text-danger db" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Check Number</label>
+                                <div class="col-sm-9">
+                                    @Html.EditorFor(model => model.CheckNumber, new { htmlAttributes = new { @class = "form-control", placeholder = "Check Number", } })
+                                    @Html.ValidationMessageFor(model => model.CheckNumber, "", new { @class = "text-danger db" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Check Date</label>
+                                <div class="col-sm-9">
+                                    @Html.EditorFor(model => model.CheckDate, new { htmlAttributes = new { @class = "form-control", placeholder = "Check Date", @type = "date" } })
+                                    @Html.ValidationMessageFor(model => model.CheckDate, "", new { @class = "text-danger db" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Check Image</label>
+                                <div class="col-sm-9">
+                                    @Html.EditorFor(model => model.Image, new { htmlAttributes = new { @class = "form-control", placeholder = "Check Date", @type = "file", @accept = "image/*" } })
+                                    @Html.ValidationMessageFor(model => model.Image, "", new { @class = "text-danger db" })
+                                    @*<input type="file" class="form-control" id="Image" name="Image" accept="image/*" value="UploadScreenSHot" style="width:96%;" />*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <input type="submit" value="Submit" class="btn btn-lg btn-primary me-3" style="float:right" />
+            </form>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script>
+
+        var remoteServerURl = "";
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            token = localStorage.getItem('token');
+        });
+
+        function getRemoteServerURl() {
+            //$.ajax({
+            //    type: 'GET',
+            //    url: '/common/getConfigurationValue',
+            //    data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+            //    getInvoiceNum();
+            //    GetClientLastPaidAmount();
+
+            //})
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+            getInvoiceNum();
+            GetClientLastPaidAmount();
+        };
+        $('#paymentType').change(function (e) {
+            if ($("#paymentType").val() == '2') {
+                $("#bank-group").show();
+                $("#CheckTitle").val("");
+                $("#CheckNumber").val("");
+                $("#CheckDate").val("");
+                $("#Image").val("");
+            }
+            else {
+                $("#bank-group").hide();
+            }
+        });
+        function getInvoiceNum() {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/ClientTransaction/GetInvoiceNum`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                data = "Invoice# " + data;
+                $("#InvoiceNum").html(data);
+            })
+        }
+
+        $('#clientId').change(function (e) {
+            GetClientLastPaidAmount()
+        });
+
+        function GetClientLastPaidAmount() {
+            var clientId = $("#clientId").val();
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                data: { clientId: clientId },
+                url: `${remoteServerURl}api/ClientTransaction/GetClientLastPaidAmount`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                data = "Client last paid amount: " + data;
+                $("#last-amount").html(data);
+            })
+        }
+        setTimeout(function () {
+            $("#msgalert").hide();
+        }, 3500);
+    </script>
+}

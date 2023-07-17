@@ -1,0 +1,148 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <div class="col-md-2">
+    </div>
+    <div class="col-md-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Ledger</h4>
+                <div class="form-group">
+                    <label for="exampleInputUsername1">Financial Accounts</label>
+                    <select name="Accounts" class="form-control" id="accountsList" aria-label="case">
+                        
+                    </select>
+                    <span class="text-danger" id="client-validation" style="display:none">Please select Account</span>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="exampleInputUsername1">Date From</label>
+                        <input class="form-control" id="DateFrom" type="date" />
+                        <span class="text-danger" id="datefrom-validation" style="display:none">Please select date</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="exampleInputUsername1">Date To</label>
+                        <input class="form-control" id="DateTo" type="date" />
+                        <span class="text-danger" id="dateto-validation" style="display:none">Please select date</span>
+                    </div>
+                </div>
+                <input type="submit" value="Gernate Ledger" onclick="GetTransaction()" class="btn btn-dark fr" />
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+    </div>
+</div>
+@section scripts {
+    <script>
+
+        var remoteServerURl = "";
+        var parentId = "";
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            parentId = $("#current-userid").val();
+            token = localStorage.getItem('token');
+        });
+        function getRemoteServerURl() {
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+            GetAccounts();
+        }
+        function GetAccounts() {
+            token = localStorage.getItem('token');
+            parentId = $("#current-userid").val();
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/UserManagement/GetFinancialAccounts`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                let options = "<option value='undefined'>Select</option>";
+                $.each(data, function (a, accounts) {
+                    options += "<option value='" + accounts.accountNumber + "'>" + accounts.name + "</option>";
+                });
+                $("#accountsList").html(options);
+            })
+        }
+
+        function GetTransaction() {
+            var ClientTransactions = [];
+            var ContactId = $('#accountsList').val();
+            var DateFrom = $('#DateFrom').val();
+            var DateTo = $('#DateTo').val();
+            if (ContactId == "undefined") {
+                $("#client-validation").show();
+                return;
+            }
+            else
+                $("#client-validation").hide();
+
+            if (DateFrom == null || DateFrom == "") {
+                $("#datefrom-validation").show();
+                return;
+            }
+            else
+                $("#datefrom-validation").hide();
+
+            if (DateTo == null || DateTo == "") {
+                $("#dateto-validation").show();
+                return;
+            }
+            else
+                $("#dateto-validation").hide();
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Transaction/GetTransactionByAccountNo`,
+                headers: { "Authorization": 'Bearer ' + token },
+                data: {
+                    accountNo: ContactId,
+                    DateFrom: DateFrom,
+                    DateTo: DateTo,
+                }
+            }).done(function (data) {
+                console.log("after",data)
+                if (data.length == 0) {
+                    toastr.error("No records found in given date range");
+                    return;
+                }
+                //$.each(data, function (i, v) {
+                //    console.log("transaction data", v);
+                //    ClientTransactions.push({
+                //        Id: v.id,
+                //        ClientName: v.accountName,
+                //        Amount: v.amount,
+                //        PaymentDate: v.date,
+                //        InvoiceNo: v.invoiceNumber,
+                //        PaymentType: v.paymentType,
+                //        Note: v.description,
+                //        ContactId: v.contactId,
+                //        IsCash: v.isCash,
+                //        IsCredit: v.isCredit,
+                //        CheckNumber: v.checkNumber,
+                //        CheckTitle: v.checkTitle,
+                //        CheckDate: v.checkDate,
+                //        CheckAmount: v.checkAmount,
+                //        CheckImagePath: v.checkImagePath,
+                //        UserId: v.userId,
+                //        ParentId: v.parentId,
+                //        CreatedDate: v.createdDate,
+                //    });
+                //});
+
+                //$.ajax({
+                //    type: 'POST',
+                //    ContentType: 'application/json; charset=utf-8',
+                //    url: '@Url.Action("SetClientTransactionList", "Reporting")',
+                //    data: { ClientTransaction: ClientTransactions }
+                //}).done(function () {
+                //    window.location.href = '@Url.Action("GenerateReceipt", "Reporting")'
+                //});
+            });
+        }
+    </script>
+}

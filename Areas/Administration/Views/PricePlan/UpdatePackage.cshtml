@@ -1,0 +1,43 @@
+﻿@using AbsolCase.Models;
+@model AbsolCase.Models.PackageService
+
+@{
+    ViewBag.Title = "Update Package";
+    Layout = "~/Views/Shared/_SPLayout.cshtml";
+    List<Service> services = (List<Service>)ViewBag.ServicesList;
+    int[] serviceIds = Model.services !=null ? Model.services.Select(x => x.Id).ToArray() : null;
+}
+
+<link href="~/css/Packages.css" rel="stylesheet" type="text/css" />
+
+
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+
+<form method="post" action="UpdatePackage">
+    <input type="hidden" name="PricePlanId" value="@Model.PricePlanId" />
+    @if (services != null && services.Count > 0)
+    {
+        @foreach (var service in services)
+        {
+            string check = string.Empty;
+            if (serviceIds != null && serviceIds.Length > 0 && serviceIds.Contains(service.Id))
+            {
+                check = "checked";
+            }
+            <div class="form-check">
+                <input class="form-check-input" name="ServicesIds" type="checkbox" value="@service.Id" id="ServicesIds" @check>
+                <label class="form-check-label" for="ServicesIds">
+                    @service.Name
+                </label>
+            </div>
+        }
+    }
+    <div class="form-group">
+        <input type="submit" value="Update Package Service" class="btn btn-primary btn-lg co-md-4">
+    </div>
+</form>

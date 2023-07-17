@@ -1,0 +1,112 @@
+﻿@model List<AbsolCase.Models.LeadDetail>
+
+@{
+    ViewBag.Title = "Manage Lead";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/css/Packages.css" rel="stylesheet" type="text/css" />
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<div class="col-lg-12 grid-margin stretch-card">
+    <input type="hidden" id="leadid" />
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Manage Lead</h4>
+            <p class="card-description">
+                Manage Your Lead
+            </p>
+            <div class="table-responsive">
+                <table id="datatable" class="table table-striped  dt-responsive nowrap" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>LastName</th>
+                            <th>Email</th>
+                            <th>Lead Detail</th>
+                            <th>Potential Case Description</th>
+                            <th>Conflict Check Notes</th>
+                            <th>
+                                Action
+                            </th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Count > 0)
+                        {
+                            @foreach (var lead in Model)
+                            {
+                                <tr>
+                                    <td>@lead.FirstName</td>
+                                    <td>
+                                        @lead.LastName
+                                    </td>
+                                    <td>@lead.Email</td>
+                                    <td>@lead.LeadDetails</td>
+                                    <td>@lead.PotentailCaseDescription</td>
+                                    <td>@lead.ConflictCheckNotes</td>
+                                    <td>
+                                        @Html.ActionLink("Edit", "UpdateLead", "Lead", new { Id = @lead.Id }) |
+                                        <a href="#" onclick="openpopup(@lead.Id, 'Are you sure to delete lead?', 'deletelead(@lead.Id)')">Delete</a> 
+                                        @*<a href="#">View Details</a>*@
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        var remoteServerURl = "";
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            token = localStorage.getItem('token');
+        });
+
+        function getRemoteServerURl() {
+            //$.ajax({
+            //    type: 'GET',
+            //    url: '/common/getConfigurationValue',
+            //    data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+            //})
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+        }
+        function deletelead(Id) {
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'Delete',
+                url: `${remoteServerURl}api/Lead/DeleteLead?Id=` + Id,
+                headers: { "Authorization": 'Bearer ' + token },
+            }).done(function (data) {
+                closepopup();
+                toastr.success("lead deleted successfully");
+                setTimeout(function () {
+                    window.location.href = '@Url.Action("ManageLead", "Lead")'
+                }, 1000);
+            })
+        }
+        $(document).ready(function () {
+            $('#datatable').dataTable({
+                "columnDefs": [
+                    { "searchable": false, "targets": 6 }
+                ]
+            });
+        });
+    </script>
+}

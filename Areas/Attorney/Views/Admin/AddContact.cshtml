@@ -1,0 +1,739 @@
+﻿@model AbsolCase.Models.Contact
+@{
+    ViewBag.Title = "AddContact";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<link href="~/assets/css/style.css" rel="stylesheet" />
+@{
+    var i = 1;
+}
+<div class="col-lg-12 grid-margin stretch-card mt-3 ms-3 me-4 pe-4 mb-5">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title text-center">Contact Details</h4>
+
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">First Name</label>
+                    @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control", @id = "firstname", placeholder = "First Name" } })
+                    @Html.ValidationMessageFor(model => model.FirstName, "please enter first name", new { @class = "text-danger db", @id = "firstnamevalidation", @style = "display: none;" })
+
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="exampleInputUsername1">Mid Name</label>
+                    @Html.EditorFor(model => model.MidName, new { htmlAttributes = new { @class = "form-control", @id = "midname", placeholder = "Mid Name" } })
+                    @Html.ValidationMessageFor(model => model.MidName, "", new { @class = "text-danger db" })
+
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="exampleInputUsername1">Last Name</label>
+                    @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control", @id = "lastname", placeholder = "Last Name" } })
+                    @Html.ValidationMessageFor(model => model.LastName, "please enter last name", new { @class = "text-danger db", @id = "lastnamevalidation", @style = "display: none;" })
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">Email</label>
+                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", @id = "email", placeholder = "Email" } })
+                    @Html.ValidationMessageFor(model => model.Email, "please enter valid email", new { @class = "text-danger db", @id = "emailnamevalidation", @style = "display: none;" })
+
+                </div>
+                <div class="form-group col-md-6 mt-1">
+                    <label for="exampleInputUsername1">Contact Group</label>
+                    <select id="contactgroup" class="form-control" aria-label="ContactGroup">
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label class="switch">
+                        <input type="checkbox" id="enable-client-portal">
+                        <span class="slider round"></span>
+                    </label>
+                    Enable client portal
+                    <p>Securely share documents, invoices, and messages with your client. They will receive a welcome email with login instructions. Your client will only have access to items that you explicitly share.</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">Work Phone</label>
+                    @Html.EditorFor(model => model.WorkPhone, new { htmlAttributes = new { @class = "form-control", @id = "workphone", placeholder = "Work Phone" } })
+                    @Html.ValidationMessageFor(model => model.WorkPhone, "Please enter valid workphone", new { @class = "text-danger db", @id = "workphonevalidation", @style = "display: none;" })
+
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">Home Phone</label>
+                    @Html.EditorFor(model => model.HomePhone, new { htmlAttributes = new { @class = "form-control", @id = "homephone", placeholder = "Home Phone" } })
+                    @Html.ValidationMessageFor(model => model.HomePhone, "Please enter valid homephone", new { @class = "text-danger db", @id = "homephonevalidation", @style = "display: none;" })
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">Cell Phone</label>
+                    @Html.EditorFor(model => model.CellPhone, new { htmlAttributes = new { @class = "form-control", @id = "cellphone", placeholder = "Cell Phone" } })
+                    @Html.ValidationMessageFor(model => model.CellPhone, "Please enter valid cell phone", new { @class = "text-danger db", @id = "cellphonevalidation", @style = "display: none;" })
+
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">Address</label>
+                    @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control", @id = "address", placeholder = "Address 1" } })
+                    @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger db" })
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">Address 2</label>
+                    @Html.EditorFor(model => model.Address2, new { htmlAttributes = new { @class = "form-control", @id = "address2", placeholder = "Address 2" } })
+                    @Html.ValidationMessageFor(model => model.Address2, "", new { @class = "text-danger db" })
+
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">City</label>
+                    @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control", @id = "city", placeholder = "City" } })
+                    @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger db",id= "cityvalidation" })
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-6  mt-1" id="statetextbox" style="display: none">
+                    <label for="exampleInputUsername1">State</label>
+                    <input type="text" class="form-control" id="statetext" />
+                </div>
+                <div class="form-group col-md-6 mt-1" id="statedropdown">
+                    <label for="exampleInputUsername1">State</label>
+                    <select class="form-control" aria-label="States" id="states">
+                        <!--via ajax-->
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">Zip Code</label>
+                    @Html.EditorFor(model => model.ZipCode, new { htmlAttributes = new { @class = "form-control", @id = "zipcode", placeholder = "Zip Code" } })
+                    @Html.ValidationMessageFor(model => model.ZipCode, "", new { @class = "text-danger db", id = "zipvalidation" })
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">Country</label>
+                    <select class="form-control" id="country" aria-label="ContactGroup">
+                        <!--via ajax-->
+                    </select>
+                </div>
+            </div>
+            <button onclick="showMoreInformation()">Add More Information</button>
+            <div id="companyinfo" style="display: none">
+                <hr />
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">JobTitle</label>
+                        @Html.EditorFor(model => model.JobTitle, new { htmlAttributes = new { @class = "form-control", @id = "jobtitle", placeholder = "Job Title" } })
+                        @Html.ValidationMessageFor(model => model.JobTitle, "", new { @class = "text-danger db" })
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-4">
+                        <label for="exampleInputUsername1">Company</label>
+                        <select class="form-control" id="company" aria-label="ContactGroup">
+                        </select>
+
+
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="exampleInputUsername1">State</label>
+                        <select class="form-control" id="licensestate" aria-label="ContactGroup">
+                            <!--via ajax-->
+                        </select>
+                    </div>
+                    <div class="form-group col-md-5">
+                        <label for="exampleInputUsername1">Driving license</label>
+                        <input type="text" class="form-control" id="drivinglicense" placeholder="driving license" />
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="examplepInutUsername1">Website</label>
+                        @Html.EditorFor(model => model.Website, new { htmlAttributes = new { @class = "form-control", placeholder = "Website", @id = "website" } })
+                        @Html.ValidationMessageFor(model => model.Website, "please enter valid website", new { @class = "text-danger db", @id = "websitevalidation", @style = "display: none;" })
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Fax Number</label>
+                        @Html.EditorFor(model => model.FaxNumber, new { htmlAttributes = new { @class = "form-control", placeholder = "FaxNumber", @id = "faxnumber" } })
+                        @Html.ValidationMessageFor(model => model.FaxNumber, "Please enter valid fax number", new { @class = "text-danger db", @id = "faxnumbervalidation", @style = "display: none;" })
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <textarea class="form-control" rows="3" id="notes" placeholder="Private notes" style="height: auto"></textarea>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <button onclick="AddCustomFields()">Show Custom Fields</button>
+            <div id="customFields" style="display: none">
+                <hr />
+                <div class="row">
+                    @if (Model.customField != null && Model.customField.Count > 0)
+                    {
+                        @foreach (var item in Model.customField)
+                        {
+                            if (item.CustomFieldType == "Text")
+                            {
+                                <div class="form-group col-md-4">
+                                    <label for="exampleInputUsername1">@item.CustomFieldName</label>
+                                    <input type="text" class="form-control" id="@("custom-"+ item.FieldId)" />
+                                </div>
+                            }
+                            else if (item.CustomFieldType == "Currency")
+                            {
+                                <div class="form-group col-md-4">
+                                    <label for="exampleInputUsername1">@item.CustomFieldName</label>
+                                    <span style="display:flex">
+                                        $
+                                        <input type="number" class="form-control" id="@("custom-"+ item.FieldId)" style="margin-left:2%" />
+                                    </span>
+                                </div>
+                            }
+                            else if (item.CustomFieldType == "Date")
+                            {
+                                <div class="form-group col-md-4">
+                                    <label for="exampleInputUsername1">@item.CustomFieldName</label>
+                                    <input type="date" class="form-control" id="@("custom-"+ item.FieldId)" />
+                                </div>
+                            }
+                            else if (item.CustomFieldType == "True/False")
+                            {
+                                <div class="form-group col-md-4">
+                                    <label for="exampleInputUsername1">@item.CustomFieldName</label>
+
+                                    <div class="form-group">
+                                        <label for="exampleInputUsername1">True</label>
+                                        <input type="radio" value="true" name="rad" id="@("True-"+ item.FieldId)" class="Classcustom-@i" />
+                                        <label for="exampleInputUsername1">False</label>
+                                        <input type="radio" value="false" name="rad" id="@("False-"+ item.FieldId)" class="Classcustom-@i" />
+                                    </div>
+
+                                </div>
+                            }
+                            else if (item.CustomFieldType == "Number")
+                            {
+                                <div class="form-group col-md-4">
+                                    <label for="exampleInputUsername1">@item.CustomFieldName</label>
+                                    <input type="number" class="form-control" id="@("custom-"+ item.FieldId)" />
+                                </div>
+                            }
+                            i++;
+                        }
+                    }
+                </div>
+            </div>
+            @*<button class="btn btn-dark fr" onclick="submitInner()">Test</button>*@
+
+            <button class="btn btn-dark fr" onclick="addContact('addcontact')">Save Contact</button>
+
+        </div>
+    </div>
+
+
+</div>
+
+@section scripts {
+    <script>
+
+
+        $('#country').change(function(e) {
+            var statevalue = $("#states").val();
+            if ($("#country").val() != '230') {
+                $("#statetext").val(statevalue);
+                $("#statedropdown").hide();
+                $("#statetextbox").show();
+            }
+            else {
+                $("#statetextbox").hide();
+                $("#statedropdown").show();
+            }
+        });
+
+        setTimeout(function() {
+            $("#msgalert").hide();
+        }, 3500);
+
+        function showMoreInformation() {
+            $("#companyinfo").toggle('hide');
+        }
+        function AddCustomFields() {
+            $("#customFields").toggle('hide');
+        }
+
+        var remoteServerURl = "";
+        var token = "";
+        $(function() {
+            getRemoteServerURl();
+            token = localStorage.getItem('token');
+            console.log("new");
+            console.log(token);
+            $("#firstname").on("input", function() {
+                if ($("#firstname").val() == "" || !validateFirstName($("#firstname").val())) {
+                    if ($("#firstname").val() == "") {
+                        $("#firstnamevalidation").text("Please enter first name");
+                    }
+                    else {
+                        $("#firstnamevalidation").text("It should contain minimum three characters and only alphabets are allowed");
+                    }
+                    $("#firstnamevalidation").show();
+                }
+                else {
+                    $("#firstnamevalidation").hide();
+                }
+            });
+            $("#lastname").on("input", function() {
+                if ($("#lastname").val() != "" && !validateLastName($("#lastname").val())) {
+                    $("#lastnamevalidation").text("Please enter last name containing alphabets only");
+                    $("#lastnamevalidation").show();
+                }
+                else {
+                    $("#lastnamevalidation").hide();
+                }
+            });
+
+            $("#email").on("input", function() {
+                if ($("#email").val() == "" || !validateEmail($("#email").val())) {
+                    if ($("#email").val() == "") {
+                        $("#emailnamevalidation").text("Please enter email");
+                    }
+                    else {
+                        $("#emailnamevalidation").text("Please enter valid email");
+                    }
+                    $("#emailnamevalidation").show();
+                }
+                else {
+                    $("#emailnamevalidation").hide();
+                }
+            });
+            $("#workphone").on("input", function() {
+                if ($("#workphone").val() != "" && !validatePhone($("#workphone").val())) {
+                    $("#workphonevalidation").text("Please enter valid cellphone");
+                    $("#workphonevalidation").show();
+                }
+                else {
+                    $("#workphonevalidation").hide();
+                }
+            });
+            $("#homephone").on("input", function() {
+                if ($("#homephone").val() != "" && !validatePhone($("#homephone").val())) {
+                    $("#homephonevalidation").text("Please enter valid cellphone");
+                    $("#homephonevalidation").show();
+                }
+                else {
+                    $("#homephonevalidation").hide();
+                }
+            });
+            $("#cellphone").on("input", function() {
+                if ($("#cellphone").val() == "" || !validatePhone($("#cellphone").val())) {
+                    if ($("#cellphone").val() == "") {
+                        $("#cellphonevalidation").text("Please enter cellphone");
+                    }
+                    else {
+                        $("#cellphonevalidation").text("Please enter valid cellphone");
+                    }
+                    $("#cellphonevalidation").show();
+                }
+                else {
+                    $("#cellphonevalidation").hide();
+                }
+            });
+            $("#Website").on("input", function() {
+                if ($(this).val() != "" && !validateWebsite($("#Website").val())) {
+                    $("#websitevalidation").text('Please enter valid website');
+                    $("#websitevalidation").show();
+                }
+                else {
+                    $("#websitevalidation").hide();
+                }
+            });
+            $("#FaxNumber").on("input", function() {
+                if ($(this).val() != "" && !validatePhone($("#FaxNumber").val())) {
+                    $("#faxnumbervalidation").text('Please enter valid faxnumber');
+                    $("#faxnumbervalidation").show();
+                }
+                else {
+                    $("#faxnumbervalidation").hide();
+                }
+            });
+            $("#city").on("input", function() {
+
+                if ($("#city").val() != "" && !validateCity($("#city").val())) {
+                    if ($("#city").val() == "") {
+                        $("#cityvalidation").text('Please enter city');
+                    }
+                    else {
+                        $("#cityvalidation").text('Please enter valid city');
+                    }
+                    $("#cityvalidation").show();
+                }
+                else {
+                    $("#cityvalidation").hide();
+                }
+            });
+            $("#zipcode").on("input", function() {
+
+                if ($("#zipcode").val() != "" && !validateZip($("#zipcode").val())) {
+                    if ($("#zipcode").val() == "") {
+                        $("#zipvalidation").text('Please enter zip code');
+                    }
+                    else {
+                        $("#zipvalidation").text('Enter Valid Postal Code e.g It should match 12345 or 12345-6789.');
+                    }
+                    $("#zipvalidation").show();
+                }
+                else {
+                    $("#zipvalidation").hide();
+                }
+            });
+        });
+        function getRemoteServerURl() {
+            //$.ajax({
+            //    type: 'GET',
+            //    url: '/common/getConfigurationValue',
+            //    data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+
+            //})
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+
+            getCompanies();
+            getContactGroups();
+            getcounties();
+            getStates();
+        }
+        function getCompanies() {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/CompanyManagement/Get`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function(data) {
+                let options = "<option value=0>Select company</option>";
+                $.each(data, function(a, companies) {
+                    options += "<option value='" + companies.id + "'>" + companies.name + "</option>";
+                });
+                $("#company").html(options);
+            })
+        }
+        function getContactGroups() {
+            token = localStorage.getItem('token');
+
+
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/ConfigManagement/GetContactGroups`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function(data) {
+                console.log(data);
+                let options = "<option value=0>Select contact group</option>";
+                $.each(data, function(a, contactgroups) {
+                    options += "<option value='" + contactgroups.id + "'>" + contactgroups.contactGroupName + "</option>";
+                });
+                $("#contactgroup").html(options);
+            })
+        }
+        function getcounties() {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Country/Get`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function(data) {
+                let options = "<option value=0>Select Country</option>";
+                $.each(data, function(a, country) {
+                    options += "<option value='" + country.id + "'>" + country.name + "</option>";
+                });
+                $("#country").html(options);
+            })
+        }
+        function getStates() {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Country/GetStates`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function(data) {
+                let options = "<option value=''>Select State</option>";
+                $.each(data, function(a, state) {
+                    options += "<option value='" + state.code + "'>" + state.code + "</option>";
+                });
+                $("#states").html(options);
+                $("#licensestate").html(options);
+            })
+        }
+        function addContact(fromMethod) {
+            if (fromMethod == 'addcontact') {
+                var email = $("#email").val();
+                var CellPhone = $("#cellphone").val();
+                var WorkPhone = $("#workphone").val();
+                var HomePhone = $("#homephone").val();
+                var isFormValid = true;
+                if ($("#firstname").val() == "") {
+                    $("#firstnamevalidation").show();
+                    isFormValid = false;
+                }
+                else {
+                    $("#firstnamevalidation").hide();
+                }
+                if ($("#lastname").val() != "" && !validateLastName($("#lastname").val())) {
+                    $("#lastnamevalidation").show();
+                    isFormValid = false;
+                }
+                else {
+                    $("#lastnamevalidation").hide();
+                }
+                if (email == "" || !validateEmail(email)) {
+                    if (email == "") {
+                        $("#emailnamevalidation").text("Please enter email");
+                    }
+                    else {
+                        $("#emailnamevalidation").text("Please enter valid email");
+                    }
+                    $("#emailnamevalidation").show();
+                    isFormValid = false;
+                }
+                else {
+                    $("#emailnamevalidation").hide();
+                }
+                if (CellPhone == "" || !validatePhone(CellPhone)) {
+                    if (CellPhone == "") {
+                        $("#cellphonevalidation").text('Please enter cell phone');
+                    }
+                    else {
+                        $("#cellphonevalidation").text('Please enter valid cell phone');
+                    }
+                    $("#cellphonevalidation").show();
+                    isFormValid = false;
+                }
+                else {
+                    $("#cellphonevalidation").hide();
+                }
+                if (WorkPhone != "" && !validatePhone(WorkPhone)) {
+                    if (WorkPhone == "") {
+                        $("#workphonevalidation").text("Please enter work phone");
+                    }
+                    else {
+                        $("#workphonevalidation").text("Please enter valid work phone");
+                    }
+                    $("#workphonevalidation").show();
+                    isFormValid = false;
+                }
+                else {
+                    $("#workphonevalidation").hide();
+                }
+                if ($("#FaxNumber").val() != "" && !validatePhone($("#FaxNumber").val())) {
+                    $("#faxnumbervalidation").show();
+                    isFormValid = false;
+                }
+                else {
+                    $("#faxnumbervalidation").hide();
+                }
+                if ($("#Website").val() != "" && !validateWebsite($("#Website").val())) {
+                    $("#websitevalidation").show();
+                    isFormValid = false;
+                }
+                else {
+                    $("#websitevalidation").hide();
+                }
+                if (HomePhone != "" && !validatePhone(HomePhone)) {
+                    if (HomePhone == "") {
+                        $("#homephonevalidation").text("Please enter homephone");
+                    }
+                    else {
+                        $("#homephonevalidation").text("Please enter valid homephone");
+                    }
+                    $("#homephonevalidation").show();
+                    isFormValid = false;
+                }
+                else {
+                    $("#homephonevalidation").hide();
+                }
+                if ($("#city").val() != "" && !validateCity($("#city").val())) {
+                    if ($("#city").val() == "") {
+                        $("#cityvalidation").text('Please enter city');
+                    }
+                    else {
+                        $("#cityvalidation").text('Please enter valid city');
+                    }
+                    $("#cityvalidation").show();
+                }
+                else {
+                    $("#cityvalidation").hide();
+                }
+                if (!isFormValid) {
+                    document.body.scrollTop = document.documentElement.scrollTop = 0;
+                    return;
+                }
+                openpopup('', 'Are you sure to add contact?', "addContact('frompopup')");
+            }
+            else {
+                var state = '';
+                if ($("#statedropdown").is(":visible")) {
+                    state = $("#states").val()
+                }
+                else {
+                    state = $("#statetext").val();
+                }
+
+                var data = [];
+                $("#customFields input").each(function(index, volume) {
+                    var innerdata = {};
+                    innerdata = new FormData();
+                    var Type = $(volume).attr('type');
+                    var CurrentID = $(volume).attr('id');
+                    var value = $("#" + CurrentID).val();
+                    var Isvalid = true;
+                    if (Type == "radio") {
+                        var CurrentID = $(volume).attr('id');
+
+                        if ($("#True" + CurrentID.split('-')[1]).is(":checked")) {
+                            //innerdata.append("Value", true);
+
+                        } else {
+                            // innerdata.append("Value", false);
+                        }
+                    } else {
+                        //innerdata.append("FieldID", CurrentID.split('-')[1]);
+                        //innerdata.append("ModuleType", Type);
+                        //innerdata.append("Value", value);
+                    }
+
+                    var cfield = {
+                        FieldID: CurrentID.split('-')[1],
+                        ModuleType: Type,
+                        Value: value
+                            }
+                    data.push(cfield);
+                });
+
+
+                var contact = {
+                    FirstName: $("#firstname").val(),
+                    MidName: $("#midname").val(),
+                    LastName: $("#lastname").val(),
+                    Email: $("#email").val(),
+                    ContactGroupId: $("#contactgroup").val(),
+                    CellPhone: $("#cellphone").val(),
+                    WorkPhone: $("#workphone").val(),
+                    HomePhone: $("#homephone").val(),
+                    Address: $("#address").val(),
+                    Address2: $("#address2").val(),
+                    City: $("#city").val(),
+                    State: state,
+                    ZipCode: $("#zipcode").val() ? $("#zipcode").val() : null,
+                    CountryId: $("#country").val(),
+                    JobTitle: $("#jobtitle").val(),
+                    WebSite: $("#website").val(),
+                    Notes: $("#notes").val(),
+                    CompanyId: $("#company").val(),
+                    DrivingLicense: $("#drivinglicense").val(),
+                    DrivingLicenseState: $("#licensestate").val(),
+                    FaxNumber: $("#faxnumber").val(),
+                    IsClientEnable: $("#enable-client-portal").is(':checked') ? true : false,
+                    ParentId: $("#current-userid").val(),
+                    cfieldValue: data,
+
+
+                };
+
+
+                token = localStorage.getItem('token');
+                $.ajax({
+                    url: `${remoteServerURl}api/Contact/AddContact`,
+                    headers: { "Authorization": 'Bearer ' + token },
+                    type: "POST",
+                    data: JSON.stringify(contact),
+                    contentType: "application/json; charset=utf-8",
+                    success: function(response) {
+                        closepopup();
+                        toastr.success("Contact added Successfully");
+                        setTimeout(function() {
+                            window.location.href = '@Url.Action("ManageContact","Admin")';
+                        }, 500);
+                    },
+                    error: function(response) {
+                        if (response.responseText == "ISP does not allow to email to send But Client registered Successfuly.") {
+                            toastr.success(response.responseText);
+                            setTimeout(function() {
+                                window.location.href = '@Url.Action("ManageContact","Admin")';
+                            }, 500);
+                        } else {
+                            toastr.error(response.responseText);
+                        }
+                    }
+                });
+            }
+        }
+
+
+        function submitInner() {
+            var data = [];
+            $("#customFields input").each(function(index, volume) {
+                var innerdata = {};
+                innerdata = new FormData();
+
+
+                var Type = $(volume).attr('type');
+                var CurrentID = $(volume).attr('id');
+                var value = $("#" + CurrentID).val();
+                if (Type == "radio") {
+                    var CurrentID = $(volume).attr('id');
+
+                    if ($("#True" + CurrentID.split('-')[1]).is(":checked")) {
+                        innerdata.append("Value", true);
+                        value = true;
+
+                    } else {
+                        innerdata.append("Value", false);
+                        value = false;
+
+                    }
+                } else {
+                    innerdata.append("FieldID", CurrentID.split('-')[1]);
+                    innerdata.append("ModuleType", Type);
+                    innerdata.append("Value", value);
+                }
+
+                var cfield = {
+                    FieldID: CurrentID.split('-')[1],
+                    ModuleType: Type,
+                    Value: value
+                }
+
+                data.push(cfield);
+            });
+            //for (var pair2 of data.entries) {
+            //    for (var pair of pair2.entries()) {
+            //         console.log(pair[0] + ', ' + pair[1]);
+            //     }
+            //}
+
+            console.log(data);
+        }
+
+
+    </script>
+ }

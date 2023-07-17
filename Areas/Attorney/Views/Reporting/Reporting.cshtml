@@ -1,0 +1,111 @@
+﻿@{
+    @using Newtonsoft.Json;
+    @using Microsoft.AspNetCore.Http;
+    @using AbsolCase.Models
+    @inject IHttpContextAccessor httpContextAccessor;
+    string userdto = httpContextAccessor.HttpContext.Session.GetString("userData");
+    UserDto userDto = new UserDto();
+    bool canAccessMessages = false;
+    bool canAccessTimeLline = false;
+    bool canAccessCalendar = false;
+    bool canAccessReporting = false;
+    bool canAccessDocuments = false;
+    bool canAccessNotes = false;
+    if (!string.IsNullOrEmpty(userdto))
+    {
+        userDto = JsonConvert.DeserializeObject<UserDto>(userdto);
+    @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Unlimited Messages").FirstOrDefault() != null)
+            canAccessMessages = true;
+    @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Timeline").FirstOrDefault() != null)
+            canAccessTimeLline = true;
+
+    @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Calendar Events").FirstOrDefault() != null)
+            canAccessCalendar = true;
+    @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Reporting").FirstOrDefault() != null)
+            canAccessReporting = true;
+        if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Documents Handling").FirstOrDefault() != null)
+            canAccessDocuments = true;
+        if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Notes Handling").FirstOrDefault() != null)
+            canAccessNotes = true;
+    }
+}
+@{
+    ViewData["Title"] = "Reporting";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .card-headergrey{
+        background-color:#697179 !important;
+    }
+    .card-bodyGrey{
+        background-color:#6c757d !important;
+    }
+    .bbottomGrey{
+        border-bottom:1px solid rgba(0,0,0,.125) !important;
+    }
+    .cursorp{
+        cursor:pointer;
+    }
+    .widthHeight{
+        width: 18rem;
+        height: 12rem;
+    }
+</style>
+
+<div class="container ms-5 mt-5">
+    <div class="row">
+        <div class="col-lg-12 card-group">
+            <a href="@(canAccessReporting == true ? Url.Action("ClientReceipt","Reporting", new { area = "Attorney"}) : "#")" class=" nav-link" style="@(!canAccessReporting ? "color: lightslategray" : "")">
+                <div class="card text-white bg-secondary ms-3 mb-3 cursorp widthHeight" style="max-width: 18rem;">
+                    <div class="card-header card-headergrey bbottomGrey">Client Invoices</div>
+                    <div class="card-body card-bodyGrey">
+                        <h5 class="card-title text-white">Client Invoices</h5>
+                        <p class="card-text">Click to view invoices.</p>
+                    </div>
+                </div>
+            </a>
+            <a href="@(canAccessReporting == true ? Url.Action("ExpenseReceipt","Reporting", new { area = "Attorney"})  : "#")" class="nav-link" style="@(!canAccessReporting ? "color: lightslategray" : "")">
+                <div class="card text-white bg-secondary ms-2 mb-3 cursorp widthHeight" style="max-width: 18rem;">
+                    <div class="card-header card-headergrey bbottomGrey">Expense Invoices</div>
+                    <div class="card-body card-bodyGrey">
+                        <h5 class="card-title text-white">Expense Invoices</h5>
+                        <p class="card-text">Click to view expense invoices.</p>
+                    </div>
+                </div>
+            </a>
+            <a style="display:none;" href="@(canAccessReporting == true ? Url.Action("Ledger","Reporting", new { area = "Attorney"}) : "#")" class="nav-link" style="@(!canAccessReporting ? "color: lightslategray" : "")">
+                <div class="card text-white bg-secondary ms-2 mb-3 cursorp widthHeight" style="max-width: 18rem;">
+                    <div class="card-header card-headergrey bbottomGrey">Ledger</div>
+                    <div class="card-body card-bodyGrey">
+                        <h5 class="card-title text-white">Ledger</h5>
+                        <p class="card-text">Click to view ledger.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 card-group">
+            <a href="@(canAccessReporting == true ? Url.Action("AllClientInvoices","Reporting", new { area = "Attorney"}) : "#")" class=" nav-link" style="@(!canAccessReporting ? "color: lightslategray" : "")">
+                <div class="card text-white bg-secondary ms-3 mb-3 cursorp widthHeight" style="max-width: 18rem;">
+                    <div class="card-header card-headergrey bbottomGrey">All Clients</div>
+                    <div class="card-body card-bodyGrey">
+                        <h5 class="card-title text-white">All Clients</h5>
+                        <p class="card-text">Click to view all Clients.</p>
+                    </div>
+                </div>
+            </a>
+            <a href="@(canAccessReporting == true ? Url.Action("AllCasesInvoices","Reporting", new { area = "Attorney"}) : "#")" class=" nav-link" style="@(!canAccessReporting ? "color: lightslategray" : "")">
+                <div class="card text-white bg-secondary ms-2 mb-3 cursorp widthHeight" style="max-width: 18rem;">
+                    <div class="card-header card-headergrey bbottomGrey">All Cases</div>
+                    <div class="card-body card-bodyGrey">
+                        <h5 class="card-title text-white">All Cases</h5>
+                        <p class="card-text">Click to view all Cases.</p>
+                    </div>
+                </div>
+            </a>
+            
+        </div>
+    </div>
+</div>
+

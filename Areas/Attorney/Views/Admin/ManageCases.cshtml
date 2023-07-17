@@ -1,0 +1,1185 @@
+﻿@{
+    @using AbsolCase.Models
+    @using Newtonsoft.Json;
+    @using Microsoft.AspNetCore.Http;
+    @inject IHttpContextAccessor httpContextAccessor;
+    string userdto = httpContextAccessor.HttpContext.Session.GetString("userData");
+    UserDto userDto = new UserDto();
+    if (!string.IsNullOrEmpty(userdto))
+    {
+        userDto = JsonConvert.DeserializeObject<UserDto>(userdto);
+    }
+}
+@model List<AbsolCase.Models.CaseDetail>
+@{
+    ViewBag.Title = "ManageCases";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<link href="~/css/lite.min.css" rel="stylesheet" />
+<script src="~/assets/js/lite.min.js"></script>
+
+<div class="card">
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-lg-3">
+                <h4 class="card-title">Total Cases</h4>
+            </div>
+            <div class="col-lg-7"></div>
+            <div class="col-lg-2">
+                <a href="#" class="btn btn-warning" id="addCasebtn" onclick="abc();">Add Case</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <table id="datatable" class="table table-striped table-responsive">
+                    <thead>
+                        <tr>
+                            <th>Sr No.</th>
+                            <th>Case Name</th>
+                            <th>Case Number</th>
+                            <th>Client Name</th>
+                            <th>Case Stage</th>
+                            <th>Action</th>
+
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Count > 0)
+                        {
+                            int count = 0;
+                            @foreach (var item in Model)
+                            {
+                                count++;
+                                <tr class="odd">
+                                    <td>@count</td>
+                                    <td>@item.CaseName </td>
+                                    <td>@item.CaseNumber</td>
+                                    <td>@item.ClientName</td>
+                                    <td>@item.CaseStage</td>
+                                    <td>
+                                        <a href="@Url.Action("ViewCase","Admin", new { id = item.Id })">View </a>
+
+                                    </td>
+                                    @*<td>
+                            <a href="#">Update</a>
+                            <a href="#">Delete</a>
+                            </td>*@
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="myModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Case</h5>
+                <button type="button" class="close" onclick="closePop()" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12 grid-margin stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+
+                            <form id="msform">
+                                <!-- progressbar -->
+                                <ul id="progressbar" style="padding-left:12%">
+                                    @*  <li class="active" id="clientAndContacts"><strong>Clients $ Contacts</strong></li>*@
+                                    <li class="active" id="account"><strong>Case Details</strong></li>
+                                    <li id="personal"><strong>Billing</strong></li>
+                                    <li id="payment"><strong>Staff</strong></li>
+                                </ul>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div> <br>
+                                <fieldset>
+                                    <div class="form-card">
+                                        <div class="row">
+                                            <div class="form-group col-md-6">
+                                                <label for="exampleInputUsername1">Case Name</label>
+                                                @Html.EditorFor(model => model.ElementAt(0).CaseName, new { htmlAttributes = new { @class = "form-control", placeholder = "Name", Id = "CaseName" } })
+                                                @Html.ValidationMessageFor(model => model.ElementAt(0).CaseName, "", new { @class = "text-danger db", id = "validateCaseName" })
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="exampleInputUsername1">Case Number</label>
+                                                @Html.EditorFor(model => model.ElementAt(0).CaseNumber, new { htmlAttributes = new { @class = "form-control", placeholder = "Case Number" } })
+                                                @Html.ValidationMessageFor(model => model.ElementAt(0).CaseNumber, "", new { @class = "text-danger db", id = "validateCaseNumber" })
+                                            </div>
+                                        </div>
+                                        <div class="row">
+
+                                            <div class="form-group col-md-6">
+                                                <label for="exampleInputUsername1">Practice Area</label>
+                                                <select class="form-control" name="practiceArea" id="practiceArea">
+                                                </select>
+
+                                            </div>
+                                            <div class="form-group col-md-6 mt-2">
+                                                <label>Case Stage</label>
+                                                <select class="form-control" aria-label="ContactGroup" id="caseStageId">
+                                                    <option value="undefined" selected>Select</option>
+                                                    <option value="1">Discovery</option>
+                                                    <option value="2">InTrial</option>
+                                                    <option value="3">OnHold</option>
+
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group col-md-6">
+                                                <label for="exampleInputUsername1">Office</label>
+                                                @Html.EditorFor(model => model.ElementAt(0).Office, new { htmlAttributes = new { @class = "form-control", placeholder = "Office" } })
+                                                @Html.ValidationMessageFor(model => model.ElementAt(0).Office, "", new { @class = "text-danger db", id = "validateOffice" })
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="exampleInputUsername1">Description</label>
+                                                @Html.EditorFor(model => model.ElementAt(0).Description, new { htmlAttributes = new { @class = "form-control", placeholder = "Description" } })
+                                                @Html.ValidationMessageFor(model => model.ElementAt(0).Description, "", new { @class = "text-danger db", id = "validateDescription" })
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group col-md-6">
+                                                <label for="exampleInputUsername1">Statue Of Limitation</label>
+                                                @Html.EditorFor(model => model.ElementAt(0).StatueOfLimitation, new { htmlAttributes = new { @class = "form-control", placeholder = "Statue of Limitation" } })
+                                                @Html.ValidationMessageFor(model => model.ElementAt(0).StatueOfLimitation, "", new { @class = "text-danger db" })
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="exampleInputUsername1">Conflict Check Notes</label>
+                                                @Html.EditorFor(model => model.ElementAt(0).ConflictCheckNotes, new { htmlAttributes = new { @class = "form-control", placeholder = "Conflict Check Notes" } })
+                                                @Html.ValidationMessageFor(model => model.ElementAt(0).ConflictCheckNotes, "", new { @class = "text-danger db", id = "validateConflictCheckNotes" })
+                                            </div>
+                                        </div>
+                                        <button type="button" onclick="AddCustomFields()">Add Custom Fields</button>
+                                        <div id="customFields" style="display: none">
+                                            <hr />
+                                            <div class="row">
+                                                @if (Model.ElementAt(0).customField != null && Model.ElementAt(0).customField.Count > 0)
+                                                {
+                                                    @foreach (var item in Model.ElementAt(0).customField)
+                                                    {
+                                                        if (item.CustomFieldType == "Text")
+                                                        {
+                                                            <div class="form-group col-md-4">
+                                                                <label for="exampleInputUsername1">@item.CustomFieldName</label>
+                                                                <input type="text" class="form-control" id="@("custom-"+ item.FieldId)" />
+                                                            </div>
+                                                        }
+                                                        else if (item.CustomFieldType == "Currency")
+                                                        {
+                                                            <div class="form-group col-md-4">
+                                                                <label for="exampleInputUsername1">@item.CustomFieldName</label>
+                                                                <span style="display:flex">
+                                                                    $
+                                                                    <input type="number" class="form-control" id="@("custom-"+ item.FieldId)" style="margin-left:2%" />
+                                                                </span>
+                                                            </div>
+                                                        }
+                                                        else if (item.CustomFieldType == "Date")
+                                                        {
+                                                            <div class="form-group col-md-4">
+                                                                <label for="exampleInputUsername1">@item.CustomFieldName</label>
+                                                                <input type="date" class="form-control" id="@("custom-"+ item.FieldId)" />
+                                                            </div>
+                                                        }
+                                                        else if (item.CustomFieldType == "True/False")
+                                                        {
+                                                            <div class="form-group col-md-4">
+                                                                <label for="exampleInputUsername1">@item.CustomFieldName</label>
+
+                                                                <div class="form-group">
+                                                                    <label for="exampleInputUsername1">True</label>
+                                                                    <input type="radio" value="true" name="rad" id="@("True-"+ item.FieldId)" />
+                                                                    <label for="exampleInputUsername1">False</label>
+                                                                    <input type="radio" value="false" name="rad" id="@("False-"+ item.FieldId)"/>
+                                                                </div>
+
+                                                            </div>
+                                                        }
+                                                        else if (item.CustomFieldType == "Number")
+                                                        {
+                                                            <div class="form-group col-md-4">
+                                                                <label for="exampleInputUsername1">@item.CustomFieldName</label>
+                                                                <input type="number" class="form-control" id="@("custom-"+ item.FieldId)" />
+                                                            </div>
+                                                        }
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="button" name="next" class="next action-button" value="Next" />
+                                </fieldset>
+                                <fieldset>
+                                    <div class="form-card">
+                                        <div class="row">
+                                            <div class="form-group col-md-6 mt-4">
+                                                <label>Billing Contact</label>
+                                                <select class="form-control" aria-label="ContactGroup" id="BillingContact">
+                                                </select>
+
+                                                <span class="field-validation-valid text-danger db" id="validateBillingContact" style="display: none;"></span>
+                                            </div>
+                                            <div id="ulCaseclients"></div>
+                                            <div class="form-group col-md-6 mt-4">
+                                                <label>Billing Method</label>
+                                                <select class="form-control" name="BillingMethod" id="BillingMethod">
+                                                </select>
+                                                <span class="field-validation-valid text-danger db" id="validateBillingMethod" style="display: none;"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <input type="button" name="next" class="next action-button" value="Next" />
+                                    <input type="button" name="previous" class="previous action-button-previous" value="Previous" />
+                                </fieldset>
+                                <fieldset>
+                                    <div class="form-card">
+                                        <div class="form-group col-md-6 mt-4">
+                                            @if (ViewBag.LeadAttorney != null)
+                                            {
+                                                <h2 style="float:left">Lead Attorney</h2>
+                                                @Html.DropDownList("LeadAttorney", (IEnumerable<SelectListItem>)ViewBag.LeadAttorney, "--- Select Lead Attorney ---", new { @class = "form-control", Id = "LeadAttorney" })
+                                                <input type="hidden" id="firstName" />
+                                                <input type="hidden" id="lastname" />
+                                                <input type="hidden" id="email" />
+                                                <input type="hidden" id="Role" />
+                                                <input type="hidden" id="DefultRate" />
+
+
+
+                                                <a class="action-button" data-added="0" onclick="inertRowsTogrid()" style="color: white; background: blue"> Add</a>
+                                                <a class="action-button" onclick="insertAllAttorney()" style="color: white"> Add All</a>
+                                            }
+                                        </div>
+
+
+                                        <div class="card-body">
+
+                                            <p class="card-description">
+                                                Add Attorney from your firm should have access to this case?
+                                            </p>
+                                            <div class="table-responsive">
+                                                <table id="zero-configuration1" class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th>FirstName</th>
+                                                            <th>LastName</th>
+                                                            <th>Email</th>
+                                                            <th>Role</th>
+                                                            <th>Billing Rate</th>
+                                                            <th>Rate</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+
+                                                </table>
+
+                                            </div>
+                                            @if (ViewBag.GetStaff != null)
+                                            {
+                                                <div class="form-group col-md-6 mt-4">
+
+                                                    <h3 style="float:left">Staff</h3>
+
+                                                    @Html.DropDownList("Staff", (IEnumerable<SelectListItem>)ViewBag.GetStaff, "--- Select Staff ---", new { @class = "form-control", Id = "Staff" })
+                                                    <input type="hidden" id="firstNamestaff" />
+                                                    <input type="hidden" id="lastnamestaff" />
+                                                    <input type="hidden" id="emailstaff" />
+                                                    <input type="hidden" id="Rolestaff" />
+                                                    <input type="hidden" id="DefultRatestaff" />
+
+
+
+                                                    <a class="action-button" data-added="0" onclick="inertStaffRowsTogrid()" style="color: white"> Add</a>
+                                                    <a class="action-button" onclick="insertAllStaff()" style="color: white"> Add All</a>
+
+                                                </div>
+                                                <div class="card-body">
+
+                                                    <p class="card-description">
+                                                        Add Staff from your firm should have access to this case?
+                                                    </p>
+                                                    <div class="table-responsive">
+                                                        <table id="zero-configuration2" class="table table-striped">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>#</th>
+                                                                    <th>FirstName</th>
+                                                                    <th>LastName</th>
+                                                                    <th>Email</th>
+                                                                    <th>Role</th>
+                                                                    <th>Billing Rate</th>
+                                                                    <th>Rate</th>
+                                                                    <th>Action</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            </tbody>
+
+                                                        </table>
+
+                                                    </div>
+                                                </div>
+                                            }
+
+                                        </div>
+                                    </div>
+
+                                    <input type="button" name="next" class="next action-button" value="Submit" onclick="insertCase()" />
+                                    <input type="button" name="previous" class="previous action-button-previous" value="Previous" />
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section scripts{
+
+    <script src="~/assets/js/lite.min.js"></script>
+    <script>
+        var remoteServerURl = "";
+        var plan = null;
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            token = localStorage.getItem('token');
+        });
+        function getRemoteServerURl() {
+            //$.ajax({
+            //type: 'GET',
+            //url: '/common/getConfigurationValue',
+            //data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+            //    getTagNotes();
+            //    getEditNotesTag();
+            //    getCases();
+            //})
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+            //$(".modal-backdrop").css("display", "block");
+        };
+
+
+
+        function CloseEditModel() {
+
+            $('#ModelEdit').hide();
+        };
+        $("#addCasebtn").click(function () {
+            $("#CaseName").val('');
+            $("#CaseNumber").val('');
+            $("#Office").val('');
+            $("#Description").val('');
+            $("#ConflictCheckNotes").val('');
+        });
+
+        function AddCustomFields() {
+            $("#customFields").toggle('hide');
+        }
+
+    </script>
+
+    <script>
+        $("#BillingContact").change(function () {
+            var text = $("#BillingContact option:selected").text();
+
+            if (text != "Select") {
+
+                $("#ulCaseclients").append("<li data-valId=" + $("#BillingContact option:selected").val() + " class='btn btn-success'>" + $("#BillingContact option:selected").text() + "<span class='closeCaseTags pull-right' onclick='DeleteItemm(this)'>&times;</span></li> ");
+            }
+
+        });
+    </script>
+
+    <script>
+        var sernum = 1;
+        var bulkuser = 1;
+
+        function insertAllStaff() {
+
+            debugger;
+            var val = 1;
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetAllStaff", "AttorneyDashboard", new{area="Attorney" })',
+                data: {
+                    Id: val
+                },
+                dataType: 'json',
+                success: function (data) {
+
+
+                    $.each(data, function (key, value) {
+
+                        $('#firstNamestaff').val(value.firstName);
+                        $('#lastnamestaff').val(value.lastName);
+                        $('#emailstaff').val(value.email);
+                        $('#Rolestaff').val(value.roleName);
+                        $('#DefultRatestaff').val(value.caseRate);
+                        $('#Staff').val(value.id);
+
+                        inertStaffRowsTogridAll();
+
+                    });
+
+
+
+                },
+                error: function (xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText
+                },
+            });
+        }
+
+
+        function inertStaffRowsTogridAll() {
+            $('#zero-configuration2').append('<tr>' +
+                '<td>' + sernum + '</td>' +
+                '<td>' + $("#firstNamestaff").val() + '</td>' +
+                '<td style="display:none;">' + $("#Staff").val() + '</td>' +
+                '<td>' + $("#lastnamestaff").val() + '</td>' +
+                '<td>' + $("#emailstaff").val() + '</td>' +
+                '<td>' + $("#Rolestaff").val() + '</td>' +
+                '<td><select class="form-control ddlRate"><option value="N' + sernum + '">Default Rate</option><option value="CaseRate' + sernum + '">Case Rate</option></select></td>' +
+                '<td id="CaseRate' + sernum + '" style="display:none" ><input type="text"  id="txtRatestaff' + sernum + '" class="form-control" /></td>' +
+                '<td id="defultRate' + sernum + '">' + $("#DefultRatestaff").val() + '</td>' +
+                '<td> <a onclick="DeleteItem(this)"><span><i class="btn btn-danger">Delete</i></span></a></td></tr>'
+            );
+            sernum++
+        }
+
+
+        function insertAllAttorney() {
+
+            debugger;
+            var val = 1;
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetAllAttorney", "AttorneyDashboard", new{area="Attorney" })',
+                data: {
+                    Id: val
+                },
+                dataType: 'json',
+                success: function (data) {
+
+                    $.each(data, function (key, value) {
+                        $('#firstName').val(value.firstName);
+                        $('#lastname').val(value.lastName);
+                        $('#email').val(value.email);
+                        $('#Role').val(value.roleName);
+                        $('#DefultRate').val(value.caseRate);
+                        $('#LeadAttorney').val(value.id);
+
+                        inertAllAttorney();
+
+                    });
+                },
+                error: function (xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText
+                },
+            });
+        }
+
+        function inertAllAttorney() {
+
+            $('#zero-configuration1').append('<tr>' +
+                '<td>' + sernum + '</td>' +
+                '<td>' + $("#firstName").val() + '</td>' +
+                '<td style="display:none;">' + $("#LeadAttorney").val() + '</td>' +
+                '<td>' + $("#lastname").val() + '</td>' +
+                '<td>' + $("#email").val() + '</td>' +
+                '<td>' + $("#Role").val() + '</td>' +
+                '<td><select class="form-control ddlRate"><option value="N' + sernum + '">Default Rate</option><option value="CaseRate' + sernum + '">Case Rate</option></select></td>' +
+                '<td id="CaseRate' + sernum + '" style="display:none" ><input type="text"  id="txtRatestaff' + sernum + '" class="form-control" /></td>' +
+                '<td id="defultRate' + sernum + '">' + $("#DefultRate").val() + '</td>' +
+                '<td> <a onclick="DeleteItem(this)"><span><i class="btn btn-danger">Delete</i></span></a></td></tr>'
+            );
+            sernum++
+
+        }
+
+
+
+
+        function inertRowsTogrid() {
+
+            $('#zero-configuration1').append('<tr>' +
+                '<td>' + sernum + '</td>' +
+                '<td>' + $("#LeadAttorney").find("option:selected").text() + '</td>' +
+                '<td style="display:none;">' + $("#LeadAttorney").val() + '</td>' +
+                '<td>' + $("#lastname").val() + '</td>' +
+                '<td>' + $("#email").val() + '</td>' +
+                '<td>' + $("#Role").val() + '</td>' +
+                '<td><select class="form-control ddlRate"><option value="N' + sernum + '">Default Rate</option><option value="CaseRate' + sernum + '">Case Rate</option></select></td>' +
+                '<td id="CaseRate' + sernum + '" style="display:none" ><input type="text"  id="txtRatestaff' + sernum + '" class="form-control" /></td>' +
+                '<td id="defultRate' + sernum + '">' + $("#DefultRate").val() + '</td>' +
+                '<td> <a onclick="DeleteItem(this)"><span><i class="btn btn-danger">Delete</i></span></a></td></tr>'
+            );
+            sernum++
+
+        }
+        function inertStaffRowsTogrid() {
+            $('#zero-configuration2').append('<tr>' +
+                '<td>' + sernum + '</td>' +
+                '<td>' + $("#Staff").find("option:selected").text() + '</td>' +
+                '<td style="display:none;">' + $("#Staff").val() + '</td>' +
+                '<td>' + $("#lastnamestaff").val() + '</td>' +
+                '<td>' + $("#emailstaff").val() + '</td>' +
+                '<td>' + $("#Rolestaff").val() + '</td>' +
+                '<td><select class="form-control ddlRate"><option value="N' + sernum + '">Default Rate</option><option value="CaseRate' + sernum + '">Case Rate</option></select></td>' +
+                '<td id="CaseRate' + sernum + '" style="display:none" ><input type="text"  id="txtRatestaff' + sernum + '" class="form-control" /></td>' +
+                '<td id="defultRate' + sernum + '">' + $("#DefultRatestaff").val() + '</td>' +
+                '<td> <a onclick="DeleteItem(this)"><span><i class="btn btn-danger">Delete</i></span></a></td></tr>'
+            );
+            sernum++
+        }
+        function inertBulkUserRowsTogrid() {
+            var _firstName = $('#firstname-1').val();
+            var _lastName = $('#lastname-1').val();
+            var _emailName = $('#email-1').val();
+            var _RoleName = $("#userType-1").find("option:selected").text();
+            let user = "";
+            if (_emailName != "") {
+                token = localStorage.getItem('token');
+                $.ajax({
+                    url: `${remoteServerURl}api/UserManagement/GetUserByEmail`,
+                    headers: { "Authorization": 'Bearer ' + token },
+                    type: "Get",
+                    dataType: 'json',
+                    data: { Email: _emailName },
+                    contentType: "application/json; charset=utf-8",
+                    success: function (response) {
+                        if (response != null) {
+                            user += "<ol style='color:Red'>" + response.email + " User already Exist.</ol>";
+                            $("#NotAddedUser").html(user);
+                            $("#NotAddedUser").show();
+                        }
+                        else {
+                            $('#BulkUser').append('<tr>' +
+                                '<td>' + bulkuser + '</td>' +
+                                '<td>' + $("#firstname-1").val() + '</td>' +
+                                '<td>' + $("#lastname-1").val() + '</td>' +
+                                '<td>' + $("#email-1").val() + '</td>' +
+                                '<td>' + $("#userType-1").find("option:selected").text() + '</td>' +
+                                '<td style="display:none;">' + $("#userType-1").val() + '</td>' +
+                                '<td> <a onclick="DeleteItem(this)"><span><i class="btn btn-danger">Delete</i></span></a></td></tr>'
+                            );
+                            bulkuser++
+                        }
+        @*window.location.href = '@Url.Action("index", "AttorneyDashboard")'*@
+                                                                    },
+                    error: function (response) {
+                        //window.location.href='@Url.Action("index", "AttorneyDashboard")'
+                    }
+                });
+            }
+        }
+        function AddBulkUser() {
+            var UserList = new Array();
+            $("#BulkUser TBODY TR").each(function () {
+                var row = $(this);
+                var user = {};
+
+                user.FirstName = row.find("TD").eq(1).html();
+                user.LastName = row.find("TD").eq(2).html();
+                user.Email = row.find("TD").eq(3).html();
+                user.RoleName = row.find("TD").eq(4).html();
+                UserList.push(user);
+            });
+            if (UserList.length > 0) {
+                token = localStorage.getItem('token');
+                $.ajax({
+                    url: `${remoteServerURl}api/UserManagement/AddUsersBulk`,
+                    headers: { "Authorization": 'Bearer ' + token },
+                    type: "POST",
+                    dataType: 'json',
+                    data: JSON.stringify(UserList),
+                    contentType: "application/json; charset=utf-8",
+                    success: function (response) {
+                        closePopinviteuser();
+                        let list = "";
+                        $.each(response, function (i, v) {
+
+                            list += "<ol style='color:Red'>" + v + " User already Exist.</ol>";
+                        });
+
+                        $("#NotAddedUser").html(list);
+                        $("#NotAddedUser").show();
+
+        @*window.location.href = '@Url.Action("index", "AttorneyDashboard")'*@
+                                                                    },
+                    error: function (response) {
+                        //window.location.href='@Url.Action("index", "AttorneyDashboard")'
+                    }
+                });
+            }
+
+        }
+        function insertCase() {
+            var StafArray = new Array();
+            var serno = "";
+            var practiceArea = $('#practiceArea').val();
+            var casestage = $('#caseStageId').val();
+
+            var billingContact = $('#BillingContact').val();
+            var BillingMethod = $('#BillingMethod').val();
+
+            if (billingContact == "undefined") {
+                billingContact = null
+            }
+            if (BillingMethod == "undefined") {
+
+                BillingMethod = null
+            }
+            if (casestage == "undefined") {
+                casestage = null
+            }
+            if (practiceArea == "undefined") {
+                practiceArea = null
+            }
+
+
+
+            var NotesTagArray = new Array();
+            $("#ulCaseclients LI").each(function () {
+
+                var notesTag = {};
+                notesTag.name = $(this).text().substring(0, $(this).text().length - 1)
+                notesTag.id = $(this).attr("data-valId");
+
+                NotesTagArray.push(notesTag);
+            });
+            console.log(NotesTagArray);
+            var notestittle = "";
+            var i;
+            for (i = 0; i < NotesTagArray.length; i++) {
+                if (NotesTagArray.length == 1) {
+                    notestittle = NotesTagArray[i].id + ","
+                }
+                else if (i == 0) {
+                    notestittle = NotesTagArray[i].id
+
+                }
+                else {
+                    notestittle = notestittle + "," + NotesTagArray[i].id;
+
+                }
+            }
+            var trimenotetagstr = notestittle
+            console.log(trimenotetagstr);
+
+
+
+
+
+            $("#zero-configuration1 TBODY TR").each(function () {
+                var row = $(this);
+                var staf = {};
+                serno = row.find("TD").eq(0).html();
+                staf.StafId = row.find("TD").eq(2).html();
+
+                var tdelement = row.find("TD").eq(6).html();
+
+                var selectText = $(tdelement).find('OPTION:SELECTED').text();
+
+                staf.BillingRate = selectText;
+
+                if (staf.BillingRate == "Default Rate") {
+                    staf.Rate = row.find("TD").eq(8).html();
+                }
+                else {
+                    var selectinputvalu = $('#txtRate' + serno).val();
+                    staf.Rate = selectinputvalu;
+                }
+                StafArray.push(staf);
+            });
+            console.log(StafArray);
+                $("#zero-configuration2 TBODY TR").each(function () {
+            var row = $(this);
+                var staff = {};
+                serno = row.find("TD").eq(0).html();
+            staff.StafId = row.find("TD").eq(2).html();
+
+            var tdelement = row.find("TD").eq(6).html();
+
+                var selectText = $(tdelement).find('OPTION:SELECTED').text();
+
+                staff.BillingRate = selectText;
+
+                if (staff.BillingRate == "Default Rate") {
+                    staff.Rate = row.find("TD").eq(8).html();
+                }
+                else {
+                    var selectinputvalu = $('#txtRatestaff' + serno).val();
+                    staff.Rate = selectinputvalu;
+                }
+            StafArray.push(staff);
+            });
+
+            var data = [];
+            $("#customFields input").each(function (index, volume) {
+                var innerdata = {};
+                innerdata = new FormData();
+                var Type = $(volume).attr('type');
+                var CurrentID = $(volume).attr('id');
+                var value = $("#" + CurrentID).val();
+                var Isvalid = true;
+                if (Type == "radio") {
+                    var CurrentID = $(volume).attr('id');
+
+                    if ($("#True" + CurrentID.split('-')[1]).is(":checked")) {
+                        //innerdata.append("Value", true);
+
+                    } else {
+                        // innerdata.append("Value", false);
+                    }
+                } else {
+                    //innerdata.append("FieldID", CurrentID.split('-')[1]);
+                    //innerdata.append("ModuleType", Type);
+                    //innerdata.append("Value", value);
+                }
+
+                var cfield = {
+                    FieldID: CurrentID.split('-')[1],
+                    ModuleType: Type,
+                    Value: value
+                }
+                data.push(cfield);
+            });
+
+
+            var model = {
+                caseName: $("#CaseName").val(),
+                caseNumber: $("#CaseNumber").val(),
+                practiceArea: practiceArea,
+                caseStage: casestage,
+                /*  caseStage: $("#caseStageId option:selected").text(),*/
+                office: $("#Office").val(),
+                description: $("#Description").val(),
+                //statueOfLimitation: $("#StatueOfLimitation").val(),
+                conflictCheckNotes: $("#ConflictCheckNotes").val(),
+                BillingContactList: trimenotetagstr,
+                billingMethod: BillingMethod,
+                staflist: StafArray,
+                CaseAddedBy: $("#current-userid").val(),
+                cfieldValue: data,
+            };
+            token = localStorage.getItem('token');
+            $.ajax({
+                url: `${remoteServerURl}api/Case/AddCase`,
+                headers: { "Authorization": 'Bearer ' + token },
+                type: "POST",
+                dataType: 'json',
+                data: JSON.stringify(model),
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    window.location.href = '@Url.Action("index", "AttorneyDashboard")'
+                },
+                error: function (response) {
+                    //window.location.href='@Url.Action("index", "AttorneyDashboard")'
+                }
+            });
+        };
+
+
+        function DeleteItem(ctl) {
+            $(ctl).parents("tr").remove();
+            sernum--
+        }
+        //url: "/Attorney/AttorneyDashboard/GetAttorney",
+        $(function () {
+
+
+            $("#LeadAttorney").change(function () {
+                var val = $(this).val();
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("GetAttorney", "AttorneyDashboard", new{area="Attorney" })',
+                    data: {
+                        Id: val
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        $('#firstName').val(data.firstName);
+                        $('#lastname').val(data.lastName);
+                        $('#email').val(data.email);
+                        $('#Role').val(data.roleName);
+                        $('#DefultRate').val(data.caseRate);
+                    },
+                    error: function (xhr, status, error) {
+                        var errorMessage = xhr.status + ': ' + xhr.statusText
+                    },
+                });
+            });
+        });
+        $(function () {
+            $("#Staff").change(function () {
+
+                var val = $(this).val();
+
+                $.ajax({
+                    type: "GET",
+                    //url: "/Attorney/AttorneyDashboard/GetAttorney",
+                    url: '@Url.Action("GetAttorney", "AttorneyDashboard", new{ area="Attorney"})',
+                    data: {
+                        Id: val
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        $('#firstNamestaff').val(data.firstName);
+                        $('#lastnamestaff').val(data.lastName);
+                        $('#emailstaff').val(data.email);
+                        $('#Rolestaff').val(data.roleName);
+                        $('#DefultRatestaff').val(data.caseRate);
+                    },
+                    error: function (xhr, status, error) {
+
+                        var errorMessage = xhr.status + ': ' + xhr.statusText
+                    },
+                });
+            });
+        });
+        var remoteServerURl = "";
+        var plan = null;
+        var parentId = "";
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            parentId = $("#current-userid").val();
+            token = localStorage.getItem('token');
+        });
+        function getRemoteServerURl() {
+            //$.ajax({
+            //    type: 'GET',
+            //    url: '/common/getConfigurationValue',
+            //    data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+
+            //})
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+            getPracticeArea();
+            getBillingMethod();
+            getLeadAttorney();
+            getBillingContact();
+        };
+        function getPracticeArea() {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/ConfigManagement/GetPracticeAreas`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                let options = "<option value='undefined'>Select</option>";
+                $.each(data, function (a, b) {
+                    options += "<option value='" + b.id + "'>" + b.practiceAreaName + "</option>";
+                });
+
+                $("#practiceArea").html(options);
+            })
+        };
+        function getBillingContact() {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/contact/GetContacts`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                let options = "<option value='undefined'>Select</option>";
+                $.each(data, function (a, b) {
+                    options += "<option value='" + b.contactId + "'>" + b.firstName + "</option>";
+                });
+
+                $("#BillingContact").html(options);
+            })
+        };
+        function getBillingMethod() {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/ConfigManagement/GetBillingMethods`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                let options = "<option value='undefined'>Select</option>";
+                $.each(data, function (a, b) {
+                    options += "<option value='" + b.id + "'>" + b.name + "</option>";
+                });
+                $("#BillingMethod").html(options);
+            })
+        };
+        function getLeadAttorney() {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/UserManagement/GetUsers?ParentId=${parentId}&&Status=leadAttorney`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                let options = "<option value='undefined'>Select</option>";
+                $.each(data, function (a, b) {
+                    options += "<option value='" + b.id + "'>" + b.firstName + "</option>";
+                });
+
+                $("#LeadAttorney").html(options);
+            })
+        };
+
+        function addBulkUser() {
+            var isFormValid = true;
+            var model = [];
+            var userCount = 1;
+            $(".row .bulk-user").each(function () {
+                if ($("#firstname-" + userCount).val() || $("#email-" + userCount).val()) {
+                    if ($("#firstname-" + userCount).val() == "") {
+                        $("#fvalidation-" + userCount).show();
+                        isFormValid = false;
+                    }
+                    else {
+                        $("#fvalidation-" + userCount).hide();
+                    }
+                    if ($("#email-" + userCount).val() != "") {
+                        if (!validateEmail($("#email-" + userCount).val())) {
+                            $("#evalidation-" + userCount).show();
+                            isFormValid = false;
+                        }
+                        else {
+                            $("#evalidation-" + userCount).hide();
+                        }
+                    }
+                    else {
+                        $("#evalidation-" + userCount).show();
+                    }
+                }
+                if (!isFormValid) {
+                    hideLoader();
+                    $('#myModalinviteuser').animate({ scrollTop: (0) }, 'slow');
+                    return;
+                }
+                userCount++;
+            });
+        };
+        function abc() {
+
+            $("#myModal").modal('show');
+        };
+        function closePop() {
+            $("#myModal").modal('hide');
+        };
+        function invitemember() {
+            $("#myModalinviteuser").modal('show');
+        };
+        function closePopinviteuser() {
+            $("#myModalinviteuser").modal('hide');
+        };
+
+        $(document).ready(function () {
+
+
+            $("#CaseName").on('input', function () {
+                if ($("#CaseName").val() == "" || !validateCaseName($("#CaseName").val())) {
+                    $("#validateCaseName").text("It should contain minimum three characters and only alphabets are allowed");
+                    $("#validateCaseName").show();
+                    isvalid = false;
+                }
+                else {
+                    $("#validateCaseName").hide();
+                }
+            });
+            $("#CaseNumber").on('input', function () {
+                if ($("#CaseNumber").val() == "" || !validateCaseNo($("#CaseNumber").val())) {
+                    $("#validateCaseNumber").text("Please enter case number");
+                    $("#validateCaseNumber").show();
+                    isvalid = false;
+                }
+                else {
+                    $("#validateCaseNumber").hide();
+                }
+            });
+            $("#BillingContact").on('change', function () {
+                if ($("#BillingContact option:selected").val() == "undefined" || $("#BillingContact option:selected").val() == "undefined") {
+                    $("#validateBillingContact").text("Please select billing contact");
+                    $("#validateBillingContact").show();
+                    isvalid = false;
+                }
+                else {
+                    $("#validateBillingContact").hide();
+                }
+            });
+            $("#BillingMethod").on('change', function () {
+                if ($("#BillingMethod option:selected").val() == "undefined" || $("#BillingMethod option:selected").val() == "undefined") {
+                    $("#validateBillingMethod").text("Please select billing method");
+                    $("#validateBillingMethod").show();
+                    isvalid = false;
+                }
+                else {
+                    $("#validateBillingMethod").hide();
+                }
+            });
+            var current_fs, next_fs, previous_fs; //fieldsets
+            var opacity;
+            var current = 1;
+            var steps = $("fieldset").length;
+
+            setProgressBar(current);
+
+            $(".next").click(function () {
+                var isvalid = true;
+                if ($("#account").hasClass('active')) {
+                    if ($("#CaseName").val() == "" || !validateCaseName($("#CaseName").val())) {
+                        $("#validateCaseName").text("Please enter case name");
+                        $("#validateCaseName").show();
+                        isvalid = false;
+                    }
+                    else {
+                        $("#validateCaseName").hide();
+                    }
+                }
+                if ($("#account").hasClass('active')) {
+                    if ($("#CaseNumber").val() == "" || !validateCaseNo($("#CaseNumber").val())) {
+                        $("#validateCaseNumber").text("Please enter case number");
+                        $("#validateCaseNumber").show();
+                        isvalid = false;
+                    }
+                    else {
+                        $("#validateCaseNumber").hide();
+                    }
+                }
+                if ($("#personal").hasClass('active')) {
+                    if ($("#BillingContact option:selected").val() == "undefined" || $("#BillingContact option:selected").val() == "") {
+                        $("#validateBillingContact").text("please select billing contact");
+                        $("#validateBillingContact").show();
+                        isvalid = false;
+                    }
+                    else {
+                        $("#validateBillingContact").hide();
+                    }
+                }
+                if ($("#personal").hasClass('active')) {
+                    if ($("#BillingMethod option:selected").val() == "undefined" || $("#BillingMethod option:selected").val() == "") {
+                        $("#validateBillingMethod").text("please select billing method");
+                        $("#validateBillingMethod").show();
+                        isvalid = false;
+                    }
+                    else {
+                        $("#validateBillingMethod").hide();
+                    }
+                }
+                if ($("#payment").hasClass('active')) { }
+                if (isvalid) {
+                    current_fs = $(this).parent();
+                    next_fs = $(this).parent().next();
+
+                    //Add Class Active
+                    $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
+                    $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+
+                    //show the next fieldset
+                    next_fs.show();
+                    //hide the current fieldset with style
+                    current_fs.animate({ opacity: 0 }, {
+                        step: function (now) {
+                            // for making fielset appear animation
+                            opacity = 1 - now;
+
+                            current_fs.css({
+                                'display': 'none',
+                                'position': 'relative'
+                            });
+                            next_fs.css({ 'opacity': opacity });
+                        },
+                        duration: 500
+                    });
+                    setProgressBar(++current);
+                }
+
+            });
+
+            $(".previous").click(function () {
+
+                current_fs = $(this).parent();
+                previous_fs = $(this).parent().prev();
+
+                //Remove class active
+                $("#progressbar li").eq($("fieldset").index(previous_fs)).addClass("active");
+                $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
+
+                //show the previous fieldset
+                previous_fs.show();
+
+                //hide the current fieldset with style
+                current_fs.animate({ opacity: 0 }, {
+                    step: function (now) {
+                        // for making fielset appear animation
+                        opacity = 1 - now;
+
+                        current_fs.css({
+                            'display': 'none',
+                            'position': 'relative'
+                        });
+                        previous_fs.css({ 'opacity': opacity });
+                    },
+                    duration: 500
+                });
+                setProgressBar(--current);
+            });
+
+            function setProgressBar(curStep) {
+                var percent = parseFloat(100 / steps) * curStep;
+                percent = percent.toFixed();
+                $(".progress-bar")
+                    .css("width", percent + "%")
+            }
+
+            $(".submit").click(function () {
+                return false;
+            })
+        });
+
+        $(document).ready(function () {
+            $("#contactmodal").click(function () {
+                $("#contact-company-modal").modal('show');
+            });
+        });
+        function closecontactpopup() {
+            $("#contact-company-modal").modal('hide');
+        }
+        $(document).on('change', '.ddlRate', function () {
+            var dropdownvalu = $(this).val();
+            var digit = dropdownvalu.replace(/[^\d-]/g, '')
+            if ($(this).find("option:selected").text() == "Case Rate") {
+                $('#CaseRate' + digit).show();
+                $('.ddlRate option:contains("Case Rate")').attr('selected', 'selected')
+                $('#defultRate' + digit).hide();
+            } else if ($(this).find("option:selected").text() == "Default Rate") {
+                $('#CaseRate' + digit).hide();
+                $('.ddlRate option:contains("Default Rate")').attr('selected', 'selected')
+
+                $('#defultRate' + digit).show();
+            }
+        }).prop('selected', true);
+    </script>
+    <script>
+        function DeleteItemm(ctl) {
+            $(ctl).parents("li").remove();
+
+        }
+    </script>
+    }

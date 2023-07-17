@@ -1,0 +1,38 @@
+﻿
+@{
+    ViewBag.Title = "UpdateRole";
+    Layout = "~/Views/Shared/_SPLayout.cshtml";
+}
+
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<div class="col-md-6 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Edit Role</h4>
+            @*<p class="card-description">
+                    Basic form layout
+                </p>*@
+            <form class="forms-sample">
+                <div class="form-group">
+                    <label for="exampleInputUsername1">Role Name</label>
+                    <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Role">
+                </div>
+
+
+                <button type="submit" class="btn btn-primary me-2">Submit</button>
+                @*<button class="btn btn-light">Cancel</button>*@
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    setTimeout(function () {
+        $("#msgalert").hide();
+    }, 3500);
+</script>
+

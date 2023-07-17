@@ -1,0 +1,191 @@
+﻿@model List<AbsolCase.Models.AspNetUsers>
+@{
+    ViewBag.Title = "ManageUser";
+    Layout = "~/Views/Shared/_SPLayout.cshtml";
+}
+<style>
+    .modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        /*margin-left: 234px;*/
+        margin-top: 44px;
+    }
+</style>
+<div class="card">
+    <div class="card-body">
+        <input type="hidden" id="usertodeleteid" />
+        <h4 class="card-title">Manage Users</h4>
+        <div class="row">
+            <div class="table-responsive">
+                <table id="datatable" class="table table-striped  dt-responsive nowrap" width="100%" cellspacing="0">
+                    <thead>
+                        <tr role="row">
+                            <th>Sr No.</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Phone number</th>
+                            <th>Role</th>
+                            <th>UnBlock/Block</th>
+                            <th>Delete</th>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Count > 0)
+                        {
+                            int count = 0;
+                            @foreach (var user in Model)
+                            {
+                                count++;
+                                <tr class="odd">
+                                    <td class="sorting_1">@count</td>
+                                    <td>@user.FirstName</td>
+                                    <td>@user.LastName</td>
+                                    <td>@user.Email</td>
+                                    <td>@user.PhoneNumber</td>
+                                    <td>@user.RoleName</td>
+                                    <td>
+                                        @if (Model.ElementAt(0).CurrentUserEmail != user.Email)
+                                        {
+                                            <label class="switch">
+                                                <input type="checkbox" id="block-user" @(!user.Status ? "checked" : "") onclick="ToggleUserBlock(this, '@user.Id')">
+                                                <span class="slider round"></span>
+                                            </label>
+                                        }else{
+                                            <label class="switch"> </label>
+                                        }
+                                        
+                                    </td>
+                                    <td>
+                                        @if (user.Email == "lydiacms00@gmail.com")
+                                        {
+
+
+                                        }
+                                        else
+                                        {
+                                            <a href="#" onclick="openpopup('@user.Id')">Delete</a>
+                                        }
+
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@*///////////*@
+<div id="myModall" class="modal fade" tabindex="-1" style="z-index:1111">
+    <div class="modal-dialog">
+        <div class="modal-content" z-index="1111">
+            <div class="modal-header">
+                <h3 class="modal-title"><b>Confirm!</b></h3>
+                <button type="button" class="close" data-dismiss="modal" onclick="closepopups()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:20px; text-align:center; color:black"><b>Are you sure to delete notes?</b></p>
+            </div>
+            <ul style="display:table;border-collapse:collapse; margin-bottom:20px">
+                <li onclick="closepopups()" style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="#" style="text-decoration:none;  color:black" ;>
+                        <img src="~/images/download (2).png" width="90" height="90" /><br />
+                        No
+                    </a>
+                </li>
+
+                <li onclick="UserDelete()" style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="#" style="text-decoration:none;  color:black">
+                        <img src="~/images/download.jpg" width="100" height="100" /><br />
+                        Yes
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        var remoteServerURl = "";
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            token = localStorage.getItem('token');
+            $('#datatable').dataTable({
+                "columnDefs": [
+                    { "searchable": false, "targets": 6 }
+                ]
+            });
+        });
+        function getRemoteServerURl() {
+            @*$.ajax({
+                type: 'GET',
+                url: '@Url.Action("getConfigurationValue", "common")',
+                data: { sectionName: "app", paramName: "remoteServerUrl" }
+            }).done(function (response) {
+                remoteServerURl = response.parameter;
+            })*@
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+        }
+
+        function ToggleUserBlock(event, userId) {
+            Status = $(event).prop('checked') ? false : true;
+            showLoader();
+                token = localStorage.getItem('token');
+            $.ajax({
+                url: `${remoteServerURl}api/UserManagement/ToggleUserBlock?UserId=${userId}&&Status=${Status}`,
+                headers: { "Authorization": 'Bearer ' + token },
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    hideLoader();
+                    toastr.success(response);
+                },
+                error: function (response) {
+                    hideLoader();
+                    if ($(event).prop('checked'))
+                        $(event).prop('checked', false);
+                    else
+                        $(event).prop('checked', true);
+                    toastr.error(response.responseText);
+                }
+            });
+            }
+    </script>
+    <script>
+        function openpopup(id) {
+            $("#myModall").modal('show');
+            $("#usertodeleteid").val(id);
+        }
+        function closepopups() {
+            $("#myModall").modal('hide');
+
+        }
+
+        function UserDelete() {
+            var Id = $("#usertodeleteid").val();
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'Delete',
+                url: `${remoteServerURl}api/UserManagement/DeleteUser?Id=${Id}`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                window.location.href = '@Url.Action("ManageUser", "Users")'
+            })
+        };
+    </script>
+}
+
+

@@ -1,0 +1,199 @@
+﻿@model IEnumerable<AbsolCase.Models.Faq>
+@{
+    Layout = "~/Views/Shared/_OuterLayout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="irstheme">
+
+    <title> Absol Case </title>
+    <link rel=" shortcut icon" href="~/images/favicon.png" />
+    <link href="~/assets/css/themify-icons.css" rel="stylesheet" />
+    <link href="~/assets/css/flaticon.css" rel="stylesheet" />
+    <link href="~/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/assets/css/animate.css" rel="stylesheet" />
+    <link href="~/assets/css/owl.carousel.css" rel="stylesheet" />
+    <link href="~/assets/css/owl.theme.css" rel="stylesheet" />
+    <link href="~/assets/css/slick.css" rel="stylesheet" />
+    <link href="~/assets/css/slick-theme.css" rel="stylesheet" />
+    <link href="~/assets/css/owl.transitions.css" rel="stylesheet" />
+    <link href="~/assets/css/jquery.fancybox.css" rel="stylesheet" />
+    <link href="~/assets/css/style.css" rel="stylesheet" />
+
+    <style>
+        .faqHeader {
+            font-size: 27px;
+            margin: 20px;
+        }
+
+        .panel-heading [data-toggle="collapse"]:after {
+            font-family: 'Glyphicons Halflings';
+            content: "\e072"; /* "play" icon */
+            float: right;
+            color: #F58723;
+            font-size: 18px;
+            line-height: 22px;
+            /* rotate "play" icon from > (right arrow) to down arrow */
+            -webkit-transform: rotate(-90deg);
+            -moz-transform: rotate(-90deg);
+            -ms-transform: rotate(-90deg);
+            -o-transform: rotate(-90deg);
+            transform: rotate(-90deg);
+        }
+
+        .panel-heading [data-toggle="collapse"].collapsed:after {
+            /* rotate "play" icon from > (right arrow) to ^ (up arrow) */
+            -webkit-transform: rotate(90deg);
+            -moz-transform: rotate(90deg);
+            -ms-transform: rotate(90deg);
+            -o-transform: rotate(90deg);
+            transform: rotate(90deg);
+            color: #454444;
+        }
+    </style>
+    <style>
+        .testimonials-contact-section {
+            background: none !important;
+        }
+    </style>
+
+</head>
+
+
+<body>
+    <div class="page-wrapper">
+
+
+        <section class="testimonials-contact-section section-padding">
+
+            <div class="container">
+                <div class="page-header">
+                    <h1>FAQ <small>Frequently Asked Questions</small></h1>
+                </div>
+                <div class="accordion container" id="accordionExample" style="margin-top:50px">
+                    <div class="alert alert-warning alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        This section contains a wealth of information, related to <strong>Absolute Solutions</strong>. If you cannot find an answer to your question,
+                        make sure to contact us.
+                    </div>
+
+                    <div class="accordion-item">
+                        @if (Model.Count() > 1)
+                        {
+                            int i = 1;
+                            @foreach (var item in Model)
+                            {
+
+                                <h2 class="accordion-header" id="heading@(i)">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse@(i)" aria-expanded="false" aria-controls="collapse@(i)">
+                                        @item.Question
+                                    </button>
+                                </h2>
+                                <div id="collapse@(i)" class="accordion-collapse collapse" aria-labelledby="heading@(i)" data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                        @item.Answer
+                                    </div>
+                                </div>
+                                i++;
+
+
+                            }
+
+
+
+                        }
+                        else
+                        {
+
+
+
+
+
+                            <div class="panel-group" id="accordion">
+                                <div class="faqHeader">General questions</div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Is account registration required?</a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseOne" class="panel-collapse collapse in">
+                                        <div class="panel-body">
+                                            Account registration at <strong>PrepBootstrap</strong> is only required if you will be selling or buying themes.
+                                            This ensures a valid communication channel for all parties involved in any transactions.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTen">Can I submit my own Bootstrap templates or themes?</a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseTen" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            A lot of the content of the site has been submitted by the community. Whether it is a commercial element/template/theme
+                                            or a free one, you are encouraged to contribute. All credits are published along with the resources.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseEleven">What is the currency used for all transactions?</a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseEleven" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            All prices for themes, templates and other items, including each seller's or buyer's account balance are in <strong>USD</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+                        }
+
+
+
+
+
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+
+
+    </div>
+
+
+    <script src="~/assets/js/jquery.min.js"></script>
+    <script src="~/assets/js/bootstrap.min.js"></script>
+    <script src="~/assets/js/jquery-plugin-collection.js"></script>
+    <script src="~/assets/js/script.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('.supportclass').addClass('active');
+        });
+
+            //$(".navbar-nav .nav-link").click(function (e) {
+            //    e.preventDefault();
+            //    $('.menu-item-has-children').removeClass('active');
+            //    $(this).closest('.menu-item-has-children').addClass('active');
+            //});
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,397 @@
+﻿@using AbsolCase.Models
+@model Expense
+@{
+    ViewBag.Title = "AddExpense";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    /* The Modal (background) */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 50px;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    /* Modal Content */
+    .modal-contentModal {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 35%;
+        margin-left: 546px;
+        margin-top: 80px;
+    }
+    
+
+    /* The Close Button */
+    .close {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    
+</style>
+
+
+
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<link href="~/assets/css/style.css" rel="stylesheet" />
+
+
+
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-10">
+                    <h4 class="card-title text-center">Add Expenses</h4>
+                </div>
+                <div class="col-md-2">
+                    <button id="myBtn" class="right-col btn btn-success"><b style="color:white">+ Expense Type</b></button>
+                </div>
+            </div>
+            <!-- The Modal -->
+            <div id="myModal" class="modal col-md-3">
+
+                <!-- Modal content -->
+                <div class="modal-contentModal">
+                    <span class="close">&times;</span>
+                    <label for="exampleInputUsername1">Name</label>
+                    <br />
+                    <input type="text" class="form-control" name="paymenttype" id="paymenttype" />
+                    <br />
+
+                    <center>
+                        <span class="btn btn-dark" onclick="AddPayments()"> Add</span>
+                    </center>
+
+
+                </div>
+
+            </div>
+            <form class="form-sample" method="post" enctype="multipart/form-data">
+                @*<input type="hidden" value="@parentId" name="CreatedBy" />*@
+                <div class="row">
+                    <div class="form-group col-md-9">
+
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label class="col-sm-9 col-form-label" id="InvoiceNum" style="font-weight: bold">Invoice# </label>
+                        <label id="Ac" style="font-weight: bold"></label>
+                        <label id="Clients" style="font-weight: bold"></label>
+                        <label id="Name" style="font-weight: bold"></label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+
+                        <div class="form-group" id="Clientdown">
+                            <label>Client</label>
+                            <select id="Client" name="ClientId" class="form-control" aria-label="case">
+                                <option>Please select Client</option>
+                                <!--via ajax-->
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="exampleInputUsername1">Amount</label>
+                        <input type="text" class="form-control" name="Amount" id="Amount" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="exampleInputUsername1">Date</label>
+                        <input type="date" name="duedate" id="duedate" class="form-control" />
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Expense Type</label>
+                            <select id="PaymentTypeList" name="ExpenseType" class="form-control" aria-label="case">
+                                <!--via ajax-->
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="form-group col-md-4">
+                        <div class="form-group">
+                            <label>Payment Mode</label>
+                            <select class="form-control" name="PAymentMode" aria-label="case" id="paymentType">
+                                <option value="1">Cash</option>
+                                <option value="2">Bank Transfer</option>
+                                <option value="3">Bank Cheque</option>
+                                <option value="4">Paypal</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="exampleInputUsername1">Description</label>
+                        <input type="text" class="form-control" name="Description" id="description" />
+                    </div>
+                    <fieldset class="border p-2" id="bank-group" style="margin-bottom: 1.5rem; display:none">
+                        <legend class="w-auto" style="float: none; font-size:20px">Bank Cheque:</legend>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Cheque Title</label>
+                                    <div class="col-sm-9">
+                                        @Html.EditorFor(model => model.CheckTitle, new { htmlAttributes = new { @class = "form-control", placeholder = "Check Title", } })
+                                        @Html.ValidationMessageFor(model => model.CheckTitle, "", new { @class = "text-danger db" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Cheque Number</label>
+                                    <div class="col-sm-9">
+                                        @Html.EditorFor(model => model.CheckNumber, new { htmlAttributes = new { @class = "form-control", placeholder = "Check Number", } })
+                                        @Html.ValidationMessageFor(model => model.CheckNumber, "", new { @class = "text-danger db" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Cheque Date</label>
+                                    <div class="col-sm-9">
+                                        @Html.EditorFor(model => model.CheckDate, new { htmlAttributes = new { @class = "form-control", placeholder = "Check Date", @type = "date" } })
+                                        @Html.ValidationMessageFor(model => model.CheckDate, "", new { @class = "text-danger db" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Cheque Image</label>
+                                    <div class="col-sm-9">
+                                        <input type="file" class="form-control" id="Image" name="Image" accept="image/*" value="UploadScreenSHot" style="width:96%;" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <input type="submit" value="Submit" class="btn btn-lg btn-primary me-3" style="float:right" />
+            </form>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        setTimeout(function () {
+            $("#msgalert").hide();
+        }, 3500);
+        function GetAccount() {
+            var StaffId = $("#stafflist").val();
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                data: { Id: StaffId },
+                   headers: { "Authorization": 'Bearer ' + token },
+                url: `${remoteServerURl}api/FinancialDetails/GetAccountById`
+            }).done(function (data) {
+                data = "A/C # " + data.accountNumber;
+                $("#Ac").html(data);
+            })
+        }
+        function getclient() {
+
+            var ClientId = $("#client").val();
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                data: { Id: ClientId },
+                   headers: { "Authorization": 'Bearer ' + token },
+                url: `${remoteServerURl}api/Case/GetCasesById`
+            }).done(function (data) {
+                data = "Client Name : " + data.firstName;
+                $("#Name").html(data);
+            })
+        }
+
+
+        function showMoreInformation() {
+            $("#companyinfo").toggle('hide');
+        }
+
+        var remoteServerURl = "";
+        var parentId = "";
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            parentId = $("#current-userid").val();
+            token = localStorage.getItem('token');
+
+        });
+        function getInvoiceNum() {
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Expense/GetInvoiceNum`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                data = "Invoice# " + data;
+                $("#InvoiceNum").html(data);
+            })
+        }
+
+        function getRemoteServerURl() {
+            //$.ajax({
+            //    type: 'GET',
+            //    url: '/common/getConfigurationValue',
+            //    data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+
+            //    getInvoiceNum();
+            //    GetClients();
+            //    GetPaymentTypes();
+            //})
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+            getInvoiceNum();
+               GetClients();
+             GetPaymentTypes();
+        }
+        $('#paymentType').change(function (e) {
+            if ($("#paymentType").val() == '3') {
+                $("#bank-group").show();
+                $("#CheckTitle").val("");
+                $("#CheckNumber").val("");
+                $("#CheckDate").val("");
+                $("#Image").val("");
+            }
+            else {
+                $("#bank-group").hide();
+            }
+        });
+        function getStaff() {
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/UserManagement/GetStaff?ParentId=${parentId}&&userType=Staff`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                let options = "<option value=''>Select Staff</option>";
+                $.each(data, function (a, leads) {
+                    options += "<option value='" + leads.id + "'>" + leads.firstName  + "</option>";
+                });
+
+                $("#stafflist").html(options);
+            })
+        };
+
+        function GetPaymentTypes() {
+
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Expense/GetPaymentTypes`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                let options = "<option value=''>Select Payment Type</option>";
+                $.each(data, function (a, b) {
+                    options += "<option value='" + b.id + "'>" + b.name  + "</option>";
+                });
+
+                $("#PaymentTypeList").html(options);
+            })
+        }
+       function GetClients() {
+               token = localStorage.getItem('token');
+           $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Contact/GetContacts`,
+                headers: { "Authorization": 'Bearer ' + token },
+            }).done(function (data) {
+                let options = "<option value=''>Select</option>";
+                $.each(data, function (a, b) {
+                    options += "<option value='" + b.contactId + "'>" + b.firstName +' '+ b.lastName + "</option>";
+                });
+                $("#Client ").html(options);
+            })
+        };
+
+        function AddPayments() {
+            var PaymentTypeModel = {
+                Name: $("#paymenttype").val(),
+            };
+                token = localStorage.getItem('token');
+            $.ajax({
+                url: `${remoteServerURl}api/Expense/AddPaymentTypes`,
+               headers: { "Authorization": 'Bearer ' +  token },
+                type: "POST",
+                data: JSON.stringify(PaymentTypeModel),
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    setTimeout(function () {
+                        window.location.href='@Url.Action("AddExpense","Expense")'
+                    }, 1000);
+                },
+                error: function (response) {
+                    toastr.error(response.responseText);
+                }
+            });
+            }
+    </script>
+    <script>
+        // Get the modal
+        var modal = document.getElementById("myModal");
+
+        // Get the button that opens the modal
+        var btn = document.getElementById("myBtn");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        // When the user clicks the button, open the modal
+        btn.onclick = function () {
+            modal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+}
+

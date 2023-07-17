@@ -1,0 +1,122 @@
+﻿@using AbsolCase.Models
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_StaffLayout.cshtml";
+    @using Newtonsoft.Json;
+    @using Microsoft.AspNetCore.Http;
+    @inject IHttpContextAccessor httpContextAccessor;
+    @using Microsoft.AspNetCore.Hosting;
+    @using Microsoft.Extensions.Configuration;
+    @using AbsolCase.Utility;
+    @inject IWebHostEnvironment _env;
+    @inject IConfiguration _config;
+    string userdto = httpContextAccessor.HttpContext.Session.GetString("userData");
+    UserDto userDto = new UserDto();
+    bool canAccessMessages = false;
+    if (!string.IsNullOrEmpty(userdto))
+    {
+        userDto = JsonConvert.DeserializeObject<UserDto>(userdto);
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Unlimited Messages").FirstOrDefault() != null)
+            canAccessMessages = true;
+    }
+    var apiBaseUrl = CommonMethods.GetApiBaseURL(_env, _config);/* + "api/";*/
+}
+
+<style>
+    .content-wrapper {
+        height: 81vh;
+    }
+</style>
+
+
+<div class="row">
+    <div style="margin-left:400px;">
+        <a href="@(canAccessMessages == true ? "/cms/Staff/Message/MessagesChat" : "#")" style="text-decoration:none;" @(!canAccessMessages ? "onclick=ShowSubscriptionLimitation()": "")>
+            <img src="~/images/messageicon.png" width="70" height="70" /><br />
+        </a>
+        <div class="text mt-2" style="margin-left:-20px;">
+            Send Message
+        </div>
+    </div>
+    
+    <div class="row" style="margin-top:5%">
+        <div class="col-md-8 grid-margin grid-margin-md-0 stretch-card">
+            <div class="card" style="overflow: auto;height: 20rem;">
+                <div class="card-body">
+                    <h4 class="card-title">Your Cases</h4>
+                    <div class="table-responsive">
+                        @if (ViewBag.Cases != null)
+                        {
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="pt-1 ps-0">
+                                            Concerned Lawyer/Person
+                                        </th>
+                                        <th class="pt-1">
+                                            Case Name
+                                        </th>
+                                        <th class="pt-1">
+                                            Status
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (ViewBag.Cases != null)
+                                    {
+                                        @foreach (var usercase in ViewBag.Cases)
+                                        {
+                                            <tr>
+                                                <td class="py-1 ps-0">
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="@($"{apiBaseUrl}images/faces/face1.jpg")" alt="profile">
+                                                        @*<img src="https://localhost:44318/images/faces/face1.jpg" alt="profile">
+                                                        <img src="http://38.17.51.206:8010/images/faces/face1.jpg" alt="profile">*@
+                                                        <div class="ms-3">
+                                                            <p class="mb-0">@usercase.LeadAttorney</p>
+                                                            <p class="mb-0 text-muted text-small">@usercase.Office</p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td> @usercase.Description </td>
+                                                <td>
+                                                    <label class="badge badge-success">@usercase.CaseStage</label>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 grid-margin stretch-card fr" style="position: relative; left: 1%; ">
+            <div class="card" style="overflow: auto;height: 20rem;">
+                <div class="card-body">
+                    <h4 class="card-title">News</h4>
+                    <ul class="bullet-line-list">
+                        @if (ViewBag.News != null)
+                        {
+                            @foreach (var item in ViewBag.News)
+                            {
+                                <li>
+                                    <h6>@item.NewsTittle</h6>
+                                    <p>@item.NewsDescription </p>
+                                    <p class="text-muted mb-4">
+                                        <i class="ti-time"></i>
+                                        @item.PublishDate.ToString("dd/MM/yyyy")
+                                    </p>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

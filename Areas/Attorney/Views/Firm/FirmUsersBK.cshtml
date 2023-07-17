@@ -1,0 +1,106 @@
+﻿
+@{
+    ViewData["Title"] = "FirmUsers";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            
+
+            <h4 class="card-title">Firm Users <a href="@Url.Action("AddUsers","Firm",new{@area="Attorney"})" class="btn btn-warning ms-5">Add User</a></h4>
+            @*<p class="card-description">
+                Manage Document Tag
+            </p>*@
+            <div class="table-responsive">
+                <table id="datatable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                Title
+                            </th>
+                            <th>
+                                Permissions
+                            </th>
+                            <th>
+                                Active Cases
+                            </th>
+                            <th>
+                                Calendar Color
+                            </th>
+                            <th>
+                                Default Hourly Rate
+                            </th>
+                            <th>
+                                Last Login
+                            </th>
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+                    </thead>
+                    @{
+                        int i = 1;
+                    }
+                    <tbody>
+                        @if (Model != null && Model.Count > 0)
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <img src="~/images/blank-profile.png" width="500" height="600">
+                                    </td>
+                                    <td class="py-1">
+                                        @item.FirstName @item.LastName
+                                    </td>
+                                    <td class="py-1">
+                                        @item.RoleName
+                                    </td>
+                                    <td class="py-1">
+                                        @item.RoleName
+                                    </td>
+                                    <td class="py-1">
+                                        @item.RoleName
+                                    </td>
+                                    <td class="py-1">
+                                        @item.RoleName
+                                    </td>
+                                    <td class="py-1">
+                                        @item.CaseRate
+                                    </td>
+                                    <td class="py-1">
+                                        djaks
+                                    </td>
+                                    <td class="py-1">
+                                        @item.VerificationStatus
+                                    </td>
+
+                                    @*<td>
+                                        <a href="@Url.Action("UpdateDocumentTag", "Configuration", new { id = document.Id })">Edit </a>
+                                        |  <a href="#" onclick="openpopup(@document.Id, 'Are you sure to delete document tag?', 'deletedocument(@document.Id)')">Delete</a>
+                                        @*<a href>Edit |</a>
+                                <a>Delete </a>
+                                    </td>*@
+
+
+                                </tr>
+                                i++;
+
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+

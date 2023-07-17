@@ -1,0 +1,721 @@
+﻿@{
+    @using Newtonsoft.Json;
+    @using Microsoft.AspNetCore.Http;
+    @inject IHttpContextAccessor httpContextAccessor;
+    @using Microsoft.AspNetCore.Hosting;
+    @using Microsoft.Extensions.Configuration;
+    @using AbsolCase.Utility;
+    @inject IWebHostEnvironment _env;
+    @inject IConfiguration _config;
+    string userdto = httpContextAccessor.HttpContext.Session.GetString("userData");
+    UserDto userDto = new UserDto();
+    if (!string.IsNullOrEmpty(userdto))
+    {
+        userDto = JsonConvert.DeserializeObject<UserDto>
+    (userdto);
+    }
+    var apiBaseUrl = CommonMethods.GetApiBaseURL(_env, _config);/* + "api/";*/
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>
+        Absol Case
+    </title>
+
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="~/vendors/feather/feather.css">
+    <link rel="stylesheet" href="~/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="~/vendors/ti-icons/css/themify-icons.css">
+    <link rel="stylesheet" href="~/vendors/typicons/typicons.css">
+    <link rel="stylesheet" href="~/vendors/simple-line-icons/css/simple-line-icons.css">
+    <link rel="stylesheet" href="~/vendors/css/vendor.bundle.base.css">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="~/vendors/datatables.net-bs4/dataTables.bootstrap4.css">
+    <link rel="stylesheet" href="~/js/select.dataTables.min.css">
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="~/css/vertical-layout-light/style.css">
+    <!-- endinject -->
+    <link href="~/assets/css/appdefault.css" rel="stylesheet" />
+    <link href="~/css/case.css" rel="stylesheet" />
+    <link rel=" shortcut icon" href="~/images/favicon.png" />
+    <style type="text/css">
+
+        /* Chart.js */
+        @@keyframes chartjs-render-animation {
+            from {
+                opacity: .99
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        #datatable_previous {
+            border-color: #010001eb;
+            background-color: #efefef;
+        }
+
+        #datatable_next {
+            border-color: #010001eb;
+            background-color: #efefef;
+        }
+
+        .chartjs-render-monitor {
+            animation: chartjs-render-animation 1ms
+        }
+
+        .chartjs-size-monitor, .chartjs-size-monitor-expand, .chartjs-size-monitor-shrink {
+            position: absolute;
+            direction: ltr;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            pointer-events: none;
+            visibility: hidden;
+            z-index: -1
+        }
+
+            .chartjs-size-monitor-expand > div {
+                position: absolute;
+                width: 1000000px;
+                height: 1000000px;
+                left: 0;
+                top: 0
+            }
+
+            .chartjs-size-monitor-shrink > div {
+                position: absolute;
+                width: 200%;
+                height: 200%;
+                left: 0;
+                top: 0
+            }
+    </style>
+    <style>
+        .sidebar .nav .nav-item .nav-link .menu-title {
+            color: white;
+        }
+    </style>
+    <style>
+        .sidebar .nav .nav-item .nav-link i.menu-icon {
+            color: white;
+        }
+    </style>
+
+    <style>
+        .sidebar .nav .nav-item:hover > .nav-link i, .sidebar .nav .nav-item:hover > .nav-link .menu-title, .sidebar .nav .nav-item:hover > .nav-link .menu-arrow {
+            color: white;
+        }
+    </style>
+    <style>
+        .sidebar {
+            width: 270px;
+        }
+    </style>
+
+    <style>
+        .navbar .navbar-menu-wrapper {
+            width: calc(100% - 262px);
+        }
+    </style>
+
+    <style>
+        .sidebar .nav:not(.sub-menu) > .nav-item:hover > .nav-link, .sidebar .nav:not(.sub-menu) > .nav-item:hover[aria-expanded="true"] {
+            background: #1f1f1f;
+            color: #fff;
+        }
+    </style>
+
+    <style>
+        .sidebar .nav:not(.sub-menu) > .nav-item > .nav-link[aria-expanded="true"] {
+            border-radius: 8px 8px 0 0;
+            background: #1F1F1f;
+            color: #1f1f1f;
+        }
+    </style>
+    @RenderSection("styles", false)
+    <style>
+        .dataTables_wrapper .dataTable thead .sorting:after, .dataTables_wrapper .dataTable thead .sorting_asc:after, .dataTables_wrapper .dataTable thead .sorting_desc:after, .dataTables_wrapper .dataTable thead .sorting_asc_disabled:after, .dataTables_wrapper .dataTable thead .sorting_desc_disabled:after {
+            display: none
+        }
+
+        .dataTables_wrapper .dataTable thead .sorting:before, .dataTables_wrapper .dataTable thead .sorting_asc:before, .dataTables_wrapper .dataTable thead .sorting_desc:before, .dataTables_wrapper .dataTable thead .sorting_asc_disabled:before, .dataTables_wrapper .dataTable thead .sorting_desc_disabled:before {
+            display: none
+        }
+    </style>
+    <style>
+        .colorMenuwhite {
+            color: white !important;
+        }
+
+        .colorMenublack {
+            color: black !important;
+        }
+    </style>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+</head>
+
+<body>
+    <div class="preloader" id="overlay" style="display: none">
+        <div class="lds-roller">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+    <div class="container-scroller ">
+        <input type="hidden" value="@userDto.Id" id="current-userid" />
+        <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top" style="background-color: #1f1f1f">
+            <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start" style="background-color:#1F1F1F">
+                <div class="me-3">
+                    <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize" onclick="toggleIcon()">
+                        <span id="menuClick" class="icon-menu" style="color: white"></span>
+                    </button>
+                </div>
+                <div>
+                    <a class="navbar-brand brand-logo">
+                        <h3 class="name-heading" style="color:white">
+                            @userDto.FirstName @userDto.LastName
+                        </h3>
+                    </a>
+                </div>
+            </div>
+            <div class="navbar-menu-wrapper d-flex align-items-top">
+                <ul class="navbar-nav">
+                    <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
+                        <h1 class="welcome-text">Good Morning, <span class="text-black fw-bold">@userDto.FirstName</span></h1>
+                        <h3 class="welcome-sub-text">Welcome to Case Management System</h3>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown d-none d-lg-block user-dropdown">
+                        <a class="nav-link c-pointer" id="UserDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img class="img-xs rounded-circle" src="@userDto.ImagePath" alt="Profile image">
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right navbar-dropdown dropdown-item-links" aria-labelledby="UserDropdown">
+                            <div class="dropdown-header text-center">
+                                <img class="img-xs rounded-circle" src="@userDto.ImagePath" alt="Profile image">
+                                <p class="mb-1 mt-3 font-weight-semibold">@userDto.FirstName @userDto.LastName</p>
+                                <p class="fw-light text-muted mb-0">@userDto.Email</p>
+                            </div>
+                            <a class="dropdown-item" href="~/Administration/Users/UserProfile"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile</a>
+                            <a class="dropdown-item" href="~/Administration/Users/AdminActivityLog"><i class="dropdown-item-icon mdi mdi-calendar-check-outline text-primary me-2"></i>Activity Logs</a>
+                            <a class="dropdown-item" href="~/Administration/FAQA/AddFAQuestions"> <i class="dropdown-item-icon mdi mdi-help-circle-outline text-primary me-2"></i> FAQ</a>
+                            <a class="dropdown-item" href="~/Security/Account/Logout"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
+                        </div>
+                    </li>
+                </ul>
+                <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
+                    <span class="mdi mdi-menu"></span>
+                </button>
+            </div>
+        </nav>
+        <!-- partial -->
+        <div class="container-fluid page-body-wrapper">
+            <!-- partial:partials/_settings-panel.html -->
+            <div class="theme-setting-wrapper">
+
+                <div id="theme-settings" class="settings-panel">
+                    <i class="settings-close ti-close"></i>
+                    <p class="settings-heading">SIDEBAR SKINS</p>
+                    <div class="sidebar-bg-options selected" id="sidebar-light-theme">
+                        <div class="img-ss rounded-circle bg-light border me-3">
+                        </div>Light
+                    </div>
+                    <div class="sidebar-bg-options" id="sidebar-dark-theme">
+                        <div class="img-ss rounded-circle bg-dark border me-3">
+                        </div>Dark
+                    </div>
+                    <p class="settings-heading mt-2">HEADER SKINS</p>
+                    <div class="color-tiles mx-0 px-4">
+                        <div class="tiles success"></div>
+                        <div class="tiles warning"></div>
+                        <div class="tiles danger"></div>
+                        <div class="tiles info"></div>
+                        <div class="tiles dark"></div>
+                        <div class="tiles default"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="right-sidebar" class="settings-panel">
+                <i class="settings-close ti-close"></i>
+                <ul class="nav nav-tabs border-top" id="setting-panel" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="todo-tab" data-bs-toggle="tab" href="#todo-section" role="tab" aria-controls="todo-section" aria-expanded="true">TO DO LIST</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="chats-tab" data-bs-toggle="tab" href="#chats-section" role="tab" aria-controls="chats-section">CHATS</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="setting-content">
+                    <div class="tab-pane fade show active scroll-wrapper" id="todo-section" role="tabpanel" aria-labelledby="todo-section">
+                        <div class="add-items d-flex px-3 mb-0">
+                            <form class="form w-100">
+                                <div class="form-group d-flex">
+                                    <input type="text" class="form-control todo-list-input" placeholder="Add To-do">
+                                    <button type="submit" class="add btn btn-primary todo-list-add-btn" id="add-task">Add</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="list-wrapper px-3">
+                            <ul class="d-flex flex-column-reverse todo-list">
+                                <li>
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input class="checkbox" type="checkbox">
+                                            Team review meeting at 3.00 PM
+                                        </label>
+                                    </div>
+                                    <i class="remove ti-close"></i>
+                                </li>
+                                <li>
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input class="checkbox" type="checkbox">
+                                            Prepare for presentation
+                                        </label>
+                                    </div>
+                                    <i class="remove ti-close"></i>
+                                </li>
+                                <li>
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input class="checkbox" type="checkbox">
+                                            Resolve all the low priority tickets due today
+                                        </label>
+                                    </div>
+                                    <i class="remove ti-close"></i>
+                                </li>
+                                <li class="completed">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input class="checkbox" type="checkbox" checked>
+                                            Schedule meeting for next week
+                                        </label>
+                                    </div>
+                                    <i class="remove ti-close"></i>
+                                </li>
+                                <li class="completed">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input class="checkbox" type="checkbox" checked>
+                                            Project review
+                                        </label>
+                                    </div>
+                                    <i class="remove ti-close"></i>
+                                </li>
+                            </ul>
+                        </div>
+                        <h4 class="px-3 text-muted mt-5 fw-light mb-0">Events</h4>
+                        <div class="events pt-4 px-3">
+                            <div class="wrapper d-flex mb-2">
+                                <i class="ti-control-record text-primary me-2"></i>
+                                <span>Feb 11 2018</span>
+                            </div>
+                            <p class="mb-0 font-weight-thin text-gray">Creating component page build a js</p>
+                            <p class="text-gray mb-0">The total number of sessions</p>
+                        </div>
+                        <div class="events pt-4 px-3">
+                            <div class="wrapper d-flex mb-2">
+                                <i class="ti-control-record text-primary me-2"></i>
+                                <span>Feb 7 2018</span>
+                            </div>
+                            <p class="mb-0 font-weight-thin text-gray">Meeting with Alisa</p>
+                            <p class="text-gray mb-0 ">Call Sarah Graves</p>
+                        </div>
+                    </div>
+                    <!-- To do section tab ends -->
+                    <div class="tab-pane fade" id="chats-section" role="tabpanel" aria-labelledby="chats-section">
+                        <div class="d-flex align-items-center justify-content-between border-bottom">
+                            <p class="settings-heading border-top-0 mb-3 pl-3 pt-0 border-bottom-0 pb-0">Friends</p>
+                            <small class="settings-heading border-top-0 mb-3 pt-0 border-bottom-0 pb-0 pr-3 fw-normal">See All</small>
+                        </div>
+                        <ul class="chat-list">
+                            <li class="list active">
+                                <div class="profile"><img src="~/images/faces/face1.jpg" alt="image"><span class="online"></span></div>
+                                <div class="info">
+                                    <p>Thomas Douglas</p>
+                                    <p>Available</p>
+                                </div>
+                                <small class="text-muted my-auto">19 min</small>
+                            </li>
+                            <li class="list">
+                                <div class="profile"><img src="~/images/faces/face2.jpg" alt="image"><span class="offline"></span></div>
+                                <div class="info">
+                                    <div class="wrapper d-flex">
+                                        <p>Catherine</p>
+                                    </div>
+                                    <p>Away</p>
+                                </div>
+                                <div class="badge badge-success badge-pill my-auto mx-2">4</div>
+                                <small class="text-muted my-auto">23 min</small>
+                            </li>
+                            <li class="list">
+                                <div class="profile"><img src="~/images/faces/face3.jpg" alt="image"><span class="online"></span></div>
+                                <div class="info">
+                                    <p>Daniel Russell</p>
+                                    <p>Available</p>
+                                </div>
+                                <small class="text-muted my-auto">14 min</small>
+                            </li>
+                            <li class="list">
+                                <div class="profile"><img src="~/images/faces/face4.jpg" alt="image"><span class="offline"></span></div>
+                                <div class="info">
+                                    <p>James Richardson</p>
+                                    <p>Away</p>
+                                </div>
+                                <small class="text-muted my-auto">2 min</small>
+                            </li>
+                            <li class="list">
+                                <div class="profile"><img src="~/images/faces/face5.jpg" alt="image"><span class="online"></span></div>
+                                <div class="info">
+                                    <p>Madeline Kennedy</p>
+                                    <p>Available</p>
+                                </div>
+                                <small class="text-muted my-auto">5 min</small>
+                            </li>
+                            <li class="list">
+                                <div class="profile"><img src="~/images/faces/face6.jpg" alt="image"><span class="online"></span></div>
+                                <div class="info">
+                                    <p>Sarah Graves</p>
+                                    <p>Available</p>
+                                </div>
+                                <small class="text-muted my-auto">47 min</small>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- chat tab ends -->
+                </div>
+            </div>
+
+            <nav class="sidebar sidebar-offcanvas" id="sidebar" style="background-color: #1F1F1F;">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="~/Administration/Dashboard/index" style="background-color:#1f1f1f">
+                            <i class="menu-icon mdi mdi-kodi colorMenuwhite"></i>
+                            <span class="menu-title ClrChk">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-items"> </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic" style="background-color:#1f1f1f">
+                            <i class="menu-icon mdi mdi-account-arrow-right colorMenuwhite"></i>
+                            <span class="menu-title ClrChk">User Management</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="ui-basic">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Users" asp-action="AddUser">Register User</a></li>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Users" asp-action="ManageUser">Manage Users</a></li>
+                                <div class="sepmenu"></div>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Users" asp-action="BlockUser">Block Users</a></li>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Users" asp-action="ChangePassword">Change Password</a></li>
+                                <div class="sepmenu"></div>
+                                @*<li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Role" asp-action="AddRole">Add Roles</a></li>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Role" asp-action="ManageRoles">Manage Roles</a></li>*@
+                                <div class="sepmenu"></div>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Users" asp-action="AdminActivityLog">Activity Logs</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item"> </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-customer" aria-expanded="false" aria-controls="ui-basic" style="background-color:#1f1f1f">
+                            <i class="menu-icon mdi mdi-account-multiple colorMenuwhite"></i>
+                            <span class="menu-title ClrChk">Customers Management</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="ui-customer">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Users" asp-action="PendingCustomer">Pending Customers</a></li>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Users" asp-action="RejectedCustomer">Rejected Customers</a></li>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Users" asp-action="ApprovedCustomer">Approved Customers</a></li>
+
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item"></li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-b" aria-expanded="false" aria-controls="ui-basic" style="background-color:#1f1f1f">
+                            <i class="menu-icon mdi mdi mdi-newspaper colorMenuwhite"></i>
+                            <span class="menu-title ClrChk">News</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="ui-b">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="AdminNews" asp-action="AddNews">Add News</a></li>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="AdminNews" asp-action="ManageNews">Manage News</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item "></li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-ba" aria-expanded="false" aria-controls="ui-basic" style="background-color:#1f1f1f">
+                            <i class="menu-icon mdi mdi-cogs colorMenuwhite"></i>
+                            <span class="menu-title ClrChk">Configurations</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="ui-ba">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Configuration" asp-action="AddAdminNotesTag">Notes Tag</a></li>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Configuration" asp-action="ManageAdminNotesTag">Manage Notes Tags</a></li>
+                                <div class="sepmenu"></div>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Configuration" asp-action="AddAdminDocumentTag">Document Tags</a></li>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Configuration" asp-action="ManageAdminDocumentTag">Manage Document Tags</a></li>
+                                <div class="sepmenu"></div>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Configuration" asp-action="AddContactGroup">Add Contact Group</a></li>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Configuration" asp-action="ManageContactGroup">Manage Contact Group</a></li>
+                                <div class="sepmenu"></div>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Configuration" asp-action="AddPracticeArea">Add Practice Area</a></li>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Configuration" asp-action="ManagePracticeArea">Manage Practice Area</a></li>
+                                <div class="sepmenu"></div>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Configuration" asp-action="AddUserTitle">Add User Title</a></li>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Configuration" asp-action="ManageUserTitle">Manage User Title</a></li>
+                                <div class="sepmenu"></div>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Configuration" asp-action="AddRefferalSource">Add Refferal Source</a></li>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Configuration" asp-action="ManageRefferalSource">Manage Refferal Source</a></li>
+                                <div class="sepmenu"></div>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Configuration" asp-action="AddBillingMethod">Add Billing Method</a></li>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Configuration" asp-action="ManageBillingMethod">Manage Billing Method</a></li>
+
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="nav-item"></li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-basi" aria-expanded="false" aria-controls="ui-basic" style="background-color:#1f1f1f">
+                            <i class="menu-icon mdi mdi-wallet colorMenuwhite"></i>
+                            <span class="menu-title ClrChk">Subscription Plan</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="ui-basi">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="PricePlan" asp-action="AddPricePlan">Add Price Plan</a></li>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="PricePlan" asp-action="ManagePricePlans">Manage Price Plans</a></li>
+                                <div class="sepmenu"></div>
+                                @*<li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="PricePlan" asp-action="AddService">Add Service</a></li>
+                                <li class="nav-item"> <a class="nav-link" asp-area="administration" asp-controller="PricePlan" asp-action="ManageServices">Manage Service</a></li>*@
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="nav-item "></li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-finance" aria-expanded="false" aria-controls="ui-basic" style="background-color:#1f1f1f">
+                            <i class="menu-icon mdi mdi-square-inc-cash colorMenuwhite"></i>
+                            <span class="menu-title ClrChk">Cash Management</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="ui-finance">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Finance" asp-action="Payments">Subscription Invoices</a></li>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Transaction" asp-action="CustomerTransactions">All Transactions</a></li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="nav-item "></li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-report" aria-expanded="false" aria-controls="ui-basic" style="background-color:#1f1f1f">
+                            <i class="menu-icon mdi mdi-finance colorMenuwhite"></i>
+                            <span class="menu-title ClrChk">Reports Management</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="ui-report">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Users" asp-action="AddUser">Ledger Report</a></li>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Users" asp-action="ManageUser">Online Transactions</a></li>
+                            </ul>
+                        </div>
+                    </li>
+
+
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-Events" aria-expanded="false" aria-controls="ui-basic" style="background-color:#1f1f1f">
+                            <i class="menu-icon mdi mdi-cash-multiple colorMenuwhite"></i>
+                            <span class="menu-title ClrChk">Events</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="ui-Events">
+                            <ul class="nav flex-column sub-menu">
+
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="Event" asp-action="ManageEvents">Manage Events</a></li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-Decuments" aria-expanded="false" aria-controls="ui-basic">
+                            <i class="menu-icon mdi mdi-file-document colorMenuwhite"></i>
+                            <span class="menu-title ClrChk">Documents</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="ui-Decuments">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="AdminDocuments" asp-action="ManageDocuments">Manage Documents</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-Notes" aria-expanded="false" aria-controls="ui-basic" style="background-color:#1f1f1f">
+                            <i class="menu-icon mdi mdi-cash-multiple colorMenuwhite"></i>
+                            <span class="menu-title ClrChk">Notes</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="ui-Notes">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="AdminNotes" asp-action="ManageNotes">Manage Notes</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-Faqs" aria-expanded="false" aria-controls="ui-basic">
+                            <i class="menu-icon mdi mdi-help-circle colorMenuwhite"></i>
+                            <span class="menu-title ClrChk">FAQS</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="ui-Faqs">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="FAQA" asp-action="AddFAQuestions">Add Faqs</a></li>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Administration" asp-controller="FAQA" asp-action="ManageFAQuestions">Manage Faqs</a></li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-ContactUs" aria-expanded="false" aria-controls="ui-basic">
+                            <i class="menu-icon mdi mdi-contact-phone colorMenuwhite"></i>
+                            <span class="menu-title ClrChk">Contact Us</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="ui-ContactUs">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link" asp-area="Public" asp-controller="Home" asp-action="ManageContact">Manage Contact Us</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- partial -->
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="home-tab">
+
+                                <div class="tab-content tab-content-basic">
+                                    <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview">
+                                        @RenderBody()
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <footer class="footer">
+                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Powered by <a href="https://www.ab-sol.com/" target="_blank">Absolute solutions</a></span>
+                        <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Copyright © @DateTime.Now.Year.ToString();. All rights reserved Absol Case.</span>
+                    </div>
+                </footer>
+            </div>
+
+            <!-- main-panel ends -->
+        </div>
+    </div>
+
+
+
+
+
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+
+    <script src="~/js/toastr.min.js"></script>
+    <script src="~/jquery/jquery.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/vendors/jquery-toast-plugin/jquery.toast.min.js"></script>
+    <script src="~/vendors/chart.js/Chart.min.js"></script>
+    <script src="~/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+    <script src="~/vendors/progressbar.js/progressbar.min.js"></script>
+    <script src="~/vendors/datatables.net/jquery.dataTables.js"></script>
+    <script src="~/vendors/datatables.net-bs4/dataTables.bootstrap4.js"></script>
+    <link href="~/css/toastr.css" rel="stylesheet" />
+    <link href="~/css/toastr.min.css" rel="stylesheet" />
+    <script src="~/js/off-canvas.js"></script>
+    <script src="~/js/hoverable-collapse.js"></script>
+    <script src="~/js/settings.js"></script>
+    <script src="~/js/todolist.js"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page-->
+    <script src="~/js/dashboard.js"></script>
+    <script src="~/js/Chart.roundedBarCharts.js"></script>
+    <script src="~/vendors/js/vendor.bundle.base.js"></script>
+
+    @RenderSection("Scripts", required: false)
+    <script src="~/assets/js/dataTables.min.js"></script>
+    <script>
+        var numChk = 0;
+        $(document).ready(function () {
+
+            $(".ClrChk").addClass("colorMenuwhite");
+
+            $('#datatable').DataTable();
+            localStorage.setItem("token", '@userDto.Token');
+        });
+        function toggleIcon() {
+            $('body').toggleClass("sidebar-icon-only");
+        }
+        function GetURL() {
+            var URL = "@apiBaseUrl";
+            //var URL = "https://localhost:44318/";
+            //var URL = "http://38.17.51.206:8010/";
+            return URL;
+        }
+
+
+
+        //$(document).ready(function () {
+        //    //for white
+        //    $("#menuClick").css("color", "#FFFFFF");
+        //    ////for black
+        //    //$("#menuClick").css("color", "#000000");
+        //});
+
+        $("#menuClick").click(function () {
+            if (numChk == 0) {
+                numChk = 1;
+                //for black
+                $(".ClrChk").removeClass("colorMenuwhite");
+                $(".ClrChk").addClass("colorMenublack");
+            }
+            else {
+                numChk = 0;
+                $(".ClrChk").addClass("colorMenuwhite");
+                $(".ClrChk").removeClass("colorMenublack");
+            }
+        });
+
+    </script>
+</body>
+</html>

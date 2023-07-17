@@ -1,0 +1,41 @@
+﻿@model AbsolCase.Models.CaseDetail
+@{
+    ViewData["Title"] = "UpdateCase";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+
+<div class="col-md-6 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Update Case Stage</h4>
+
+            @using (Html.BeginForm("UpdateCase", "Admin", FormMethod.Post, new { @class = "forms-sample" }))
+            {
+                @Html.HiddenFor(model => model.Id)
+                <div class="form-group">
+                    <label for="exampleInputUsername1">Case Stage</label>
+                    @Html.EditorFor(model => model.CaseStage, new { htmlAttributes = new { @class = "form-control", placeholder = "Case Stage" } })
+                    @Html.ValidationMessageFor(model => model.CaseStage, "", new { @class = "text-danger db" })
+
+                </div>
+
+
+                <input type="submit" value="Update" class="btn btn-dark fr" />
+                @*<button class="btn btn-light">Cancel</button>*@
+            }
+        </div>
+    </div>
+</div>
+<script>
+    setTimeout(function () {
+        $("#msgalert").hide();
+    }, 3500);
+</script>

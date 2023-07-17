@@ -1,0 +1,1129 @@
+﻿@using AbsolCase.Models
+@model CaseDetail
+
+@{
+    ViewBag.Title = "Attorney Dashboard";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    @using Newtonsoft.Json;
+    @using Microsoft.AspNetCore.Http;
+    @inject IHttpContextAccessor httpContextAccessor;
+    string userdto = httpContextAccessor.HttpContext.Session.GetString("userData");
+    UserDto userDto = new UserDto();
+    bool canAccessMessages = false;
+    bool canAccessCalendar = false;
+    bool canAccessDocuments = false;
+    bool canAccessNotes = false;
+    if (!string.IsNullOrEmpty(userdto))
+    {
+        userDto = JsonConvert.DeserializeObject<UserDto>(userdto);
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Unlimited Messages").FirstOrDefault() != null)
+            canAccessMessages = true;
+
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Calendar Events").FirstOrDefault() != null)
+            canAccessCalendar = true;
+
+        if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Documents Handling").FirstOrDefault() != null)
+            canAccessDocuments = true;
+
+        if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Notes Handling").FirstOrDefault() != null)
+            canAccessNotes = true;
+    }
+}
+
+<style>
+    .FixedHeightContainer {
+        /*     float: right;*/
+        height: 250px;
+        width: 250px;
+        padding: 3px;
+        /*   background: #f00;*/
+    }
+
+    .Content {
+        height: 224px;
+        overflow: auto;
+        /*   background: #fff;*/
+    }
+</style>
+<style>
+    element.style {
+        width: 39rem;
+        margin-left: 12px;
+    }
+
+    .bullet-line-list {
+        padding-left: 18px;
+        position: inherit;
+        list-style-type: none;
+        margin-bottom: 0;
+    }
+
+    .closeCaseTags {
+        color: white;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        margin-left: 10px;
+    }
+
+
+    .breadcrumb {
+	/*centering*/
+	display: inline-block;
+	box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.35);
+	overflow: hidden;
+	border-radius: 5px;
+	/*Lets add the numbers for each link using CSS counters. flag is the name of the counter. to be defined using counter-reset in the parent element of the links*/
+	counter-reset: flag; 
+}
+
+.breadcrumb a {
+	text-decoration: none;
+	outline: none;
+	display: block;
+	float: left;
+	font-size: 12px;
+	line-height: 36px;
+	color: white;
+	/*need more margin on the left of links to accomodate the numbers*/
+	padding: 0 10px 0 60px;
+	background: #666;
+	background: linear-gradient(#666, #333);
+	position: relative;
+}
+/*since the first link does not have a triangle before it we can reduce the left padding to make it look consistent with other links*/
+.breadcrumb a:first-child {
+	padding-left: 46px;
+	border-radius: 5px 0 0 5px; /*to match with the parent's radius*/
+}
+.breadcrumb a:first-child:before {
+	left: 14px;
+}
+.breadcrumb a:last-child {
+	border-radius: 0 5px 5px 0; /*this was to prevent glitches on hover*/
+	padding-right: 20px;
+}
+
+/*hover/active styles*/
+.breadcrumb a.active, .breadcrumb a:hover{
+	background: #333;
+	background: linear-gradient(#333, #000);
+}
+.breadcrumb a.active:after, .breadcrumb a:hover:after {
+	background: #333;
+	background: linear-gradient(135deg, #333, #000);
+}
+
+/*adding the arrows for the breadcrumbs using rotated pseudo elements*/
+.breadcrumb a:after {
+	content: '';
+	position: absolute;
+	top: 0; 
+	right: -18px; /*half of square's length*/
+	/*same dimension as the line-height of .breadcrumb a */
+	width: 36px; 
+	height: 36px;
+	/*as you see the rotated square takes a larger height. which makes it tough to position it properly. So we are going to scale it down so that the diagonals become equal to the line-height of the link. We scale it to 70.7% because if square's: 
+	length = 1; diagonal = (1^2 + 1^2)^0.5 = 1.414 (pythagoras theorem)
+	if diagonal required = 1; length = 1/1.414 = 0.707*/
+	transform: scale(0.707) rotate(45deg);
+	/*we need to prevent the arrows from getting buried under the next link*/
+	z-index: 1;
+	/*background same as links but the gradient will be rotated to compensate with the transform applied*/
+	background: #666;
+	background: linear-gradient(135deg, #666, #333);
+	/*stylish arrow design using box shadow*/
+	box-shadow: 
+		2px -2px 0 2px rgba(0, 0, 0, 0.4), 
+		3px -3px 0 2px rgba(255, 255, 255, 0.1);
+	/*
+		5px - for rounded arrows and 
+		50px - to prevent hover glitches on the border created using shadows*/
+	border-radius: 0 5px 0 50px;
+}
+/*we dont need an arrow after the last link*/
+.breadcrumb a:last-child:after {
+	content: none;
+}
+
+
+.flat a, .flat a:after {
+	background: white;
+	color: black;
+	transition: all 0.5s;
+}
+.flat a:before {
+	background: white;
+	box-shadow: 0 0 0 1px #ccc;
+}
+.flat a:hover, .flat a.active, 
+.flat a:hover:after, .flat a.active:after{
+	background: #9EEB62;
+}
+
+
+</style>
+<script src="~/Scripts/jquery-1.8.0.js"></script>
+<link href="~/css/case.css" rel="stylesheet" />
+<script src="~/js/site.js"></script>
+<link href="~/css/awesome.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet" />
+
+
+<div class="row mb-1">
+    <div class="card col-md-12 col-lg-12 pull-right grid-margin">
+
+        <div class="card-block mt-3 ml-5">
+            <ul class="navbar dashboard-short-icon">
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;" @(!canAccessCalendar ? "onclick=ShowSubscriptionLimitation()" : "")>
+                    <a href="@(canAccessCalendar == true ? Url.Action("ManageEvents","Events", new { area = "Attorney"}) : "#")" style="text-decoration:none;">
+                        <img src="~/images/dashboard/event.jpg" width="50" height="50" /><br />
+                        <p style="color:black;">Event</p>
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;" @(!canAccessDocuments ? "onclick=ShowSubscriptionLimitation()" : "")>
+                    <a href="@(canAccessDocuments == true ?  Url.Action("ManageDocuments","Documents", new { area = "Attorney"}) : "#")" style="text-decoration:none;">
+                        <img src="~/images/dashboard/document-removebg.png" width="50" height="50" /><br />
+                         <p style="color:black;">Document</p>
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("AddTask", "Task", new { area = "Attorney" })" style="text-decoration:none;">
+                        <img src="~/images/dashboard/task.png" width="50" height="50" /><br />
+                         <p style="color:black;">Task</p>
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("AddPotentialClient", "Lead", new { area = "Lead" })" style="text-decoration:none;">
+                        <img src="~/images/dashboard/lead-removebg.png" width="50" height="50" /><br />
+                        <p style="color:black;">Lead</p>
+                        
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("AddContact", "Company", new { area = "Cases" })" style="text-decoration:none;" id="contactmodal">
+                        <img src="~/images/dashboard/contact-removebg.png" width="50" height="50" /><br />
+                        <p style="color:black;">Contact</p>
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("ManageCases", "Cases", new { area = "Cases" })" style="text-decoration:none;" onclick="abc();">
+                        <img src="~/images/dashboard/briefcase-removebg.png" width="50" height="50" /><br />
+                         <p style="color:black;">Case</p>
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;" @(!canAccessMessages ? "onclick=ShowSubscriptionLimitation()" : "")>
+                    <a href="@(canAccessMessages == true ? Url.Action("Message","Message", new { area = "Attorney"}) : "#")" style="text-decoration:none;">
+                        <img src="~/images/dashboard/message.png" width="50" height="50" /><br />
+                         <p style="color:black;">Message</p>
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box; ">
+                    <a href="@Url.Action("AddExpense", "Expense", new { area = "Attorney" })" style="text-decoration:none;">
+                        <img src="~/images/dashboard/expenses.png" width="50" height="50" /><br />
+                         <p style="color:black;">Expense</p>
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("AddReceipt", "Finance", new { area = "Attorney" })" style="text-decoration:none;">
+                        <img src="~/images/dashboard/invoice.jpg" width="50" height="50" /><br />
+                         <p style="color:black;">Invoice</p>
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;" @(!canAccessNotes ? "onclick=ShowSubscriptionLimitation()" : "")>
+                    <a href="@(canAccessNotes == true ? Url.Action("ManageNotes","Notes", new { area = "Attorney"}) : "#")" style="text-decoration:none;">
+                        <img src="~/images/dashboard/notes.png" width="50" height="50" /><br />
+                         <p style="color:black;">Notes</p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div>
+<div class="breadcrumb">
+	<a href="@Url.Action("FirmUsers","Firm", new { area = "Attorney"})">Firm Users</a>
+    <a href="#">Setups</a>
+	
+</div></div>
+
+<div class="row">
+    <div class="col-lg-7">
+        <div class="card card-rounded" style="min-height:500px;max-height: 550px;overflow: auto;">
+            <div class="card-body card-rounded">
+                <h4 class="card-title  card-title-dash">Recent Activity</h4>
+
+                <div class="table-responsive">
+                    <table id="datatable" class="table table-striped  dt-responsive nowrap" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>SR#</th>
+                                <th>Date &nbsp;</th>
+                                <th>Time &nbsp;</th>
+                                <th>Operation Name</th>
+                                <th>Action Detail</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyId">
+                            @if (ViewBag.RecentActivity != null)
+                            {
+                                int count = 0;
+                                foreach (var item in ViewBag.RecentActivity)
+                                {
+                                    count++;
+                                    <tr class="odd">
+                                        <td class="sorting_1">@count</td>
+                                        <td>@item.Date.ToString("yyyy-M-d")</td>
+                                        <td>@item.Date.ToString("hh:mm tt")</td>
+                                        <td>@item.OperationName</td>
+                                        <td>@item.ActionDetail</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="row">
+            <div class="card card-rounded" style="min-height: 14.75rem;max-height: 14.95rem;overflow:auto;">
+                <div class="card-body card-rounded">
+                    <h4 class="card-title  card-title-dash">Alerts</h4>
+                    <ul class="bullet-line-list">
+                        @if (ViewBag.News != null)
+                        {
+                            @foreach (var item in ViewBag.News)
+                            {
+                                int minutes = Convert.ToInt32((DateTime.Now - item.PublishDate).TotalMinutes);
+                                string dateTime = minutes < 525600 ? minutes < 1440 ? minutes < 60 ? minutes == 0 ? "Just now" : $"{minutes} Mins ago" : $"{minutes / 60} Hours ago" : $"{item.PublishDate.ToString("MMM")} {item.PublishDate.Day}" : $"{item.PublishDate.ToString("MMM")} {item.PublishDate.Year}";
+                                <li>
+                                    <h6 style="text-align: left"><b>@item.NewsTittle</b></h6>
+                                    <p style="text-align: left">@item.NewsDescription </p>
+                                    <p class="text-muted mb-4" style="text-align: left">
+                                        <i class="mdi mdi-calendar"> </i>
+                                        @dateTime
+                                    </p>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="card card-rounded" style="min-height: 15.75rem;max-height: 16.5rem;overflow:auto;">
+                <div class="card-body card-rounded">
+                    <h4 class="card-title  card-title-dash">Upcomming Events <span style="float:right"><a href="@Url.Action("ManageEvents","Events",new{area="Attorney"})" class="btn btn-warning">Add Event</a></span> </h4>
+                    @if (ViewBag.EventsList != null)
+                    {
+                        foreach (var item in ViewBag.EventsList)
+                        {
+                            <div class="list align-items-center border-bottom py-2">
+                                <div class="wrapper w-100">
+                                    <p class="mb-2 font-weight-medium">
+                                        @item.Title
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <i class="mdi mdi-calendar text-muted me-1"></i>
+                                            <p class="mb-0 text-small text-muted">@item.Start</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="card card-rounded" style="min-height: 15.75rem;max-height: 16.5rem;overflow:auto;">
+                <div class="card-body card-rounded">
+                    <h4 class="card-title  card-title-dash">Upcomming Tasks <span style="float:right"><a href="@Url.Action("AddTask","Task",new{area="Attorney"})" class="btn btn-warning">Add Task</a></span> </h4>
+                    @if (ViewBag.EventsList != null)
+                    {
+                        foreach (var item in ViewBag.TasksList)
+                        {
+                            <div class="list align-items-center border-bottom py-2">
+                                <div class="wrapper w-100">
+                                    <p class="mb-2 font-weight-medium">
+                                        @item.Name
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <i class="mdi mdi-calendar text-muted me-1"></i>
+                                            <p class="mb-0 text-small text-muted">@item.DueDate</p>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <p style="color:#f16c40;font-size:14px;" class="mb-0 text-small">@item.Priority</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $("#BillingContact").change(function () {
+            var text = $("#BillingContact option:selected").text();
+
+            if (text != "Select") {
+
+                $("#ulCaseclients").append("<li data-valId=" + $("#BillingContact option:selected").val() + " class='btn btn-success'>" + $("#BillingContact option:selected").text() + "<span class='closeCaseTags pull-right' onclick='DeleteItemm(this)'>&times;</span></li> ");
+            }
+
+        });
+    </script>
+
+    <script>
+        var sernum = 1;
+        var bulkuser = 1;
+
+        function insertAllStaff() {
+
+            debugger;
+            var val = 1;
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetAllStaff", "AttorneyDashboard", new{area="Attorney" })',
+                data: {
+                    Id: val
+                },
+                dataType: 'json',
+                success: function (data) {
+
+
+                    $.each(data, function (key, value) {
+
+                        $('#firstNamestaff').val(value.firstName);
+                        $('#lastnamestaff').val(value.lastName);
+                        $('#emailstaff').val(value.email);
+                        $('#Rolestaff').val(value.roleName);
+                        $('#DefultRatestaff').val(value.caseRate);
+                        $('#Staff').val(value.id);
+
+                        inertStaffRowsTogridAll();
+
+                    });
+
+
+
+                },
+                error: function (xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText
+                },
+            });
+        }
+
+
+        function inertStaffRowsTogridAll() {
+            $('#zero-configuration2').append('<tr>' +
+                '<td>' + sernum + '</td>' +
+                '<td>' + $("#firstNamestaff").val() + '</td>' +
+                '<td style="display:none;">' + $("#Staff").val() + '</td>' +
+                '<td>' + $("#lastnamestaff").val() + '</td>' +
+                '<td>' + $("#emailstaff").val() + '</td>' +
+                '<td>' + $("#Rolestaff").val() + '</td>' +
+                '<td><select class="form-control ddlRate"><option value="N' + sernum + '">Default Rate</option><option value="CaseRate' + sernum + '">Case Rate</option></select></td>' +
+                '<td id="CaseRate' + sernum + '" style="display:none" ><input type="text"  id="txtRatestaff' + sernum + '" class="form-control" /></td>' +
+                '<td id="defultRate' + sernum + '">' + $("#DefultRatestaff").val() + '</td>' +
+                '<td> <a onclick="DeleteItem(this)"><span><i class="btn btn-danger">Delete</i></span></a></td></tr>'
+            );
+            sernum++
+        }
+
+
+        function insertAllAttorney() {
+
+            debugger;
+            var val = 1;
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetAllAttorney", "AttorneyDashboard", new{area="Attorney" })',
+                data: {
+                    Id: val
+                },
+                dataType: 'json',
+                success: function (data) {
+
+                    $.each(data, function (key, value) {
+                        $('#firstName').val(value.firstName);
+                        $('#lastname').val(value.lastName);
+                        $('#email').val(value.email);
+                        $('#Role').val(value.roleName);
+                        $('#DefultRate').val(value.caseRate);
+                        $('#LeadAttorney').val(value.id);
+
+                        inertAllAttorney();
+
+                    });
+                },
+                error: function (xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText
+                },
+            });
+        }
+
+        function inertAllAttorney() {
+
+            $('#zero-configuration1').append('<tr>' +
+                '<td>' + sernum + '</td>' +
+                '<td>' + $("#firstName").val() + '</td>' +
+                '<td style="display:none;">' + $("#LeadAttorney").val() + '</td>' +
+                '<td>' + $("#lastname").val() + '</td>' +
+                '<td>' + $("#email").val() + '</td>' +
+                '<td>' + $("#Role").val() + '</td>' +
+                '<td><select class="form-control ddlRate"><option value="N' + sernum + '">Default Rate</option><option value="CaseRate' + sernum + '">Case Rate</option></select></td>' +
+                '<td id="CaseRate' + sernum + '" style="display:none" ><input type="text"  id="txtRatestaff' + sernum + '" class="form-control" /></td>' +
+                '<td id="defultRate' + sernum + '">' + $("#DefultRate").val() + '</td>' +
+                '<td> <a onclick="DeleteItem(this)"><span><i class="btn btn-danger">Delete</i></span></a></td></tr>'
+            );
+            sernum++
+
+        }
+
+
+
+
+        function inertRowsTogrid() {
+
+            $('#zero-configuration1').append('<tr>' +
+                '<td>' + sernum + '</td>' +
+                '<td>' + $("#LeadAttorney").find("option:selected").text() + '</td>' +
+                '<td style="display:none;">' + $("#LeadAttorney").val() + '</td>' +
+                '<td>' + $("#lastname").val() + '</td>' +
+                '<td>' + $("#email").val() + '</td>' +
+                '<td>' + $("#Role").val() + '</td>' +
+                '<td><select class="form-control ddlRate"><option value="N' + sernum + '">Default Rate</option><option value="CaseRate' + sernum + '">Case Rate</option></select></td>' +
+                '<td id="CaseRate' + sernum + '" style="display:none" ><input type="text"  id="txtRatestaff' + sernum + '" class="form-control" /></td>' +
+                '<td id="defultRate' + sernum + '">' + $("#DefultRate").val() + '</td>' +
+                '<td> <a onclick="DeleteItem(this)"><span><i class="btn btn-danger">Delete</i></span></a></td></tr>'
+            );
+            sernum++
+
+        }
+        function inertStaffRowsTogrid() {
+            $('#zero-configuration2').append('<tr>' +
+                '<td>' + sernum + '</td>' +
+                '<td>' + $("#Staff").find("option:selected").text() + '</td>' +
+                '<td style="display:none;">' + $("#Staff").val() + '</td>' +
+                '<td>' + $("#lastnamestaff").val() + '</td>' +
+                '<td>' + $("#emailstaff").val() + '</td>' +
+                '<td>' + $("#Rolestaff").val() + '</td>' +
+                '<td><select class="form-control ddlRate"><option value="N' + sernum + '">Default Rate</option><option value="CaseRate' + sernum + '">Case Rate</option></select></td>' +
+                '<td id="CaseRate' + sernum + '" style="display:none" ><input type="text"  id="txtRatestaff' + sernum + '" class="form-control" /></td>' +
+                '<td id="defultRate' + sernum + '">' + $("#DefultRatestaff").val() + '</td>' +
+                '<td> <a onclick="DeleteItem(this)"><span><i class="btn btn-danger">Delete</i></span></a></td></tr>'
+            );
+            sernum++
+        }
+        function inertBulkUserRowsTogrid() {
+            var _firstName = $('#firstname-1').val();
+            var _lastName = $('#lastname-1').val();
+            var _emailName = $('#email-1').val();
+            var _RoleName = $("#userType-1").find("option:selected").text();
+            let user = "";
+            if (_emailName != "") {
+                token = localStorage.getItem('token');
+                $.ajax({
+                    url: `${remoteServerURl}api/UserManagement/GetUserByEmail`,
+                    headers: { "Authorization": 'Bearer ' + token },
+                    type: "Get",
+                    dataType: 'json',
+                    data: { Email: _emailName },
+                    contentType: "application/json; charset=utf-8",
+                    success: function (response) {
+                        if (response != null) {
+                            user += "<ol style='color:Red'>" + response.email + " User already Exist.</ol>";
+                            $("#NotAddedUser").html(user);
+                            $("#NotAddedUser").show();
+                        }
+                        else {
+                            $('#BulkUser').append('<tr>' +
+                                '<td>' + bulkuser + '</td>' +
+                                '<td>' + $("#firstname-1").val() + '</td>' +
+                                '<td>' + $("#lastname-1").val() + '</td>' +
+                                '<td>' + $("#email-1").val() + '</td>' +
+                                '<td>' + $("#userType-1").find("option:selected").text() + '</td>' +
+                                '<td style="display:none;">' + $("#userType-1").val() + '</td>' +
+                                '<td> <a onclick="DeleteItem(this)"><span><i class="btn btn-danger">Delete</i></span></a></td></tr>'
+                            );
+                            bulkuser++
+                        }
+        @*window.location.href = '@Url.Action("index", "AttorneyDashboard")'*@
+                                            },
+                    error: function (response) {
+                        //window.location.href='@Url.Action("index", "AttorneyDashboard")'
+                    }
+                });
+            }
+        }
+        function AddBulkUser() {
+            var UserList = new Array();
+            $("#BulkUser TBODY TR").each(function () {
+                var row = $(this);
+                var user = {};
+
+                user.FirstName = row.find("TD").eq(1).html();
+                user.LastName = row.find("TD").eq(2).html();
+                user.Email = row.find("TD").eq(3).html();
+                user.RoleName = row.find("TD").eq(4).html();
+                UserList.push(user);
+            });
+            if (UserList.length > 0) {
+                token = localStorage.getItem('token');
+                $.ajax({
+                    url: `${remoteServerURl}api/UserManagement/AddUsersBulk`,
+                    headers: { "Authorization": 'Bearer ' + token },
+                    type: "POST",
+                    dataType: 'json',
+                    data: JSON.stringify(UserList),
+                    contentType: "application/json; charset=utf-8",
+                    success: function (response) {
+                        closePopinviteuser();
+                        let list = "";
+                        $.each(response, function (i, v) {
+
+                            list += "<ol style='color:Red'>" + v + " User already Exist.</ol>";
+                        });
+
+                        $("#NotAddedUser").html(list);
+                        $("#NotAddedUser").show();
+
+        @*window.location.href = '@Url.Action("index", "AttorneyDashboard")'*@
+                                            },
+                    error: function (response) {
+                        //window.location.href='@Url.Action("index", "AttorneyDashboard")'
+                    }
+                });
+            }
+
+        }
+        function insertCase() {
+            var StafArray = new Array();
+            var serno = "";
+            var practiceArea = $('#practiceArea').val();
+            var casestage = $('#caseStageId').val();
+
+            var billingContact = $('#BillingContact').val();
+            var BillingMethod = $('#BillingMethod').val();
+
+            if (billingContact == "undefined") {
+                billingContact = null
+            }
+            if (BillingMethod == "undefined") {
+
+                BillingMethod = null
+            }
+            if (casestage == "undefined") {
+                casestage = null
+            }
+            if (practiceArea == "undefined") {
+                practiceArea = null
+            }
+
+
+
+            var NotesTagArray = new Array();
+            $("#ulCaseclients LI").each(function () {
+
+                var notesTag = {};
+                notesTag.name = $(this).text().substring(0, $(this).text().length - 1)
+                notesTag.id = $(this).attr("data-valId");
+
+                NotesTagArray.push(notesTag);
+            });
+            console.log(NotesTagArray);
+            var notestittle = "";
+            var i;
+            for (i = 0; i < NotesTagArray.length; i++) {
+                if (NotesTagArray.length == 1) {
+                    notestittle = NotesTagArray[i].id + ","
+                }
+                else if (i == 0) {
+                    notestittle = NotesTagArray[i].id
+
+                }
+                else {
+                    notestittle = notestittle + "," + NotesTagArray[i].id;
+
+                }
+            }
+            var trimenotetagstr = notestittle
+            console.log(trimenotetagstr);
+
+
+
+
+
+            $("#zero-configuration1 TBODY TR").each(function () {
+                var row = $(this);
+                var staf = {};
+                serno = row.find("TD").eq(0).html();
+                staf.StafId = row.find("TD").eq(2).html();
+
+                var tdelement = row.find("TD").eq(6).html();
+
+                var selectText = $(tdelement).find('OPTION:SELECTED').text();
+
+                staf.BillingRate = selectText;
+
+                if (staf.BillingRate == "Default Rate") {
+                    staf.Rate = row.find("TD").eq(8).html();
+                }
+                else {
+                    var selectinputvalu = $('#txtRate' + serno).val();
+                    staf.Rate = selectinputvalu;
+                }
+                StafArray.push(staf);
+            });
+            console.log(StafArray);
+            //    $("#zero-configuration2 TBODY TR").each(function () {
+            //var row = $(this);
+            //    var staff = {};
+            //    serno = row.find("TD").eq(0).html();
+            //staff.StafId = row.find("TD").eq(2).html();
+
+            //var tdelement = row.find("TD").eq(6).html();
+
+            //    var selectText = $(tdelement).find('OPTION:SELECTED').text();
+
+            //    staff.BillingRate = selectText;
+
+            //    if (staff.BillingRate == "Default Rate") {
+            //        staff.Rate = row.find("TD").eq(8).html();
+            //    }
+            //    else {
+            //        var selectinputvalu = $('#txtRatestaff' + serno).val();
+            //        staff.Rate = selectinputvalu;
+            //    }
+            //StafArray.push(staff);
+            //});
+            var model = {
+                caseName: $("#CaseName").val(),
+                caseNumber: $("#CaseNumber").val(),
+                practiceArea: practiceArea,
+                caseStage: casestage,
+                /*  caseStage: $("#caseStageId option:selected").text(),*/
+                office: $("#Office").val(),
+                description: $("#Description").val(),
+                //statueOfLimitation: $("#StatueOfLimitation").val(),
+                conflictCheckNotes: $("#ConflictCheckNotes").val(),
+                BillingContactList: trimenotetagstr,
+                billingMethod: BillingMethod,
+                staflist: StafArray,
+                CaseAddedBy: $("#current-userid").val()
+            };
+            token = localStorage.getItem('token');
+            $.ajax({
+                url: `${remoteServerURl}api/Case/AddCase`,
+                headers: { "Authorization": 'Bearer ' + token },
+                type: "POST",
+                dataType: 'json',
+                data: JSON.stringify(model),
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    window.location.href = '@Url.Action("index", "AttorneyDashboard")'
+                },
+                error: function (response) {
+                    //window.location.href='@Url.Action("index", "AttorneyDashboard")'
+                }
+            });
+        };
+
+
+        function DeleteItem(ctl) {
+            $(ctl).parents("tr").remove();
+            sernum--
+        }
+        //url: "/Attorney/AttorneyDashboard/GetAttorney",
+        $(function () {
+
+
+            $("#LeadAttorney").change(function () {
+                var val = $(this).val();
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("GetAttorney", "AttorneyDashboard", new{area="Attorney" })',
+                    data: {
+                        Id: val
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        $('#firstName').val(data.firstName);
+                        $('#lastname').val(data.lastName);
+                        $('#email').val(data.email);
+                        $('#Role').val(data.roleName);
+                        $('#DefultRate').val(data.caseRate);
+                    },
+                    error: function (xhr, status, error) {
+                        var errorMessage = xhr.status + ': ' + xhr.statusText
+                    },
+                });
+            });
+        });
+        $(function () {
+            $("#Staff").change(function () {
+
+                var val = $(this).val();
+
+                $.ajax({
+                    type: "GET",
+                    //url: "/Attorney/AttorneyDashboard/GetAttorney",
+                    url: '@Url.Action("GetAttorney", "AttorneyDashboard", new{ area="Attorney"})',
+                    data: {
+                        Id: val
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        $('#firstNamestaff').val(data.firstName);
+                        $('#lastnamestaff').val(data.lastName);
+                        $('#emailstaff').val(data.email);
+                        $('#Rolestaff').val(data.roleName);
+                        $('#DefultRatestaff').val(data.caseRate);
+                    },
+                    error: function (xhr, status, error) {
+
+                        var errorMessage = xhr.status + ': ' + xhr.statusText
+                    },
+                });
+            });
+        });
+        var remoteServerURl = "";
+        var plan = null;
+        var parentId = "";
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            parentId = $("#current-userid").val();
+            token = localStorage.getItem('token');
+        });
+        function getRemoteServerURl() {
+            //$.ajax({
+            //    type: 'GET',
+            //    url: '/common/getConfigurationValue',
+            //    data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+
+            //})
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+            getPracticeArea();
+            getBillingMethod();
+            getLeadAttorney();
+            getBillingContact();
+        };
+        function getPracticeArea() {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/ConfigManagement/GetPracticeAreas`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                let options = "<option value='undefined'>Select</option>";
+                $.each(data, function (a, b) {
+                    options += "<option value='" + b.id + "'>" + b.practiceAreaName + "</option>";
+                });
+
+                $("#practiceArea").html(options);
+            })
+        };
+        function getBillingContact() {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/contact/GetContacts`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                let options = "<option value='undefined'>Select</option>";
+                $.each(data, function (a, b) {
+                    options += "<option value='" + b.contactId + "'>" + b.firstName + "</option>";
+                });
+
+                $("#BillingContact").html(options);
+            })
+        };
+        function getBillingMethod() {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/ConfigManagement/GetBillingMethods`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                let options = "<option value='undefined'>Select</option>";
+                $.each(data, function (a, b) {
+                    options += "<option value='" + b.id + "'>" + b.name + "</option>";
+                });
+                $("#BillingMethod").html(options);
+            })
+        };
+        function getLeadAttorney() {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/UserManagement/GetUsers?ParentId=${parentId}&&Status=leadAttorney`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                let options = "<option value='undefined'>Select</option>";
+                $.each(data, function (a, b) {
+                    options += "<option value='" + b.id + "'>" + b.firstName + "</option>";
+                });
+
+                $("#LeadAttorney").html(options);
+            })
+        };
+
+        function addBulkUser() {
+            var isFormValid = true;
+            var model = [];
+            var userCount = 1;
+            $(".row .bulk-user").each(function () {
+                if ($("#firstname-" + userCount).val() || $("#email-" + userCount).val()) {
+                    if ($("#firstname-" + userCount).val() == "") {
+                        $("#fvalidation-" + userCount).show();
+                        isFormValid = false;
+                    }
+                    else {
+                        $("#fvalidation-" + userCount).hide();
+                    }
+                    if ($("#email-" + userCount).val() != "") {
+                        if (!validateEmail($("#email-" + userCount).val())) {
+                            $("#evalidation-" + userCount).show();
+                            isFormValid = false;
+                        }
+                        else {
+                            $("#evalidation-" + userCount).hide();
+                        }
+                    }
+                    else {
+                        $("#evalidation-" + userCount).show();
+                    }
+                }
+                if (!isFormValid) {
+                    hideLoader();
+                    $('#myModalinviteuser').animate({ scrollTop: (0) }, 'slow');
+                    return;
+                }
+                userCount++;
+            });
+        };
+        function abc() {
+
+            $("#myModal").modal('show');
+        };
+        function closePop() {
+            $("#myModal").modal('hide');
+        };
+        function invitemember() {
+            $("#myModalinviteuser").modal('show');
+        };
+        function closePopinviteuser() {
+            $("#myModalinviteuser").modal('hide');
+        };
+
+        $(document).ready(function () {
+
+
+            $("#CaseName").on('input', function () {
+                if ($("#CaseName").val() == "" || !validateCaseName($("#CaseName").val())) {
+                    $("#validateCaseName").text("It should contain minimum three characters and only alphabets are allowed");
+                    $("#validateCaseName").show();
+                    isvalid = false;
+                }
+                else {
+                    $("#validateCaseName").hide();
+                }
+            });
+            $("#CaseNumber").on('input', function () {
+                if ($("#CaseNumber").val() == "" || !validateCaseNo($("#CaseNumber").val())) {
+                    $("#validateCaseNumber").text("Please enter case number");
+                    $("#validateCaseNumber").show();
+                    isvalid = false;
+                }
+                else {
+                    $("#validateCaseNumber").hide();
+                }
+            });
+            $("#BillingContact").on('change', function () {
+                if ($("#BillingContact option:selected").val() == "undefined" || $("#BillingContact option:selected").val() == "undefined") {
+                    $("#validateBillingContact").text("Please select billing contact");
+                    $("#validateBillingContact").show();
+                    isvalid = false;
+                }
+                else {
+                    $("#validateBillingContact").hide();
+                }
+            });
+            $("#BillingMethod").on('change', function () {
+                if ($("#BillingMethod option:selected").val() == "undefined" || $("#BillingMethod option:selected").val() == "undefined") {
+                    $("#validateBillingMethod").text("Please select billing method");
+                    $("#validateBillingMethod").show();
+                    isvalid = false;
+                }
+                else {
+                    $("#validateBillingMethod").hide();
+                }
+            });
+            var current_fs, next_fs, previous_fs; //fieldsets
+            var opacity;
+            var current = 1;
+            var steps = $("fieldset").length;
+
+            setProgressBar(current);
+
+            $(".next").click(function () {
+                var isvalid = true;
+                if ($("#account").hasClass('active')) {
+                    if ($("#CaseName").val() == "" || !validateCaseName($("#CaseName").val())) {
+                        $("#validateCaseName").text("Please enter case name");
+                        $("#validateCaseName").show();
+                        isvalid = false;
+                    }
+                    else {
+                        $("#validateCaseName").hide();
+                    }
+                }
+                if ($("#account").hasClass('active')) {
+                    if ($("#CaseNumber").val() == "" || !validateCaseNo($("#CaseNumber").val())) {
+                        $("#validateCaseNumber").text("Please enter case number");
+                        $("#validateCaseNumber").show();
+                        isvalid = false;
+                    }
+                    else {
+                        $("#validateCaseNumber").hide();
+                    }
+                }
+                if ($("#personal").hasClass('active')) {
+                    if ($("#BillingContact option:selected").val() == "undefined" || $("#BillingContact option:selected").val() == "") {
+                        $("#validateBillingContact").text("please select billing contact");
+                        $("#validateBillingContact").show();
+                        isvalid = false;
+                    }
+                    else {
+                        $("#validateBillingContact").hide();
+                    }
+                }
+                if ($("#personal").hasClass('active')) {
+                    if ($("#BillingMethod option:selected").val() == "undefined" || $("#BillingMethod option:selected").val() == "") {
+                        $("#validateBillingMethod").text("please select billing method");
+                        $("#validateBillingMethod").show();
+                        isvalid = false;
+                    }
+                    else {
+                        $("#validateBillingMethod").hide();
+                    }
+                }
+                if ($("#payment").hasClass('active')) { }
+                if (isvalid) {
+                    current_fs = $(this).parent();
+                    next_fs = $(this).parent().next();
+
+                    //Add Class Active
+                    $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
+                    $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+
+                    //show the next fieldset
+                    next_fs.show();
+                    //hide the current fieldset with style
+                    current_fs.animate({ opacity: 0 }, {
+                        step: function (now) {
+                            // for making fielset appear animation
+                            opacity = 1 - now;
+
+                            current_fs.css({
+                                'display': 'none',
+                                'position': 'relative'
+                            });
+                            next_fs.css({ 'opacity': opacity });
+                        },
+                        duration: 500
+                    });
+                    setProgressBar(++current);
+                }
+
+            });
+
+            $(".previous").click(function () {
+
+                current_fs = $(this).parent();
+                previous_fs = $(this).parent().prev();
+
+                //Remove class active
+                $("#progressbar li").eq($("fieldset").index(previous_fs)).addClass("active");
+                $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
+
+                //show the previous fieldset
+                previous_fs.show();
+
+                //hide the current fieldset with style
+                current_fs.animate({ opacity: 0 }, {
+                    step: function (now) {
+                        // for making fielset appear animation
+                        opacity = 1 - now;
+
+                        current_fs.css({
+                            'display': 'none',
+                            'position': 'relative'
+                        });
+                        previous_fs.css({ 'opacity': opacity });
+                    },
+                    duration: 500
+                });
+                setProgressBar(--current);
+            });
+
+            function setProgressBar(curStep) {
+                var percent = parseFloat(100 / steps) * curStep;
+                percent = percent.toFixed();
+                $(".progress-bar")
+                    .css("width", percent + "%")
+            }
+
+            $(".submit").click(function () {
+                return false;
+            })
+        });
+
+        $(document).ready(function () {
+            $("#contactmodal").click(function () {
+                $("#contact-company-modal").modal('show');
+            });
+        });
+        function closecontactpopup() {
+            $("#contact-company-modal").modal('hide');
+        }
+        $(document).on('change', '.ddlRate', function () {
+            var dropdownvalu = $(this).val();
+            var digit = dropdownvalu.replace(/[^\d-]/g, '')
+            if ($(this).find("option:selected").text() == "Case Rate") {
+                $('#CaseRate' + digit).show();
+                $('.ddlRate option:contains("Case Rate")').attr('selected', 'selected')
+                $('#defultRate' + digit).hide();
+            } else if ($(this).find("option:selected").text() == "Default Rate") {
+                $('#CaseRate' + digit).hide();
+                $('.ddlRate option:contains("Default Rate")').attr('selected', 'selected')
+
+                $('#defultRate' + digit).show();
+            }
+        }).prop('selected', true);
+    </script>
+    <script>
+        function DeleteItemm(ctl) {
+            $(ctl).parents("li").remove();
+
+        }
+    </script>
+}

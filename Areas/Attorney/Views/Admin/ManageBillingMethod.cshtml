@@ -1,0 +1,244 @@
+﻿@model List<AbsolCase.Models.BillingMethod>
+@using AbsolCase.Models
+@{
+    @using Newtonsoft.Json;
+    @using Microsoft.AspNetCore.Http;
+    @inject IHttpContextAccessor httpContextAccessor;
+    string userdto = httpContextAccessor.HttpContext.Session.GetString("userData");
+    UserDto userDto = new UserDto();
+    bool canAccessMessages = false;
+    bool canAccessTimeLline = false;
+    bool canAccessCalendar = false;
+    bool canAccessReporting = false;
+    bool canAccessDocuments = false;
+    bool canAccessNotes = false;
+    if (!string.IsNullOrEmpty(userdto))
+    {
+        userDto = JsonConvert.DeserializeObject<UserDto>(userdto);
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Unlimited Messages").FirstOrDefault() != null)
+            canAccessMessages = true;
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Timeline").FirstOrDefault() != null)
+            canAccessTimeLline = true;
+
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Calendar Events").FirstOrDefault() != null)
+            canAccessCalendar = true;
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Reporting").FirstOrDefault() != null)
+            canAccessReporting = true;
+        if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Documents Handling").FirstOrDefault() != null)
+            canAccessDocuments = true;
+        if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Notes Handling").FirstOrDefault() != null)
+            canAccessNotes = true;
+    }
+}
+
+@{
+    ViewBag.Title = "Manage Billing Method";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<link href="~/css/Packages.css" rel="stylesheet" type="text/css" />
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<div class="row mb-1">
+    <div class="card col-md-12 col-lg-12 pull-right grid-margin">
+
+        <div class="card-block mt-3 ml-5">
+            <ul class="navbar dashboard-short-icon">
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;" @(!canAccessCalendar ? "onclick=ShowSubscriptionLimitation()" : "")>
+                    <a href="@(canAccessCalendar == true ? Url.Action("ManageEvents","Admin", new { area = "Attorney"}) : "#")" style="text-decoration:none;">
+                        <img src="~/images/dashboard/event.jpg" width="50" height="50" /><br />
+                        Event
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;" @(!canAccessDocuments ? "onclick=ShowSubscriptionLimitation()" : "")>
+                    <a href="@(canAccessDocuments == true ?  Url.Action("ManageDocuments","Admin", new { area = "Attorney"}) : "#")" style="text-decoration:none;">
+                        <img src="~/images/dashboard/document-removebg.png" width="50" height="50" /><br />
+                        Document
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("ManageTask", "Admin", new { area = "Attorney" })" style="text-decoration:none;">
+                        <img src="~/images/dashboard/task.png" width="50" height="50" /><br />
+                        Task
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("AddPotentialClient", "Admin", new { area = "Attorney" })" style="text-decoration:none;">
+                        <img src="~/images/dashboard/lead-removebg.png" width="50" height="50" /><br />
+
+                        Lead
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("AddContact", "Admin", new { area = "Attorney" })" style="text-decoration:none;" id="contactmodal">
+                        <img src="~/images/dashboard/contact-removebg.png" width="50" height="50" /><br />
+                        Contact
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("ManageCases", "Admin", new { area = "Attorney" })" style="text-decoration:none;" onclick="abc();">
+                        <img src="~/images/dashboard/briefcase-removebg.png" width="50" height="50" /><br />
+                        Case
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;" @(!canAccessMessages ? "onclick=ShowSubscriptionLimitation()" : "")>
+                    <a href="@(canAccessMessages == true ? Url.Action("Message","Admin", new { area = "Attorney"}) : "#")" style="text-decoration:none;">
+                        <img src="~/images/dashboard/message.png" width="50" height="50" /><br />
+                        Message
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box; ">
+                    <a href="@Url.Action("AddExpense", "Admin", new { area = "Attorney" })" style="text-decoration:none;">
+                        <img src="~/images/dashboard/expenses.png" width="50" height="50" /><br />
+                        Expense
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("AddReceipt", "Admin", new { area = "Attorney" })" style="text-decoration:none;">
+                        <img src="~/images/dashboard/invoice.jpg" width="50" height="50" /><br />
+                        Invoice
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;" @(!canAccessNotes ? "onclick=ShowSubscriptionLimitation()" : "")>
+                    <a href="@(canAccessNotes == true ? Url.Action("ManageNotes","Admin", new { area = "Attorney"}) : "#")" style="text-decoration:none;">
+                        <img src="~/images/dashboard/notes.png" width="50" height="50" /><br />
+                        Notes
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="col-lg-12 grid-margin stretch-card">
+    <input type="hidden" id="methodid" />
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Billing Method</h4>
+            <p class="card-description">
+                Manage Billing
+            </p>
+            <div class="table-responsive">
+                <table id="datatable" class="table table-striped  dt-responsive nowrap" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>SR#</th>
+                            <th>
+                                Billing Method
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Count > 0)
+                        {
+                            int count = 0;
+                            foreach (var billigMethod in Model)
+                            {
+                                count++;
+                                <tr>
+                                    <td>@count</td>
+                                    <td class="py-1">
+                                        @billigMethod.Name
+                                    </td>
+
+                                    <td>
+                                        @Html.ActionLink("Edit", "UpdateBillingMethod", "Admin", new { Id = billigMethod.Id }) |
+                                        <a href="#" onclick="openpopup(@billigMethod.Id)">Delete</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="myModall" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><b>Confirm!</b></h3>
+                <button type="button" class="close" data-dismiss="modal" onclick="closepopups()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:20px; text-align:center; color:black"><b>Are you sure to delete method?</b></p>
+            </div>
+            <ul style="display:table;border-collapse:collapse; margin-bottom:20px">
+                <li onclick="closepopups()" style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="#" style="text-decoration: none; color: black">
+                       <img src="~/images/download (2).png" width="90" height="90" /><br />
+                        No
+                    </a>
+                </li>
+
+                <li onclick="deleteBillingMethod()" style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="#" style="text-decoration: none; color: black">
+                       <img src="~/images/download.jpg" width="100" height="100" /><br />
+                        Yes
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        var remoteServerURl = "";
+        var plan = null;
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            token = localStorage.getItem('token');
+        });
+        function getRemoteServerURl() {
+            //$.ajax({
+            //type: 'GET',
+            //url: '/common/getConfigurationValue',
+            //data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+            //    getDecumentsTag();
+
+            //    getCases();
+
+
+            //})
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+        };
+    
+        function deleteBillingMethod(id) {
+            var id = $("#methodid").val();
+            window.location.href = `DeleteBillingMethod/${id}`
+        }
+        function openpopup(id) {
+            $("#myModall").modal('show');
+            $("#methodid").val(id);
+        }
+        function closepopups() {
+            $("#myModall").modal('hide');
+
+        }
+        $(document).ready(function () {
+            $('#datatable').dataTable({
+                "columnDefs": [
+                    { "searchable": false, "targets": 2 }
+                ]
+            });
+        });
+    </script>
+}
+

@@ -1,0 +1,37 @@
+﻿@model AbsolCase.Models.BillingMethod
+@{
+    ViewBag.Title = "Add Billing Method";
+    Layout = "~/Views/Shared/_SPLayout.cshtml";
+}
+
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+
+<div class="col-md-6 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Add Billing Method</h4>
+            @*<p class="card-description">
+                    Basic form layout
+                </p>*@
+            <form asp-action="AddBillingMethod" method="post">
+                <div class="form-group">
+                    <label for="exampleInputUsername1">Billing Name <span style="font-weight:bolder;font-size:18px;color:red">*</span></label>
+                    @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", placeholder = "Billing Method" } })
+                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger db" })
+                </div>
+                <input type="submit" value="Create" class="btn btn-dark fr" />
+                @*<button class="btn btn-light">Cancel</button>*@
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    setTimeout(function () {
+        $("#msgalert").hide();
+    }, 3500);
+</script>

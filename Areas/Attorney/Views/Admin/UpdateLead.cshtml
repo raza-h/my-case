@@ -1,0 +1,474 @@
+﻿@model AbsolCase.Models.LeadDetail
+
+@{
+    ViewData["Title"] = "UpdateLead";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<link href="~/assets/css/style.css" rel="stylesheet" />
+
+<div class="col-lg-12 grid-margin stretch-card mt-3 ms-3 me-4 pe-4 mb-5">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title text-center">Potential New Client</h4>
+            <div class="row">
+                <input type="hidden" value="@Model.Id" name="Id" id="leadId" />
+                <input type="hidden" value="@Model.AssignTo" name="Id" id="assignId" />
+                <div class="form-group col-md-4">
+                    <label for="exampleInputUsername1">First Name</label>
+                    @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control", placeholder = "First Name" } })
+                    @Html.ValidationMessageFor(model => model.FirstName, "please enter first name", new { @class = "text-danger db", @id = "firstnamevalidation", @style = "display:none" })
+
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="exampleInputUsername1">Mid Name</label>
+                    @Html.EditorFor(model => model.MidName, new { htmlAttributes = new { @class = "form-control", placeholder = "Mid Name" } })
+                    @Html.ValidationMessageFor(model => model.MidName, "", new { @class = "text-danger db" })
+
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="exampleInputUsername1">Last Name</label>
+                    @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control", placeholder = "Last Name" } })
+                    @Html.ValidationMessageFor(model => model.LastName, "please enter last name", new { @class = "text-danger db", @id = "lastnamevalidation", @style = "display:none" })
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">Email</label>
+                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", placeholder = "Email" } })
+                    @Html.ValidationMessageFor(model => model.Email, "please enter valid email", new { @class = "text-danger db", @id = "emailvalidation", @style = "display:none" })
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">Cell Phone</label>
+                    @Html.EditorFor(model => model.CellPhone, new { htmlAttributes = new { @class = "form-control", placeholder = "Cell Phone" } })
+                    @Html.ValidationMessageFor(model => model.CellPhone, "", new { @class = "text-danger db" })
+                </div>
+            </div>
+
+            <button onclick="showMoreContactInfo()" style="background-color: lightsteelblue; color: midnightblue;">Add More Contact Information</button>
+            <br />
+            <div id="contactinfo" style="display: none">
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <br />
+                        <label for="exampleInputUsername1">Work Phone</label>
+                        @Html.EditorFor(model => model.WorkPhone, new { htmlAttributes = new { @class = "form-control", placeholder = "Work Phone" } })
+                        @Html.ValidationMessageFor(model => model.WorkPhone, "", new { @class = "text-danger db" })
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Home Phone</label>
+                        @Html.EditorFor(model => model.HomePhone, new { htmlAttributes = new { @class = "form-control", placeholder = "Home Phone" } })
+                        @Html.ValidationMessageFor(model => model.HomePhone, "", new { @class = "text-danger db" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Address</label>
+                        @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control", placeholder = "Address 1" } })
+                        @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger db" })
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Address 2</label>
+                        @Html.EditorFor(model => model.Address2, new { htmlAttributes = new { @class = "form-control", placeholder = "Address 2" } })
+                        @Html.ValidationMessageFor(model => model.Address2, "", new { @class = "text-danger db" })
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">City</label>
+                        @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control", placeholder = "City" } })
+                        @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger db" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6  mt-4" id="statetextbox" style="display: none">
+                        <input type="text" class="form-control" id="statetext" />
+                    </div>
+                    <div class="form-group col-md-6 mt-4" id="statedropdown">
+                        <select class="form-control" aria-label="States" id="states">
+                            <!--via ajax-->
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Zip Code</label>
+                        @Html.EditorFor(model => model.ZipCode, new { htmlAttributes = new { @class = "form-control", placeholder = "Zip Code" } })
+                        @Html.ValidationMessageFor(model => model.ZipCode, "", new { @class = "text-danger db" })
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Country</label>
+                        <select class="form-control" aria-label="Country" id="country">
+                            <!--via ajax-->
+                        </select>
+
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Birthday</label>
+                        @Html.EditorFor(model => model.DOB, new { htmlAttributes = new { @class = "form-control", placeholder = "Dob", @type = "date" } })
+                        @Html.ValidationMessageFor(model => model.DOB, "", new { @class = "text-danger db" })
+
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Driver License</label>
+                        @Html.EditorFor(model => model.DriverLicence, new { htmlAttributes = new { @class = "form-control", placeholder = "Driver License" } })
+                        @Html.ValidationMessageFor(model => model.DriverLicence, "", new { @class = "text-danger db" })
+                    </div>
+                    <div class="form-group col-md-2  mt-4">
+                        <select class="form-control" id="licensestates">
+                            <!--via ajax-->
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="exampleInputUsername1">Refferel Source</label>
+                    <select class="form-control" aria-label="RefferelSource" id="refferelsource">
+                    </select>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Lead Details</label>
+                        @Html.EditorFor(model => model.LeadDetails, new { htmlAttributes = new { @class = "form-control", placeholder = "Lead Detail" } })
+                        @Html.ValidationMessageFor(model => model.LeadDetails, "", new { @class = "text-danger db" })
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Reffered By</label>
+                        <select class="form-control" aria-label="Country" id="contact">
+                        </select>
+                    </div>
+                </div>
+                <hr />
+                <h4 class="card-title text-center">Potential New Case</h4>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Date Added</label>
+                        @Html.EditorFor(model => model.DateAdded, new { htmlAttributes = new { @class = "form-control", placeholder = "First Name", @type = "date" } })
+                        @Html.ValidationMessageFor(model => model.DateAdded, "", new { @class = "text-danger db" })
+
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Status</label>
+                        
+                        @if (ViewBag.LeadStatus != null)
+                        {
+                            @Html.DropDownList("leadStatuses", (IEnumerable<SelectListItem>)ViewBag.LeadStatus, "--- Select Status ---", new { @class = "form-control", Id = "caseStatus" })
+
+                        }
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Practice Area</label>
+                        <select class="form-control" aria-label="PracticeArea" id="practicearea">
+                            <!--via ajax-->
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Potential Value</label>
+                        <div class="input-group"><div class="input-group-prepend"><span class="input-group-text">$</span></div><input id="PotentialValueCase" type="number" onkeydown="return event.keyCode !== 69" name="value" class="form-control"></div>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Assign To</label>
+                        <select class="form-control" aria-label="AssignTo" id="assignto">
+                            <!--via ajax-->
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Office</label>
+                        <select class="form-control" aria-label="Office" id="office">
+                            <option value="1" selected>Primary</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Potential Case Description</label>
+                        @Html.EditorFor(model => model.PotentailCaseDescription, new { htmlAttributes = new { @class = "form-control", placeholder = "Potential Case Description" } })
+                        @Html.ValidationMessageFor(model => model.PotentailCaseDescription, "", new { @class = "text-danger db" })
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleInputUsername1">Conflict Check Notes</label>
+                        @Html.EditorFor(model => model.ConflictCheckNotes, new { htmlAttributes = new { @class = "form-control", placeholder = "Conflict Check Notes" } })
+                        @Html.ValidationMessageFor(model => model.ConflictCheckNotes, "", new { @class = "text-danger db" })
+                    </div>
+                    <div class="form-group col-md-12">
+                        <button class="btn btn-dark fr col-md-2" onclick="insertLead('insertlead')">Update Lead</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    @section scripts{
+        <script>
+
+        $('#country').change(function (e) {
+            var statevalue = $("#states").val();
+            if ($("#country").val() != '230') {
+                $("#statetext").val(statevalue);
+                $("#statedropdown").hide();
+                $("#statetextbox").show();
+            }
+            else {
+                $("#statetextbox").hide();
+                $("#statedropdown").show();
+            }
+        });
+
+            var remoteServerURl = "";
+            var token = "";
+        $(function () {
+            getRemoteServerURl();
+            token = localStorage.getItem('token');
+        });
+        function showMoreContactInfo() {
+            $("#contactinfo").toggle('hide');
+        }
+
+        function getRemoteServerURl() {
+            //$.ajax({
+            //    type: 'GET',
+            //    url: '/common/getConfigurationValue',
+            //    data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+            //    getcounties();
+            //    getPracticeAreas();
+            //    getRefferalSource();
+            //    getContacts();
+            //    getUsers();
+            //    getStates();
+            //})
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+            getcounties();
+            getPracticeAreas();
+            getRefferalSource();
+            getContacts();
+            getUsers();
+            getStates();
+        }
+        function getcounties() {
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Country/Get`,
+                headers: { "Authorization": 'Bearer ' + token },
+            }).done(function (data) {
+                let options = "<option value=0>Select Country</option>";
+                $.each(data, function (a, country) {
+                    options += "<option value='" + country.id + "'>" + country.name + "</option>";
+                });
+                $("#country").html(options);
+                $("#country").val('@Model.Country');
+            })
+        }
+
+        function getPracticeAreas() {
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/ConfigManagement/GetPracticeAreas`,
+                headers: { "Authorization": 'Bearer ' + token },
+            }).done(function (data) {
+                let options = "<option value=0>Select Practice Area</option>";
+                $.each(data, function (a, practiceArea) {
+                    options += "<option value='" + practiceArea.id + "'>" + practiceArea.practiceAreaName + "</option>";
+                });
+                $("#practicearea").html(options);
+                $("#practicearea").val('@Model.PracticeAreaId');
+            })
+        }
+
+        function getRefferalSource() {
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/ConfigManagement/GetRefferalSources`,
+                headers: { "Authorization": 'Bearer ' + token },
+            }).done(function (data) {
+                let options = "<option value=0>Select Refferal Source</option>";
+                $.each(data, function (a, source) {
+                    options += "<option value='" + source.id + "'>" + source.refferalSourceName + "</option>";
+                });
+                $("#refferelsource").html(options);
+                $("#refferelsource").val('@Model.RefferelSource');
+            })
+        }
+
+        function getContacts() {
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Contact/GetContacts`,
+                headers: { "Authorization": 'Bearer ' + token },
+            }).done(function (data) {
+                let options = "<option value=0>Select Contact</option>";
+                $.each(data, function (a, contact) {
+                    options += "<option value='" + contact.contactId + "'>" + contact.firstName + " " + contact.lastName + "</option>";
+                });
+                $("#contact").html(options);
+                $("#contact").val('@Model.ContactId');
+            })
+        }
+
+        function getUsers() {
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/UserManagement/GetUserDropDown`,
+                headers: { "Authorization": 'Bearer ' + token },
+            }).done(function (data) {
+                let options = "<option value=0>Select User</option>";
+                $.each(data, function (a, user) {
+                    options += "<option value='" + user.id + "'>" + user.firstName + " " + user.lastName + " " + user.userTitle + "</option>";
+                });
+                $("#assignto").html(options);
+                $("#assignto").val('@Model.AssignTo');
+            })
+        }
+
+        function getStates() {
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Country/GetStates`,
+                headers: { "Authorization": 'Bearer ' + token },
+            }).done(function (data) {
+                let options = "<option value=''>Select State</option>";
+                $.each(data, function (a, state) {
+                    options += "<option value='" + state.code + "'>" + state.code + "</option>";
+                });
+                $("#states").html(options);
+                $("#licensestates").html(options);
+                $("#states").val('@Model.State');
+                $("#licensestates").val('@Model.DriverLicenceState');
+            })
+        }
+
+            function insertLead(fromMethod) {
+                var state = '';
+                if ($("#statedropdown").is(":visible")) {
+                    state = $("#states").val()
+                }
+                else {
+                    state = $("#statetext").val();
+                }
+                if (fromMethod == 'insertlead') {
+                    var email = $("#Email").val();
+                    var isFormValid = true;
+                    if ($("#FirstName").val() == "") {
+                        $("#firstnamevalidation").show();
+                        isFormValid = false;
+                    }
+                    else {
+                        $("#firstnamevalidation").hide();
+                    }
+                    if ($("#LastName").val() == "") {
+                        $("#lastnamevalidation").show();
+                        isFormValid = false;
+                    }
+                    else {
+                        $("#lastnamevalidation").hide();
+                    }
+                    if (email != "") {
+                        if (!validateEmail(email)) {
+                            $("#emailvalidation").show();
+                            isFormValid = false;
+                        }
+                        else {
+                            $("#emailvalidation").hide();
+                        }
+                    }
+                    else {
+                        $("#emailvalidation").hide();
+                    }
+                    if (!isFormValid) {
+                        document.body.scrollTop = document.documentElement.scrollTop = 0;
+                        return;
+                    }
+                    openpopup('', 'Are you sure to update lead?', "insertLead('frompopup')");
+                }
+                else {
+                    showLoader();
+                    var leadmodel = {
+                        Id: $("#leadId").val(),
+                        AssignTo: $("#assignId").val(),
+                        FirstName: $("#FirstName").val(),
+                        MidName: $("#MidName").val(),
+                        LastName: $("#LastName").val(),
+                        Email: $("#Email").val(),
+                        CellPhone: $("#CellPhone").val(),
+                        WorkPhone: $("#WorkPhone").val(),
+                        HomePhone: $("#HomePhone").val(),
+                        Address: $("#Address").val(),
+                        Address2: $("#Address2").val(),
+                        City: $("#City").val(),
+                        State: state,
+                        ZipCode: $("#ZipCode").val(),
+                        Country: $("#country").val(),
+                        DOB: $("#DOB").val(),
+                        DriverLicence: $("#DriverLicence").val(),
+                        DriverLicenceState: $("#licensestates").val(),
+                        RefferelSource: $("#refferelsource").val(),
+                        ContactId: $("#contact").val(),
+                        LeadDetails: $("#LeadDetails").val(),
+                        DateAdded: $("#DateAdded").val(),
+                        //Status: $("#caseStatus").val(),
+                        LStatusId: $("#caseStatus").val(),
+                        PracticeAreaId: $("#practicearea").val(),
+                        PotentialValueCase: $("#PotentialValueCase").val(),
+                        AssignTo: $("#assignto").val(),
+                        Office: $("#office").val(),
+                        PotentailCaseDescription: $("#PotentailCaseDescription").val(),
+                        ConflictCheckNotes: $("#ConflictCheckNotes").val()
+                    };
+                        token = localStorage.getItem('token');
+                    $.ajax({
+                        url: `${remoteServerURl}api/Lead/UpdateLead`,
+                        headers: { "Authorization": 'Bearer ' + token },
+                        type: "POST",
+                        data: JSON.stringify(leadmodel),
+                        contentType: "application/json; charset=utf-8",
+                        success: function (response) {
+                            closepopup();
+                            hideLoader();
+                            window.location.href = '@Url.Action("ManageLead","Admin")'
+                        },
+                        error: function (response) {
+                            hideLoader();
+                            //window.location.href='@Url.Action("index","AttorneyDashboard")'
+                        }
+                    });
+                }
+            }
+
+
+        </script>
+
+    }

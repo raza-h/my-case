@@ -1,0 +1,434 @@
+﻿@using AbsolCase.Models
+@model List<Timeline>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_StaffLayout.cshtml";
+    @using Newtonsoft.Json;
+    @using Microsoft.AspNetCore.Http;
+    @inject IHttpContextAccessor httpContextAccessor;
+    string userdto = httpContextAccessor.HttpContext.Session.GetString("userData");
+    UserDto userDto = new UserDto();
+    bool canAccessMessages = false;
+    if (!string.IsNullOrEmpty(userdto))
+    {
+        userDto = JsonConvert.DeserializeObject<UserDto>(userdto);
+    @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Unlimited Messages").FirstOrDefault() != null)
+            canAccessMessages = true;
+    }
+}
+<style>
+    .card-header {
+        border-radius: 19px !important;
+    }
+
+    .hide {
+        display: none;
+    }
+</style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+<body>
+    <link href="~/css/all.min.css" rel="stylesheet" />
+    <link href="~/css/timeline.css" rel="stylesheet" />
+    <main>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="h5 text-blue">Lydia Charles</div>
+                            <div class="h7 "><strong>Firm Name :</strong> Attorney</div>
+                            <div class="h7">
+                                <strong>Timeline :</strong> You can upload documents, can share comments and news for users.
+                            </div>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                        </ul>
+                    </div>
+
+                </div>
+                <div class="col-lg-6 gedf-main">
+                    <!--- \\\\\\\Post-->
+                    <input type="hidden" value="" id="ID" name="ID" />
+                    <div class="card social-timeline-card">
+                        <div class="card-header">
+                            <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
+                                <li class="nav-item active">
+                                    <a class="nav-link" id="posts-tab" data-toggle="tab" href="#posts">Share your insights</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="images-tab" data-toggle="tab" href="#images">Case Documents</a>
+                                </li>
+                                <li class="nav-item" @(!canAccessMessages ? "onclick=ShowSubscriptionLimitation()" : "")>
+                                    <a class="nav-link" id="social-tab" href="@(canAccessMessages == true ? "/cms/Staff/Message/MessagesChat" : "#")">Leave a Message</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane" id="images" role="tabpanel" aria-labelledby="images-tab">
+                                    <div class="form-group">
+                                        <div class="form-group col-md-6">
+                                            <label for="exampleInputUsername1">Cases</label>
+                                            <select class="form-control" aria-label="ContactGroup" id="cases-3">
+                                                <!--via ajax-->
+                                            </select>
+                                            <label style="display:none; color: red;" id="cases-validation-3">Please select case</label>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <ul id="menu">
+                                                <li class="btn btn-primary btn-img">Pic</li>
+                                                <li class="ms-3 btn btn-primary btn-video">Video</li>
+                                                <li class="ms-3 btn btn-primary btn-doc">Doc</li>
+                                            </ul>
+                                        </div>
+
+                                        <div class="custom-file" id="first">
+                                            <label class="custom-file-label" for="customFile">Upload Pic :</label>
+                                            <input type="file" name="file" id="file" accept="image/*" />
+                                        </div>
+                                        <div class="custom-file" id="second">
+                                            <label class="custom-file-label" for="customvideo">Upload Video :</label>
+                                            <input type="file" name="filevideo" id="filevideo" accept="video/*" />
+                                        </div>
+                                        <div class="custom-file" id="third">
+                                            <label class="custom-file-label" for="customdoc">Upload Doc :</label>
+                                            <input type="file" name="filedoc" id="filedoc" accept=".pdf" />
+                                        </div>
+                                        <!--
+                                        <div class="custom-file" id="first">
+                                            <input type="file" name="file" id="file" accept="image/*" />
+                                            <label class="custom-file-label" for="customFile">Upload Document</label>
+                                        </div>
+                                        -->
+                                        <div class="form-group">
+                                            <input type="date" id="datetime" class="form-control" />
+                                        </div>
+                                        <input type="text" class="form-control" id="doc-comment" placeholder="Leave a Comment" style="height:50px" />
+                                        <label style="display:none; color: red;" id="doc-comment-validation">Please enter comment or upload file</label>
+                                    </div>
+                                    <div class="py-4"></div>
+                                </div>
+                                <div class="tab-pane active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
+                                    <div class="form-group">
+                                        <div class="form-group col-md-6">
+                                            <label for="exampleInputUsername1">Cases</label>
+                                            <select class="form-control" aria-label="ContactGroup" id="cases-2">
+                                                <!--via ajax-->
+                                            </select>
+                                            <label style="display:none; color: red;" id="cases-validation-2">Please select case</label>
+                                        </div>
+                                        <input type="text" class="form-control" id="comment" placeholder="Comments About Your Case" style="height:50px" />
+                                        <label style="display:none; color: red;" id="comment-validation">Please enter comment</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="btn-toolbar justify-content-between">
+                                <div class="btn-group">
+                                    <button class="btn btn-dark fr" onclick="addTimeLine()">Share</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        @foreach (var timeline in Model)
+                        {
+                            if (!string.IsNullOrEmpty(timeline.DocFilePath))
+                            {
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="mr-2">
+                                                    <img class="rounded-circle" width="45" src="@timeline.UserImagePath" alt="">
+
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="h5 m-2 text-blue">@timeline.UserName</div>
+                                                </div>
+                                            </div>
+                                            <p style="font-weight: bold">Case Name: <span>@timeline.CaseName</span></p>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p style="font-weight: bold">Comment:</p>
+                                        <p class="card-text">@timeline.Comment</p>
+                                        <video style="width:100%;" id="video-id" controls="" controlslist="nodownload">
+                                            <source src="@timeline.DocFilePath" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            }
+                            else if (!string.IsNullOrEmpty(timeline.VideoFilePath))
+                            {
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="mr-2">
+                                                    <img class="rounded-circle" width="45" src="@timeline.UserImagePath" alt="">
+
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="h5 m-2 text-blue">@timeline.UserName</div>
+                                                </div>
+                                            </div>
+                                            <p style="font-weight: bold">Case Name: <span>@timeline.CaseName</span></p>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p style="font-weight: bold">Comment:</p>
+                                        <p class="card-text">@timeline.Comment</p>
+                                        <video style="width:100%;" id="video-id" controls="" controlslist="nodownload">
+                                            <source src="@timeline.VideoFilePath" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            }
+                            else if (!string.IsNullOrEmpty(timeline.FilePath))
+                            {
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="mr-2">
+                                                    <img class="rounded-circle" width="45" src="@timeline.UserImagePath" alt="">
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="h5 m-2 text-blue">@timeline.UserName</div>
+                                                </div>
+                                            </div>
+                                            <p style="font-weight: bold">Case Name: <span>@timeline.CaseName</span></p>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p style="font-weight: bold">Comment:</p>
+                                        <p class="card-text">@timeline.Comment</p>
+                                        <img src="@timeline.FilePath" style="max-width: 40%;" />
+                                    </div>
+                                </div>
+                            }
+                            else if (!string.IsNullOrEmpty(timeline.HostLink))
+                            {
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="mr-2">
+                                                    <img class="rounded-circle" width="45" src="@timeline.UserImagePath" alt="">
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="h5 m-2 text-blue">@timeline.UserName</div>
+                                                </div>
+                                            </div>
+                                            <p style="font-weight: bold">Case Name: <span>@timeline.CaseName</span></p>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <img src="/images/zoom.png" style="margin-left: 15%;max-height: 8rem;" />
+                                        <p class="mt-3" style="font-weight: bolder">Click To Join:</p>
+                                        <a href="@timeline.HostLink" style="text-decoration:none;color:blue" target="_blank">
+                                            @timeline.JoinLink
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="mr-2">
+                                                    <img class="rounded-circle" width="45" src="@timeline.UserImagePath" alt="">
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="h5 m-2 text-blue">@timeline.UserName</div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                            </div>
+                                            <p style="font-weight: bold">Case Name: <span>@timeline.CaseName</span></p>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p style="font-weight: bold">Comment:</p>
+                                        <p class="card-text">
+                                            @timeline.Comment
+                                        </p>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
+@section scripts {
+    <script type="text/javascript">
+        var remoteServerURl = "";
+        var userId = $("#current-userid").val();
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            token = localStorage.getItem('token');
+        });
+        function getRemoteServerURl() {
+            //$.ajax({
+            //    type: 'GET',
+            //    url: '/common/getConfigurationValue',
+            //    data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+            //    getCases();
+            //})
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+            getCases();
+            $("#second").addClass("hide");
+            $("#third").addClass("hide");
+
+        }
+        function getCases() {
+                token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Case/GetCasesByStaffId?userId=${userId}`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                let options = "<option value=0>Select existing Case</option>";
+                $.each(data, function (a, cases) {
+                    options += "<option value='" + cases.id + "'>" + cases.caseName + "</option>";
+                });
+                $("#cases-1").html(options);
+                $("#cases-2").html(options);
+                $("#cases-3").html(options);
+            })
+        }
+        function addTimeLine() {
+            var isFormValid = true;
+             var selectedFile = $("#file");
+            var selectedVideo = $("#filevideo");
+            var selectedDoc = $("#filedoc");
+            var model = new FormData();
+            model.append("UserId", $("#current-userid").val())
+            if ($(".nav-item.active #posts-tab").length > 0) {
+                if ($("#comment").val() == '') {
+                    isFormValid = false;
+                    $("#comment-validation").show();
+                }
+                else {
+                    $("#comment-validation").hide();
+                }
+                if ($("#cases-2").val() == '0') {
+                    isFormValid = false;
+                    $("#cases-validation-2").show();
+                }
+                else {
+                    $("#cases-validation-2").hide();
+                }
+
+                model.append("Comment", $("#comment").val());
+                model.append("CaseId", $("#cases-2").val());
+                model.append("TimeLineType", '1');
+            }
+            else {
+                if ($("#cases-3").val() == '0') {
+                    isFormValid = false;
+                    $("#cases-validation-3").show();
+                }
+                else {
+                    $("#cases-validation-3").hide();
+                }
+                model.append("CaseId", $("#cases-3").val());
+                model.append("Comment", $("#doc-comment").val());
+
+                if (selectedFile && selectedFile.get(0).files.length > 0) {
+                    model.append("File", selectedFile.get(0).files.item(0));
+                    model.append("FileType", "file");
+                }
+                else if (selectedVideo && selectedVideo.get(0).files.length > 0) {
+                    model.append("File", selectedVideo.get(0).files.item(0));
+                    model.append("FileType", "video");
+                }
+                else if (selectedDoc && selectedDoc.get(0).files.length > 0) {
+                    model.append("File", selectedDoc.get(0).files.item(0));
+                    model.append("FileType", "doc");
+                }
+                else {
+                    if ($("#doc-comment").val() == "") {
+                        isFormValid = false;
+                        $("#doc-comment-validation").show();
+                    }
+                    else
+                        $("#doc-comment-validation").hide();
+                }
+                //if (selectedFile && selectedFile.get(0).files.length > 0) {
+                //    model.append("File", selectedFile.get(0).files.item(0));
+                //}
+                //else {
+                //    if ($("#doc-comment").val() == "") {
+                //        isFormValid = false;
+                //        $("#doc-comment-validation").show();
+                //    }
+                //    else
+                //        $("#doc-comment-validation").hide();
+                //}
+                model.append("DueDate", $("#datetime").val());
+                model.append("TimeLineType", '2');
+            }
+            if (!isFormValid) {
+                document.body.scrollTop = document.documentElement.scrollTop = 0;
+                hideLoader();
+                return;
+            }
+            //if ($("#posts-tab").attr('aria-expanded') == 'true') {
+            //    $("#casee").show();
+            //}
+            //else {
+            //    $("#casee").hide();
+            //}
+
+                token = localStorage.getItem('token');
+            $.ajax({
+                url: `${remoteServerURl}api/TimeLine/AddTimeLineStaff`,
+                headers: { "Authorization": 'Bearer ' + token },
+                type: "Post",
+                data: model,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    window.location.href='@Url.Action("TimeLine", "StaffTimeline")'
+                },
+                error: function (response) {
+                }
+            });
+        };
+
+
+
+        $(".btn-img").click(function () {
+            $("#second").addClass("hide");
+            $("#first").removeClass("hide");
+            $("#third").addClass("hide");
+        });
+        $(".btn-video").click(function () {
+            $("#second").removeClass("hide");
+            $("#first").addClass("hide");
+            $("#third").addClass("hide");
+        });
+        $(".btn-doc").click(function () {
+            $("#third").removeClass("hide");
+            $("#first").addClass("hide");
+            $("#second").addClass("hide");
+        });
+    </script>
+}

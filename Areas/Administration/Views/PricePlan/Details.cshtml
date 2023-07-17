@@ -1,0 +1,45 @@
+﻿@model AbsolCase.Models.PackageService
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_SPLayout.cshtml";
+}
+
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+
+<section class="pricing py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Free Tier -->
+            @if (Model != null && Model.pricePlan != null)
+            {
+                <div class="col-lg-6">
+                    <div class="card mb-5 mb-lg-0">
+                        <div class="card-body">
+                            <h5 class="card-title text-muted text-uppercase text-center">@Model.pricePlan.PlanName</h5>
+                            <h6 class="card-price text-center">@Model.pricePlan.PriceRange<span class="period">/@Model.pricePlan.TimeRange</span></h6>
+                            <hr>
+                            <ul class="fa-ul">
+                                @if (Model.services != null && Model.services.Count > 0)
+                                    @foreach (var service in Model.services)
+                                    {
+                                        <li><span class="fa-li"><i class="fas fa-check"></i></span>@service.Name</li>
+                                    }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+<script>
+    setTimeout(function () {
+        $("#msgalert").hide();
+    }, 3500);
+</script>

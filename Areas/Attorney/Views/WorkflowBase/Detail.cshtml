@@ -1,0 +1,806 @@
+﻿@model AbsolCase.Models.WorkflowBase
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .nine h2 {
+        font-size: 30px;
+        text-transform: uppercase;
+        color: #222;
+        letter-spacing: 1px;
+        font-family: "Playfair Display", serif;
+        font-weight: 400;
+    }
+
+    .my-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .card-title {
+        margin: 0;
+    }
+
+    .card-button {
+        /* Add any desired styling for the button */
+    }
+
+    .custom-modal-dialog {
+        max-width: 800px; /* Adjust the desired width here */
+        margin: 1.75rem auto;
+    }
+
+</style>
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    /* The Modal (background) */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    /* Modal Content */
+    .modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
+
+    
+
+    /* The Close Button */
+    .closeAdd {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+        .closeAdd:hover,
+        .closeAdd:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .closeDetail {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+        .closeDetail:hover,
+        .closeDetail:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .closeCase {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+        .closeCase:hover,
+        .closeCase:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .closeTags {
+        color: white;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        margin-left: 10px;
+    }
+
+        .closeTags:hover,
+        .closeTags:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .closeCaseTags {
+        color: white;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        margin-left: 10px;
+    }
+
+</style>
+
+
+<div class="container-fluid">
+    <div class="col-md-12 grid-margin mt-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-3 nine">
+                        <img src="/images/workflow-removebg-preview.png" width="50" height="50">
+                        <h2 style="display:inline-block">@Model.WorkflowName</h2>
+                        <h2 id="workflowID" style="display:none">@Model.WorkflowId</h2>
+                        <input type="hidden" id="taskid" />
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="col-md-12 grid-margin stretch-card ms-3 mt-3 me-5 pe-4">
+    <div class="card">
+        <div class="card-body">
+            <div class="my-container mb-3">
+                <h6 class="card-title">Tasks</h6>
+                <button id="addTaskBtn" class="btn btn-warning" data-toggle="modal" data-target="#taskModal">Add Task</button>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="">
+                        <div id="order-listing_wrapper">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="">
+                                        <table id="datatable-task" class="table table-striped   nowrap" width="100%" cellspacing="0">
+                                            <thead>
+                                                <tr role="row">
+                                                    <th>Sr No.</th>
+                                                    <th>Task</th>
+                                                    <th>Priority</th>
+                                                    <th>Action</th>
+                                            </thead>
+                                            <tbody>
+                                                @if (Model != null && Model.tasks.Count > 0)
+                                                {
+                                                    int count = 0;
+                                                    @foreach (var transaction in Model.tasks)
+                                                    {
+                                                        count++;
+                                                        <tr class="odd">
+                                                            <td class="sorting_1">@count</td>
+                                                            <td class="py-1">
+                                                                @transaction.Name
+                                                            </td>
+                                                            @if (transaction.Priority == AbsolCase.Models.Priority.High)
+                                                            {
+                                                                <td class="text-danger">@transaction.Priority</td>
+                                                            }
+                                                            else if (transaction.Priority == AbsolCase.Models.Priority.Low)
+                                                            {
+                                                                <td class="text-success">@transaction.Priority</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>@transaction.Priority</td>
+                                                            }
+
+
+                                                            <td>
+                                                                @Html.ActionLink("Edit", "UpdateWorkflowTask", "WorkflowBase", new { Id = transaction.Id }) |
+                                                                <a href="#" onclick="openpopup(@transaction.Id, 'Are you sure to delete task?', 'deletetask()')">Delete</a>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12 grid-margin stretch-card ms-3 mt-3 me-5 pe-4">
+    <div class="card">
+        <div class="card-body">
+            <div class="my-container mb-3">
+                <h6 class="card-title">Calender Events</h6>
+                <a class="btn btn-warning" onclick="redirectToURL()" id="eventBtn">Add Event</a>
+            </div>
+            <h6 class="card-title">Calender Events</h6>
+            <div class="row">
+                <div class="col-12">
+                    <div class="">
+                        <div id="order-listing_wrapper">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="">
+                                        <table id="datatable-Event" class="table table-striped   nowrap" width="100%" cellspacing="0">
+                                            <thead>
+                                                <tr role="row">
+                                                    <th>Sr No.</th>
+                                                    <th>Event</th>
+                                                    <th>Event Date</th>
+                                                    <th>Action</th>
+                                            </thead>
+                                            <tbody>
+                                                @if (Model != null && Model.events.Count > 0)
+                                                {
+                                                    int count = 0;
+                                                    @foreach (var transaction in Model.events)
+                                                    {
+                                                        count++;
+                                                        <tr class="odd">
+                                                            <td class="sorting_1">@count</td>
+                                                            <td class="py-1">
+                                                                @transaction.Description
+                                                            </td>
+                                                            <td class="py-1">
+                                                                @transaction.Start
+                                                            </td>
+
+                                                            <td>
+                                                                @*<a href="#" onclick="openpopup(@transaction.Id, 'Are you sure to delete document?', 'DeleteDocuments(@_decumet.Id)')">Delete</a>
+                                                        *@
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12 grid-margin stretch-card ms-3 mt-3 me-5 pe-4">
+    <div class="card">
+        <div class="card-body">
+            <div class="my-container mb-3">
+                <h6 class="card-title">Documents</h6>
+                @*<button id="addTaskBtn" class="btn btn-warning" data-toggle="modal" data-target="#taskModal">Add Task</button>*@
+                <a class="btn btn-warning" id="myBtn">Add Document</a>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="">
+                        <div id="order-listing_wrapper">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="">
+                                        <table id="datatable-Doc" class="table table-striped   nowrap" width="100%" cellspacing="0">
+                                            <thead>
+                                                <tr role="row">
+                                                    <th>Sr No.</th>
+                                                    <th>DocumentName</th>
+                                                    <th>Action</th>
+                                            </thead>
+                                            <tbody>
+                                                @if (Model != null && Model.documents.Count > 0)
+                                                {
+                                                    int count = 0;
+                                                    @foreach (var transaction in Model.documents)
+                                                    {
+                                                        count++;
+                                                        <tr class="odd">
+                                                            <td class="sorting_1">@count</td>
+                                                            <td class="py-1">
+                                                                @transaction.DecumentTittle
+                                                            </td>
+                                                            <td>
+                                                                <a href="@Url.Action("DownloadFiles", "Admin",new {id=@transaction.Id })">Download</a> |
+
+                                                                <a href="#" onclick="openpopup(@transaction.Id, 'Are you sure to delete document?', 'DeleteDocuments(@transaction.Id)')">Delete</a>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal for task-->
+<div class="modal fade" id="taskModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog custom-modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Task to Workflow</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12 grid-margin stretch-card" id="task-form">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title text-center">Add Task Details</h4>
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                                    <label for="TaskName">Task Name</label>
+                                    <input type="text" class="form-control" id="taskname" name="TaskName" />
+                                    <span class="text-danger" id="taskname-validation" style="display:none">Please enter task name</span>
+                                </div>
+                                @*<div class="form-group col-md-6">
+                                <label for="exampleInputUsername1">Due Date</label>
+                                <input type="date" name="duedate" id="duedate" class="form-control" />
+                                </div>*@
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <label>Status</label>
+                                    <select class="form-control" id="status" aria-label="status" name="status">
+                                        <option value="1">Active</option>
+                                        <option value="2">In Progress</option>
+                                        <option value="3">Completed</option>
+                                        <option value="4">OnHold</option>
+                                        <option value="5">Dismissed</option>
+                                        <option value="6">Closed</option>
+
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label>Priority</label>
+                                    <select class="form-control" id="priority" aria-label="Priority" name="Priority">
+                                        <option value="NoPriority" selected>No Priority</option>
+                                        <option value="Low">Low</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="High">High</option>
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                                    <label for="exampleInputUsername1">Description</label>
+                                    <input type="text" class="form-control" name="Description" id="description" />
+                                </div>
+                            </div>
+                            <button class="btn btn-dark fr" onclick="addTask('form')">Add Task</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            @*<div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+            </div>*@
+        </div>
+    </div>
+</div>
+
+@*modal for document *@
+<div id="myModal" class="modal">
+    <div class="row w-100 mx-0">
+        <div class="col-lg-10 mx-auto">
+
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="row">
+                    <div class="col-md-12 ml-auto">
+                        <span class="closeAdd pull-right">&times;</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="card-title">Add Documents</h4>
+                        <div class="form-group">
+                            <label>Documents Tags</label>
+                            <select id="notestag" class="js-example-basic-single w-100 form-control">
+                                <option>Select</option>
+                            </select>
+                        </div>
+                        <div id="ultagnotes"></div>
+                        <div class="form-group">
+                            <label>Documents Tittle</label>
+                            <input id="PNotesTittle" class="form-control" />
+                            <div style="color:red ;display:none" id="DocumentsTittle"></div>
+
+                        </div>
+
+                        <label>Description</label>
+                        <textarea id="decumentDescription" class="form-control" style="height: auto"></textarea>
+                        <br />
+                        <label>Uploads Documents</label>
+
+
+                        @*<div id="summernote"></div>*@
+                        <input type="file" id="decument" value="select your documents" style="margin-left:20px" />
+
+                        <div style="color:red ;display:none" id="SelectDocument"></div>
+                        <div class="row">
+                            <div class="col-md-9">
+                            </div>
+
+                            <div class="col-md-3" style="text-align:right">
+                                <span class="btn btn-info" onclick="insertDecument()">Add Document</span>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section scripts{
+
+    <script>
+
+        // Get the modal
+        var modal = document.getElementById("myModal");
+
+        // Get the button that opens the modal
+        var btn = document.getElementById("myBtn");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("closeAdd")[0];
+
+        // When the user clicks the button, open the modal
+        btn.onclick = function () {
+            modal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+    <script>
+        //$("#notestag").change(function () {
+
+        //    var text = $("#notestag option:selected").text();
+        //    if (text != "Select") {
+
+        //        $("#ultagnotes").append("<li class='btn btn-sm btn-success' style='height: 35px;'>" + $("#notestag option:selected").text() + "<span class='closeTags pull-right' style='margin-top: -5px;' onclick='DeleteItem(this)'>&times;</span></li > ");
+        //    }
+        //});
+
+        $("#notestag").change(function () {
+            var text = $("#notestag option:selected").text();
+
+            if (text != "Select") {
+                var existingNames = $("#ultagnotes li").map(function () {
+                    return $(this).text().trim().split("×")[0].trim();
+                }).get();
+
+                var splittedText = text.split("×")[0].trim();
+
+                if (existingNames.includes(splittedText)) {
+                    toastr.error("Name already exists in the list.");
+                } else {
+                    //$("#ultagnotes").append("<li data-valId=" + $("#notestag option:selected").val() + " class='btn btn-success'>" + splittedText + "<span class='closeCaseTags pull-right' onclick='DeleteItemm(this)'>&times;</span></li> ");
+                    $("#ultagnotes").append("<li class='btn btn-sm btn-success' style='height: 35px;'>" + $("#notestag option:selected").text() + "<span class='closeTags pull-right' style='margin-top: -5px;' onclick='DeleteItem(this)'>&times;</span></li > ");
+                }
+            }
+        });
+
+    </script>
+
+    <script>
+        var remoteServerURl = "";
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            token = localStorage.getItem('token');
+        });
+        function getRemoteServerURl() {
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+            getDecumentsTag();
+        };
+
+        $(document).ready(function () {
+            $('#datatable-task').dataTable({
+                "columnDefs": [
+                    { "searchable": false, "targets": 3 }
+                ]
+            });
+            $('#datatable-Event').dataTable({
+                "columnDefs": [
+                    { "searchable": false, "targets": 3 }
+                ]
+            });
+            $('#datatable-Doc').dataTable({
+                "columnDefs": [
+                    { "searchable": false, "targets": 2 }
+                ]
+            });
+        });
+
+        
+        function DeleteItem(ctl) {
+            $(ctl).parents("li").remove();
+        }
+
+        function getDecumentsTag() {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/ConfigManagement/GetDocumentTag`,
+                headers: { "Authorization": 'Bearer ' + token },
+                error: function (data) {
+                    if (data.responseText == 'Please Add Firm Details First') {
+                        window.location.href = '@Url.Action("AddFirm", "Firm", new { area= "Attorney" })';
+                    }
+                }
+            }).done(function (data) {
+                let options = "<option value='undefined'>Select</option>";
+                $.each(data, function (a, b) {
+                    options += "<option value='" + b.id + "'>" + b.documentTagName + "</option>";
+                });
+
+                $("#notestag").html(options);
+                $("#notestagCase").html(options);
+            })
+        };
+        
+
+
+        function addTask(fromPage) {
+            if (fromPage == "form") {
+                var isFormValid = true;
+                var ClientId = "";
+                var StaffId = "";
+                if ($("#taskname").val().length == "" || $("#taskname").val().length < 3) {
+                    $("#taskname-validation").text("Minimum three characters required");
+                    isFormValid = false;
+                    $("#taskname-validation").show();
+                }
+                else {
+                    $("#taskname-validation").hide();
+                }
+                if (!isFormValid) {
+                    $('html, body').animate({ scrollTop: 0 }, 100);
+                    return;
+                }
+                $("#addTaskBtn").click();
+                openpopup('', 'Are you sure to add task?', "addTask('frompopup')");
+            }
+            else {
+                var task = {
+                    Name: $("#taskname").val(),
+                    DueDate: $("#duedate").val(),
+                    Status: $("#status").val(),
+                    Priority: $("#priority").val(),
+                    Description: $("#description").val(),
+                    WorkflowId: $("#workflowID").text(),
+                    ClientId: $("#clientlist").val(),
+                    StaffId: $("#stafflist").val(),
+                };
+                console.log(task);
+
+                token = localStorage.getItem('token');
+                $.ajax({
+                    url: `${remoteServerURl}api/Workflow/AddWorkflowTask`,
+                    headers: { "Authorization": 'Bearer ' + token },
+                    type: "POST",
+                    data: JSON.stringify(task),
+                    contentType: "application/json; charset=utf-8",
+                    success: function (response) {
+                        closepopup();
+                        toastr.success(response);
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 1000);
+                    },
+                    error: function (response) {
+                        toastr.error(response.responseText);
+                    }
+                });
+            }
+        }
+
+        function deletetask() {
+            var id = $("#taskid").val();
+            console.log(`${remoteServerURl}api/Workflow/DeleteWorkflowTask?Id=` + id);
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'Delete',
+                url: `${remoteServerURl}api/Workflow/DeleteWorkflowTask?Id=` + id,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                closepopup();
+                toastr.success("task deleted successfully");
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1000);
+            })
+        }
+
+        async function insertDecument() {
+
+            var documenttittle = $('#PNotesTittle').val();
+            if (documenttittle == "") {
+                document.getElementById("DocumentsTittle").innerHTML = "Tittle is required";
+
+                $('#DocumentsTittle').show();
+                return
+            }
+
+
+            var decument;
+            var selecteddecument = $("#decument");
+            var selecteddecuments = $("#decument").val();
+            var extention = selecteddecuments.split('.').pop();
+            if (selecteddecument.get(0).files.length >= 1) {
+                let myFile = document.getElementById('decument').files[0];
+
+
+                decument = await fileToByteArray(myFile);
+
+            }
+            else {
+                document.getElementById("SelectDocument").innerHTML = "please select Document";
+                $('#SelectDocument').show();
+                return
+            }
+
+            var NotesTagArray = new Array();
+            $("#ultagnotes LI").each(function () {
+
+                var notesTag = {};
+                notesTag.name = $(this).text().substring(0, $(this).text().length - 1)
+
+                NotesTagArray.push(notesTag);
+            });
+            var notestittle = "";
+            var i;
+            for (i = 0; i < NotesTagArray.length; i++) {
+                if (NotesTagArray.length == 1) {
+                    notestittle = NotesTagArray[i].name + ","
+                }
+                else if (i == 0) {
+                    notestittle = NotesTagArray[i].name
+
+                }
+                else {
+                    notestittle = notestittle + "," + NotesTagArray[i].name;
+
+                }
+            }
+            var trimenotetagstr = notestittle.substring(0, notestittle.length - 1)
+            var descripation = $('#decumentDescription').val();
+            var workFLowID = $("#workflowID").text();
+
+            var model = {
+
+                DecumentTittle: $('#PNotesTittle').val(),
+                DecumentTags: trimenotetagstr,
+                DecumentDescripation: descripation,
+                UserId: $("#current-userid").val(),
+                extention: extention,
+                File: decument,
+                WorkflowId: workFLowID,
+            };
+            console.log(model);
+            token = localStorage.getItem('token');
+            $.ajax({
+                url: `${remoteServerURl}api/Workflow/AddWorkflowDocuments`,
+                headers: { "Authorization": 'Bearer ' + token },
+                type: "POST",
+                dataType: 'json',
+                data: JSON.stringify(model),
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    toastr.success("Added Sucessfully");
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 2200);
+
+
+                },
+                error: function (response) {
+                    if (response.responseText == 'Please Add Firm Details First') {
+                        window.location.href = '@Url.Action("AddFirm", "Admin", new { area= "Attorney" })';
+                    }
+                }
+            });
+        };
+
+        function DeleteDocuments(Id) {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'DELETE',
+                url: `${remoteServerURl}api/Workflow/DeleteWorkflowDocuments?Id=${Id}`,
+                headers: { "Authorization": 'Bearer ' + token },
+                error: function (data) {
+                    if (data.responseText == 'Please Add Firm Details First') {
+                        window.location.href = '@Url.Action("AddFirm", "Firm", new { area= "Attorney" })';
+                    }
+                }
+            }).done(function (data) {
+                //window.location.href = '@Url.Action("ManageDocuments", "Documents")'
+                toastr.success("Deleted Sucessfully");
+                setTimeout(function () {
+                    window.location.reload();
+                }, 2200);
+            })
+        };
+
+        function fileToByteArray(file) {
+            return new Promise((resolve, reject) => {
+                try {
+                    let reader = new FileReader();
+                    let fileByteArray = [];
+                    reader.readAsArrayBuffer(file);
+                    reader.onloadend = (evt) => {
+                        if (evt.target.readyState == FileReader.DONE) {
+                            let arrayBuffer = evt.target.result,
+                                array = new Uint8Array(arrayBuffer);
+                            for (byte of array) {
+                                fileByteArray.push(byte);
+                            }
+                        }
+                        resolve(fileByteArray);
+                    }
+                } catch (e) {
+                    reject(e);
+                }
+            })
+        }
+
+        function redirectToURL() {
+            var id = $("#workflowID").text(); // Replace with the actual id value
+
+            var url = '@Url.Action("WorkflowEvents", "WorkflowBase", new { area = "Attorney" })';
+
+            // Save the id to localStorage
+            localStorage.setItem('WorkdlowId', id);
+            // Redirect to the constructed URL
+            window.location.href = url;
+        }
+
+    </script>
+    }
+

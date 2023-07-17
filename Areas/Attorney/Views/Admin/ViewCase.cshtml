@@ -1,0 +1,712 @@
+﻿@{
+    @using AbsolCase.Models
+    @using Newtonsoft.Json;
+    @using Microsoft.AspNetCore.Http;
+    @inject IHttpContextAccessor httpContextAccessor;
+    string userdto = httpContextAccessor.HttpContext.Session.GetString("userData");
+    UserDto userDto = new UserDto();
+    if (!string.IsNullOrEmpty(userdto))
+    {
+        userDto = JsonConvert.DeserializeObject<UserDto>(userdto);
+    }
+}
+@model AbsolCase.Models.CaseDetail
+@{
+    ViewData["Title"] = "ViewCase";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<style>
+    .my-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn-Custom:hover span {
+        color: white !important;
+    }
+
+    .btn-Close:hover {
+        color: white !important;
+    }
+
+    .btn-Close {
+        color: red !important;
+        border: 1px solid red;
+        border-radius: 19px !important;
+    }
+
+    .box {
+        float: left;
+        height: 20px;
+        width: 20px;
+        margin-bottom: 15px;
+        border: 1px solid black;
+        clear: both;
+    }
+
+    .color1 {
+        background-color: rgb(105, 182, 214);
+    }
+
+    .color2 {
+        background-color: rgb(102, 16, 81);
+    }
+
+    .color3 {
+        background-color: rgb(191, 216, 225);
+    }
+
+    .color4 {
+        background-color: rgb(220, 190, 212);
+    }
+
+    .fWeight-6 {
+        font-weight: 600;
+        font-size: 14px;
+    }
+</style>
+<div class="container-fluid mb-5 p-4">
+
+
+    <div class="row">
+        <div class="col-lg-6" style="display:inline-flex">
+            @*<img src="~/images/dashboard/briefcase-removebg.png" width="50" height="50" /><br />*@
+            @*<i class="fas fa-3x fa-suitcase" aria-hidden="true"></i>*@
+            <i class="fa fa-suitcase fa-5" style="font-size:3rem" aria-hidden="true"></i>
+            <h4 style="margin-left:1rem;">@Model.CaseName</h4>
+            <h4 id="caseID" style="display:none">@Model.Id</h4>
+        </div>
+        <div class="col-lg-3">
+        </div>
+        <div class="col-lg-3">
+            <a href="#" style="text-decoration:none;color:#484848;">
+                <i class="fa fa-print" aria-hidden="true"></i>
+                Print
+            </a>
+            <button type="button" class="btn btn-outline-dark btn-Custom btn-lg" style="margin-left:1rem;width: 8rem;border-radius: 15px;">
+                <span style="color:#484848">Edit</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-lg-2" style="background-color:white;">
+            <h4 class="card-title mt-4 card-title-dash">Contact Info</h4>
+            <ul class="">
+                @if (Model.contact != null)
+                {
+                    <li>
+                        <h6 style="text-align: left"><b>@Model.contact.FirstName</b></h6>
+                        <p style="text-align: left">@Model.contact.Email </p>
+                        <p style="text-align: left">@Model.contact.CellPhone </p>
+                    </li>
+                }
+            </ul>
+            <label style="font-weight:600">Opened:</label><br>
+            <span>@Model.DateOpened.Value.ToShortDateString()</span><br><br>
+            <label style="font-weight:600">Practice Area:</label><br>
+            <span>@Model.PracticeAreaName</span><br><br>
+            <label style="font-weight:600">Case Stage:</label><br>
+            <span>@Model.CaseStage</span><br><br>
+            <label style="font-weight:600">Office:</label><br>
+            <span>@Model.Office</span><br><br>
+            <label style="font-weight:600">Lead Attorney:</label><br>
+            <span>@Model.LeadAttorney</span><br><br>
+            <label style="font-weight:600">Originating Attorney:</label><br>
+            <span>@Model.OriginatingLeadAttorney</span><br><br>
+            <label style="font-weight:600">Staff:</label><br>
+            <ul class="">
+                @foreach (var item in Model.userAgainstCase)
+                {
+                    <li>
+                        <h6 style="text-align: left"><b>@item.Name</b></h6>
+                        <p style="text-align: left">@item.Email </p>
+                    </li>
+                }
+            </ul>
+            <br><br>
+            <label style="font-weight:600">Description:</label><br>
+            <span>@Model.Description</span><br><br>
+            <label style="font-weight:600">Created:</label><br>
+            <span>@Model.DateOpened</span><br><br>
+            <br>
+            @if (Model.DateClosed == null)
+            {
+                <button type="button" onclick="CloseCase(@Model.Id)" class="btn btn-outline-danger ps-5 pe-5 btn-Close">Close Case</button>
+            }
+            else
+            {
+                <button type="button" disabled class="btn btn-outline-danger btn-Close" style="padding-left: 3rem;padding-right: 2.8rem;">
+                    Case Closed
+                </button>
+
+            }
+        </div>
+        <div class="col-lg-7">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Items & Info</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="profile-tab" data-toggle="tab" data-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Time & Billing</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="workflow-tab" data-toggle="tab" data-target="#workflow" type="button" role="tab" aria-controls="messages" aria-selected="false">WorkFlows</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="settings-tab" data-toggle="tab" data-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">Contacts & Staff</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="updates-tab" data-toggle="tab" data-target="#updates" type="button" role="tab" aria-controls="updates" aria-selected="false">Status Updates</button>
+                </li>
+            </ul>
+            <hr>
+            <div class="tab-content">
+                <div class="tab-pane active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Case Timeline By Stage-Days Open:</h5>
+                            <p>Opened:@Model.DateOpened.Value.ToShortDateString()</p>
+                            <center>
+                                <br />
+                                <div class="progress" style="max-width: 100%;border-radius:0px">
+                                    <div class="progress-bar"
+                                         style="width: 10%;border-radius:0px">
+                                        10%
+                                    </div>
+                                    <div class="progress-bar bg-success"
+                                         style="width: 20%;border-radius:0px">
+                                        20%
+                                    </div>
+                                    <div class="progress-bar bg-danger progress-bar-stripped" style="width: 30%;border-radius:0px">
+                                        30%
+                                    </div>
+                                    <div class="progress-bar bg-warning progress-bar-stripped" style="width: 40%;border-radius:0px">
+                                        40%
+                                    </div>
+                                </div>
+                                <br />
+                            </center>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div>
+                                        <div class='box color1 me-2'></div>
+                                        <span style="font-weight:600">Intake</span> 10 days
+                                    </div>
+                                    <br>
+                                    <div>
+                                        <div class='box color2 me-2'></div>
+                                        <span style="font-weight:600">Demand Review</span> 10 days
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div>
+                                        <div class='box color3 me-2'></div>
+                                        <span style="font-weight:600">Case Management</span> 10 days
+                                    </div>
+                                    <br>
+                                    <div>
+                                        <div class='box color4 me-2'></div>
+                                        <span style="font-weight:600">In Demand</span> 10 days
+                                    </div>
+                                </div>
+                            </div>
+                            @*<div>
+                            <div>
+                            <div class='box red me-2'></div>
+                            Intake 10 days
+                            <div style="float:right"><div class='box blue me-2'></div> Case Management 10 days</div>
+
+                            </div>
+                            </div>
+                            <div>
+                            <div>
+                            <div class='box green me-2'></div>
+                            Demand Review 10 days
+
+                            <div style="float:right"><div class='box color4 me-2'></div> In Demand 10 days</div>
+
+                            </div>
+                            </div>*@
+
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <h4 class="card-title mt-4 mb-3">Case Information</h4>
+                        <div class="col-lg-6">
+                            <label class="fWeight-6">Case name:</label>
+                            <span id="caseName">@Model.CaseName</span><br><br>
+                            <label class="fWeight-6">Case No:</label>
+                            <span id="caseNo">@Model.CaseNumber</span><br><br>
+                            <label class="fWeight-6">Practice Area:</label>
+                            <span id="caseNo">@Model.PracticeAreaName</span><br><br>
+                            <label class="fWeight-6">Case Stage:</label>
+                            <span id="caseNo">@Model.CaseStage</span><br><br>
+                            <label class="fWeight-6">Description:</label>
+                            <span id="caseNo">@Model.Description</span><br><br>
+                            <label class="fWeight-6">Conflict Check:</label>
+                            <span id="caseNo">@Model.ConflictCheckNotes</span><br><br>
+                            <label class="fWeight-6">Conflict Check Notes:</label>
+                            <span id="caseNo">@Model.ConflictCheckNotes</span><br><br>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="fWeight-6">Date Opened:</label>
+                            <span id="dateOpen">@Model.DateOpened.Value.ToShortDateString()</span><br><br>
+                            <label class="fWeight-6">Date Closed:</label>
+                            @if (Model.DateClosed != null)
+                            {
+                                <span id="dateClose">@Model.DateClosed.Value.ToShortDateString()</span>
+
+                                <br>
+
+                                <br>
+                            }
+                            else
+                            {
+                                <span id=""></span>
+
+                                <br>
+
+                                <br>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        @*<div class="col-lg-12">*@
+                        <h4 class="card-title mt-4 mb-3">Custom Fields</h4>
+                        @if (Model.customField != null && Model.customField.Count > 0)
+                        {
+                            @foreach (var item in Model.customField)
+                            {
+                                if (item.CustomFieldType == "Text")
+                                {
+                                    <div class="form-group col-md-4">
+                                        <label for="exampleInputUsername1">@item.CustomFieldName</label>
+                                        @if (Model.cfieldValue != null && Model.cfieldValue.Count > 0)
+                                        {
+                                            @foreach (var itemm in Model.cfieldValue)
+                                            {
+                                                if (item.FieldId == itemm.FieldID)
+                                                {
+                                                    <input type="text" class="form-control" value="@itemm.Value" id="@("custom-"+ item.FieldId)" disabled />
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <input type="text" class="form-control" id="@("custom-"+ item.FieldId)" disabled />
+                                        }
+                                    </div>
+                                }
+                                else if (item.CustomFieldType == "Currency")
+                                {
+                                    <div class="form-group col-md-4">
+                                        <label for="exampleInputUsername1">@item.CustomFieldName</label>
+                                        <span style="display:flex">
+                                            $
+                                            @if (Model.cfieldValue != null && Model.cfieldValue.Count > 0)
+                                            {
+                                                @foreach (var itemm in Model.cfieldValue)
+                                                {
+                                                    if (item.FieldId == itemm.FieldID)
+                                                    {
+                                                        <input type="number" class="form-control" value="@itemm.Value" id="@("custom-"+ item.FieldId)" style="margin-left:2%" disabled />
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <input type="number" class="form-control" id="@("custom-"+ item.FieldId)" style="margin-left:2%" disabled />
+                                            }
+
+                                        </span>
+                                    </div>
+                                }
+                                else if (item.CustomFieldType == "Date")
+                                {
+                                    <div class="form-group col-md-4">
+                                        <label for="exampleInputUsername1">@item.CustomFieldName</label>
+                                        @if (Model.cfieldValue != null && Model.cfieldValue.Count > 0)
+                                        {
+                                            @foreach (var itemm in Model.cfieldValue)
+                                            {
+                                                if (item.FieldId == itemm.FieldID)
+                                                {
+                                                    <input type="date" class="form-control" value="@itemm.Value" id="@("custom-"+ item.FieldId)" disabled />
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <input type="date" class="form-control" id="@("custom-"+ item.FieldId)" disabled />
+                                        }
+
+                                    </div>
+                                }
+                                else if (item.CustomFieldType == "True/False")
+                                {
+                                    <div class="form-group col-md-4">
+                                        <label for="exampleInputUsername1">@item.CustomFieldName</label>
+
+                                        <div class="form-group">
+                                            <label for="exampleInputUsername1">True</label>
+                                            <input type="radio" value="true" checked name="rad" id="@("True-"+ item.FieldId)" disabled />
+                                            <label for="exampleInputUsername1">False</label>
+                                            <input type="radio" value="false" name="rad" id="@("False-"+ item.FieldId)" disabled />
+                                        </div>
+
+                                    </div>
+                                }
+                                else if (item.CustomFieldType == "Number")
+                                {
+                                    <div class="form-group col-md-4">
+                                        <label for="exampleInputUsername1">@item.CustomFieldName</label>
+                                        @if (Model.cfieldValue != null && Model.cfieldValue.Count > 0)
+                                        {
+                                            @foreach (var itemm in Model.cfieldValue)
+                                            {
+                                                if (item.FieldId == itemm.FieldID)
+                                                {
+                                                    <input type="number" class="form-control" value="@itemm.Value" id="@("custom-"+ item.FieldId)" disabled />
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <input type="number" class="form-control" id="@("custom-"+ item.FieldId)" disabled />
+                                        }
+
+                                    </div>
+                                }
+                            }
+                        }
+                        @*</div>*@
+
+                    </div>
+
+                </div>
+                <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">2</div>
+                <div class="tab-pane" id="workflow" role="tabpanel" aria-labelledby="workflow-tab">
+                    <div class="col-md-12 grid-margin stretch-card ms-3 mt-3 me-5 pe-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="my-container mb-3">
+                                    <h6 class="card-title">Workflows</h6>
+                                    <button id="workflowBtn" class="btn btn-warning" data-toggle="modal" data-target="#workflowModal">Apply Workflow</button>
+                                </div>
+                                @*<h6 class="card-title">Workflows</h6>*@
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="">
+                                            <div id="order-listing_wrapper">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <div class="">
+                                                            <table id="datatable-Event" class="table table-striped   nowrap" width="100%" cellspacing="0">
+                                                                <thead>
+                                                                    <tr role="row">
+                                                                        <th>Sr No.</th>
+                                                                        <th>Workflow Name</th>
+                                                                        <th>Action</th>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @if (Model != null && Model.workflowAttach.Count > 0)
+                                                                    {
+                                                                    int count = 0;
+                                                                    @foreach (var item in Model.workflowAttach)
+                                                                    {
+                                                                    count++;
+                                                                    <tr class="odd">
+                                                                    <td class="sorting_1">@count</td>
+                                                                    <td class="py-1">
+                                                                    @item.WorkflowName
+                                                                    </td>
+                                                                    <td class="py-1">
+                                                                    @item.WorkflowName
+                                                                    </td>
+
+                                                                    
+                                                                    </tr>
+                                                                    }
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="settings" role="tabpanel" aria-labelledby="settings-tab">4</div>
+                <div class="tab-pane" id="updates" role="tabpanel" aria-labelledby="updates-tab">5</div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="row">
+                <div class="card card-rounded" style="min-height: 14.75rem;max-height: 14.95rem;overflow:auto;">
+                    <div class="card-body card-rounded">
+                        <h4 class="card-title  card-title-dash">Alerts</h4>
+                        <ul class="bullet-line-list">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="card card-rounded" style="min-height: 14.75rem;max-height: 14.95rem;overflow:auto;">
+                    <div class="card-body card-rounded">
+                        <h4 class="card-title  card-title-dash">Tasks @*<span style="float:right"><a href="@Url.Action("AddTask","Admin",new{area="Attorney"})" class="btn btn-warning">Add Task</a></span>*@ </h4>
+                        @if (ViewBag.EventsList != null)
+                        {
+                            foreach (var item in ViewBag.TasksList)
+                            {
+                                <div class="list align-items-center border-bottom py-2">
+                                    <div class="wrapper w-100">
+                                        <p class="mb-2 font-weight-medium">
+                                            @item.Name
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <i class="mdi mdi-calendar text-muted me-1"></i>
+                                                <p class="mb-0 text-small text-muted">@item.DueDate</p>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <p style="color:#f16c40;font-size:14px;" class="mb-0 text-small">@item.Priority</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                    @*<div class="card-body card-rounded">
+                        <h4 class="card-title  card-title-dash">Tasks</h4>
+                        <ul class="bullet-line-list">
+                        </ul>
+                    </div>*@
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="card card-rounded" style="min-height: 14.75rem;max-height: 14.95rem;overflow:auto;">
+                    <div class="card-body card-rounded">
+                        <h4 class="card-title  card-title-dash">Events @*<span style="float:right"><a href="@Url.Action("ManageEvents","Admin",new{@area="Attorney"})" class="btn btn-warning">Add Event</a></span>*@ </h4>
+                        @if (ViewBag.EventsList != null)
+                        {
+                            foreach (var item in ViewBag.EventsList)
+                            {
+                                <div class="list align-items-center border-bottom py-2">
+                                    <div class="wrapper w-100">
+                                        <p class="mb-2 font-weight-medium">
+                                            @item.Title
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <i class="mdi mdi-calendar text-muted me-1"></i>
+                                                <p class="mb-0 text-small text-muted">@item.Start</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                    @*<div class="card-body card-rounded">
+                        <h4 class="card-title  card-title-dash">Events</h4>
+                        <ul class="bullet-line-list">
+                        </ul>
+                    </div>*@
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="card card-rounded" style="min-height: 14.75rem;max-height: 14.95rem;overflow:auto;">
+                    <div class="card-body card-rounded">
+                        <h4 class="card-title  card-title-dash">Documents @*<span style="float:right"><a href="@Url.Action("ManageEvents","Admin",new{@area="Attorney"})" class="btn btn-warning">Add Event</a></span>*@ </h4>
+                        @if (ViewBag.EventsList != null)
+                        {
+                            foreach (var item in ViewBag.EventsList)
+                            {
+                                <div class="list align-items-center border-bottom py-2">
+                                    <div class="wrapper w-100">
+                                        <p class="mb-2 font-weight-medium">
+                                            @item.Title
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <i class="mdi mdi-calendar text-muted me-1"></i>
+                                                <p class="mb-0 text-small text-muted">@item.Start</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                    @*<div class="card-body card-rounded">
+                    <h4 class="card-title  card-title-dash">Events</h4>
+                    <ul class="bullet-line-list">
+                    </ul>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal for WorkFlow-->
+
+<div class="modal fade" id="workflowModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3 form-group">
+                    <label class="mb-2">Select Workflow</label>
+                    <select id="workflowdrop" class="js-example-basic-single w-100 form-control">
+                        <option>Select</option>
+                    </select>
+                    <span class="text-danger" id="workflow-validation" style="display:none"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="AttachWorkflow('form')" class="btn btn-primary">Apply</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    //$(function () {
+    //  $('#myTab li:last-child button').tab('show')
+    //})
+    $('#myTab button').on('click', function (event) {
+        event.preventDefault()
+        $(this).addClass("active");
+    });
+
+
+
+
+    var remoteServerURl = "";
+    var plan = null;
+    var token = "";
+    $(function () {
+        getRemoteServerURl();
+        token = localStorage.getItem('token');
+    });
+    function getRemoteServerURl() {
+        var ReceivedURL = GetURL();
+        remoteServerURl = ReceivedURL;
+        getWorkflows();
+    };
+
+    function CloseCase(id) {
+        token = localStorage.getItem('token');
+        $.ajax({
+            type: 'Delete',
+            url: `${remoteServerURl}api/Case/CloseCase?Id=` + id,
+            headers: { "Authorization": 'Bearer ' + token }
+        }).done(function (data) {
+            toastr.success("Case Closed Successfully");
+            setTimeout(function () {
+                window.location.href = '@Url.Action("ManageCases","Admin")'
+            }, 1000);
+        })
+    }
+
+    function getWorkflows() {
+        token = localStorage.getItem('token');
+        $.ajax({
+            type: 'GET',
+            url: `${remoteServerURl}api/Workflow/GetAllWorkflows`,
+            headers: { "Authorization": 'Bearer ' + token },
+            error: function (data) {
+                if (data.responseText == 'Please Add Firm Details First') {
+                    window.location.href = '@Url.Action("AddFirm", "Admin", new { area= "Attorney" })';
+                }
+            }
+        }).done(function (data) {
+            let options = "<option value='undefined'>Select</option>";
+            $.each(data, function (a, b) {
+                options += "<option value='" + b.workflowId + "'>" + b.workflowName + "</option>";
+            });
+
+            $("#workflowdrop").html(options);
+
+        })
+    };
+
+    function AttachWorkflow(fromPage) {
+        if (fromPage == "form") {
+            var isFormValid = true;
+
+            var selectElement = document.getElementById("workflowdrop");
+            var selectedValue = selectElement.value;
+
+            if (selectedValue === "undefined" || selectedValue === "Select") {
+                $("#workflow-validation").text("Please Select Workflow");
+                isFormValid = false;
+                $("#workflow-validation").show();
+            } else {
+                $("#taskname-validation").hide();
+            }
+            if (!isFormValid) {
+                $('html, body').animate({ scrollTop: 0 }, 100);
+                return;
+            }
+            $("#workflowBtn").click();
+            openpopup('', 'Are you sure to Attach Workflow?', "AttachWorkflow('frompopup')");
+        }
+        else {
+            var selectElement = document.getElementById("workflowdrop");
+            var workflowID = selectElement.value;
+            var caseId = $("#caseID").text();
+            var data = {
+                WorkflowId: workflowID,
+                CaseId: caseId,
+            };
+
+            token = localStorage.getItem('token');
+            $.ajax({
+                url: `${remoteServerURl}api/Workflow/AttachWorkflowToCase`,
+                headers: { "Authorization": 'Bearer ' + token },
+                type: "POST",
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    closepopup();
+                    if (response == "Workflow Already Attached")
+                    {
+                        toastr.error(response);
+                    } else if (response == "Workflow Attached successfully") {
+                        toastr.success(response);
+                    }else{
+                        toastr.error(response);
+                    }
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 1000);
+                },
+                error: function (response) {
+                    toastr.error(response.responseText);
+                }
+            });
+        }
+    }
+
+    
+</script>

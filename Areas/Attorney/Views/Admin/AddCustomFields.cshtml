@@ -1,0 +1,305 @@
+﻿@model AbsolCase.Models.CustomField
+@using AbsolCase.Models
+@{
+    @using Newtonsoft.Json;
+    @using Microsoft.AspNetCore.Http;
+    @inject IHttpContextAccessor httpContextAccessor;
+    string userdto = httpContextAccessor.HttpContext.Session.GetString("userData");
+    UserDto userDto = new UserDto();
+    bool canAccessMessages = false;
+    bool canAccessTimeLline = false;
+    bool canAccessCalendar = false;
+    bool canAccessReporting = false;
+    bool canAccessDocuments = false;
+    bool canAccessNotes = false;
+    if (!string.IsNullOrEmpty(userdto))
+    {
+        userDto = JsonConvert.DeserializeObject<UserDto>(userdto);
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Unlimited Messages").FirstOrDefault() != null)
+            canAccessMessages = true;
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Timeline").FirstOrDefault() != null)
+            canAccessTimeLline = true;
+
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Calendar Events").FirstOrDefault() != null)
+            canAccessCalendar = true;
+        @if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Reporting").FirstOrDefault() != null)
+            canAccessReporting = true;
+        if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Documents Handling").FirstOrDefault() != null)
+            canAccessDocuments = true;
+        if (userDto != null && userDto.Services != null && userDto.Services.Count > 0 && userDto.Services.Where(x => x.Name == "Notes Handling").FirstOrDefault() != null)
+            canAccessNotes = true;
+    }
+}
+
+
+
+@{
+    ViewData["Title"] = "AddCustomFields";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+
+
+@if (TempData["response"] != null)
+{
+    <script>
+        $(document).ready(function () {
+
+            var success = '@((TempData["response"] != null).ToString())';
+            if (success == 'false' || success == false) {
+
+            } else {
+                toastr.info('@TempData["response"].ToString()');
+            }
+        });
+    </script>
+}
+<style>
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+    input:checked + .slider {
+        background-color: #2196F3;
+    }
+
+    input:focus + .slider {
+        box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+        border-radius: 34px;
+    }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+</style>
+<div class="row mb-1">
+    <div class="card col-md-12 col-lg-12 pull-right grid-margin">
+
+        <div class="card-block mt-3 ml-5">
+            <ul class="navbar dashboard-short-icon">
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;" @(!canAccessCalendar ? "onclick=ShowSubscriptionLimitation()" : "")>
+                    <a href="@(canAccessCalendar == true ? Url.Action("ManageEvents","Admin", new { area = "Attorney"}) : "#")" style="text-decoration:none;">
+                        <img src="~/images/dashboard/event.jpg" width="50" height="50" /><br />
+                        Event
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;" @(!canAccessDocuments ? "onclick=ShowSubscriptionLimitation()" : "")>
+                    <a href="@(canAccessDocuments == true ?  Url.Action("ManageDocuments","Admin", new { area = "Attorney"}) : "#")" style="text-decoration:none;">
+                        <img src="~/images/dashboard/document-removebg.png" width="50" height="50" /><br />
+                        Document
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("ManageTask", "Admin", new { area = "Attorney" })" style="text-decoration:none;">
+                        <img src="~/images/dashboard/task.png" width="50" height="50" /><br />
+                        Task
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("AddPotentialClient", "Admin", new { area = "Attorney" })" style="text-decoration:none;">
+                        <img src="~/images/dashboard/lead-removebg.png" width="50" height="50" /><br />
+
+                        Lead
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("AddContact", "Admin", new { area = "Attorney" })" style="text-decoration:none;" id="contactmodal">
+                        <img src="~/images/dashboard/contact-removebg.png" width="50" height="50" /><br />
+                        Contact
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("ManageCases", "Admin", new { area = "Attorney" })" style="text-decoration:none;" onclick="abc();">
+                        <img src="~/images/dashboard/briefcase-removebg.png" width="50" height="50" /><br />
+                        Case
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;" @(!canAccessMessages ? "onclick=ShowSubscriptionLimitation()" : "")>
+                    <a href="@(canAccessMessages == true ? Url.Action("Message","Admin", new { area = "Attorney"}) : "#")" style="text-decoration:none;">
+                        <img src="~/images/dashboard/message.png" width="50" height="50" /><br />
+                        Message
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box; ">
+                    <a href="@Url.Action("AddExpense", "Admin", new { area = "Attorney" })" style="text-decoration:none;">
+                        <img src="~/images/dashboard/expenses.png" width="50" height="50" /><br />
+                        Expense
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;">
+                    <a href="@Url.Action("AddReceipt", "Admin", new { area = "Attorney" })" style="text-decoration:none;">
+                        <img src="~/images/dashboard/invoice.jpg" width="50" height="50" /><br />
+                        Invoice
+                    </a>
+                </li>
+                <li style="display: table-cell;text-align:center; box-sizing: border-box;" @(!canAccessNotes ? "onclick=ShowSubscriptionLimitation()" : "")>
+                    <a href="@(canAccessNotes == true ? Url.Action("ManageNotes","Admin", new { area = "Attorney"}) : "#")" style="text-decoration:none;">
+                        <img src="~/images/dashboard/notes.png" width="50" height="50" /><br />
+                        Notes
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+<div class="col-lg-6 grid-margin stretch-card mt-3 ms-3">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Add Custom Field</h4>
+
+            @*@using (Html.BeginForm("AddCustomFields", "Admin", FormMethod.Post, new { @class = "forms-sample" }))
+            {*@
+            <div class="form-group">
+                <label for="exampleInputUsername1">Custom Field Name</label>
+                @Html.EditorFor(model => model.CustomFieldName, new { htmlAttributes = new { @class = "form-control", placeholder = "Custom Field Name",@id="fieldName" } })
+                @Html.ValidationMessageFor(model => model.CustomFieldName, "", new { @class = "text-danger db" })
+
+
+            </div>
+            <div class="form-group">
+                <label for="exampleInputUsername1">Select Custom Field For</label>
+                <select name="cars" id="fieldfor" class="form-control">
+                    <option value="Cases">Cases</option>
+                    <option value="Contacts">Contacts</option>
+                    <option value="Companies">Companies</option>
+                    <option value="TimeEntry">TimeEntry</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputUsername1">Select Type</label>
+                <select name="cars" id="typeDrop" class="form-control">
+                    <option value="Text">Text</option>
+                    <option value="Number">Number</option>
+                    <option value="True/False">True/False</option>
+                    <option value="Currency">Currency</option>
+                    <option value="Date">Date</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputUsername1">Enable for All Practice Areas</label>
+                <label class="switch">
+                    <input type="checkbox" id="tooglebtn">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+            <input type="submit" onclick="Save()" class="btn btn-dark fr" />
+            @*<button class="btn btn-light">Cancel</button>
+            //}*@
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        var remoteServerURl = "";
+        var plan = null;
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            token = localStorage.getItem('token');
+        });
+        function getRemoteServerURl() {
+            //$.ajax({
+            //type: 'GET',
+            //url: '/common/getConfigurationValue',
+            //data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+            //    getDecumentsTag();
+
+            //    getCases();
+
+
+            //})
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+        };
+
+        setTimeout(function () {
+            $("#msgalert").hide();
+        }, 3500);
+
+        function Save() {
+
+
+            var fieldName = $("#fieldName").val();
+            var fieldType = $("#typeDrop").val();
+            var fieldfor = $("#fieldfor").val();
+            var fullpractice = $("#tooglebtn").is(":checked");
+            var record = {};
+            record = new FormData();
+            //record.append("CustomerName", $("#CuserName").text());
+            //record.append("ProductName", $("#productName").val());
+            record.append("CustomFieldName", fieldName);
+            record.append("CustomFieldType", fieldType);
+            record.append("Type", fieldfor);
+            record.append("FullPractice", fullpractice);
+            $.ajax(
+                {
+                    type: "POST",
+                    url: '@Url.Action("AddCustomFields", "Admin")',
+                    data: record,
+                    async: false,
+                    cache: false,
+                    dataType: "json",
+                    processData: false,
+                    contentType: false,
+                    success: function (result) {
+                        toastr.success(result);
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("AddCustomFields","Admin")'
+                        }, 1000);
+                    },
+                    error: function () {
+                        
+                    }
+                });
+        };
+    </script>
+}

@@ -1,0 +1,859 @@
+﻿@model List<AbsolCase.Models.Decuments>
+
+@{
+    ViewData["Title"] = "Versions";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<link href="~/css/lite.min.css" rel="stylesheet" />
+<script src="~/assets/js/lite.min.js"></script>
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    /* The Modal (background) */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    .modalEdit {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    .modalDetail {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    .modalCase {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    /* Modal Content */
+    .modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        margin-left: 42px;
+        margin-top: 44px;
+    }
+
+    .modal-contentyes {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        margin-left: 106px;
+        margin-top: 44px;
+    }
+
+    .modal-content-Detail {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        margin-left: 234px;
+        margin-top: 44px;
+    }
+
+    .modal-content-case {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        margin-left: 142px;
+        margin-top: 10px;
+    }
+
+    /* The Close Button */
+    .closeAdd {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+        .closeAdd:hover,
+        .closeAdd:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .closeDetail {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+        .closeDetail:hover,
+        .closeDetail:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .closeCase {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+        .closeCase:hover,
+        .closeCase:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .closeTags {
+        color: white;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        margin-left: 10px;
+    }
+
+        .closeTags:hover,
+        .closeTags:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .closeCaseTags {
+        color: white;
+        float: right;
+        font-size: 17px;
+        font-weight: bold;
+        margin-left: 10px;
+    }
+
+    /* .closeCaseTags:hover,
+                                                    .closeCaseTags:focus {
+                                                        color: #000;
+                                                        text-decoration: none;*/
+
+    /*}*/
+</style>
+<script>
+    $(document).ready(function () {
+        $('.summernote').summernote();
+    });
+</script>
+
+@*@if (TempData["response"] != null)
+    {
+        <div class="alert-danger" id="msgalert">
+            @TempData["response"].ToString()
+        </div>
+    }*@
+<div class="col-lg-12 grid-margin stretch-card mt-3 ms-3 me-4 pe-4">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <input type="text" id="tokenInput" value="@Model.ElementAt(0).Tokken" hidden />
+                    <h4 class="card-title">Manage Documents</h4>
+                </div>
+                <div class="col-md-4">
+                    <a class="btn btn-info" id="myBtn">Personal Documents</a>
+                    <a class="btn btn-info" id="myBtnCase">Case Documents</a>
+                </div>
+            </div>
+            <p class="card-description">
+                You can manage your Documents here .
+            </p>
+
+            <div class="table-responsive">
+                <table id="datatable" class="table table-striped  dt-responsive nowrap" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Ser No#</th>
+                            <th>
+                                Tittle
+                            </th>
+                            <th>
+                                Type
+                            </th>
+
+
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Versions</th>
+                            <th>Action</th>
+
+
+                        </tr>
+                    </thead>
+                    @{
+                        int i = 1;
+                    }
+                    <tbody>
+
+                        @if (Model != null && Model.Count > 0)
+                        {
+                            @foreach (var _decumet in Model)
+                            {
+                                <tr>
+                                    <td>@i</td>
+                                    <td class="py-1">
+                                        @_decumet.DecumentTittle
+                                    </td>
+                                    <td class="py-1">
+                                        @_decumet.DecumentType
+                                    </td>
+                                    <td>@_decumet.DecumentDescripation</td>
+                                    <td>@_decumet.CreatedDate</td>
+                                    <td>@i</td>
+                                    <td>
+                                        <a href="@Url.Action("DownloadFiles", "Admin",new {id=@_decumet.Id })">Download</a> |
+
+                                        <a href="#" onclick="openpopup(@_decumet.Id, 'Are you sure to delete document?', 'DeleteDocuments(@_decumet.Id)')">Delete</a>
+
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div id="myModal" class="modal">
+                <div class="row w-100 mx-0">
+                    <div class="col-lg-10 mx-auto">
+
+                        <!-- Modal content -->
+                        <div class="modal-contentyes">
+                            <div class="row">
+                                <div class="col-md-12 ml-auto">
+                                    <span class="closeAdd pull-right">&times;</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h4 class="card-title">Add Documents</h4>
+                                    <div class="form-group">
+                                        <label>Documents Tags</label>
+                                        <select id="notestag" class="js-example-basic-single w-100 form-control">
+                                            <option>Select</option>
+                                        </select>
+                                    </div>
+                                    <div id="ultagnotes"></div>
+                                    <div class="form-group">
+                                        <label>Documents Tittle</label>
+                                        <input id="PNotesTittle" class="form-control" />
+                                        <div style="color:red ;display:none" id="DocumentsTittle"></div>
+
+                                    </div>
+
+                                    <label>Description</label>
+                                    <textarea id="decumentDescription" class="form-control" style="height: auto"></textarea>
+                                    <br />
+                                    <label>Uploads Documents</label>
+
+
+                                    @*<div id="summernote"></div>*@
+                                    <input type="file" id="decument" value="select your documents" style="margin-left:20px" />
+
+                                    <div style="color:red ;display:none" id="SelectDocument"></div>
+                                    <div class="row">
+                                        <div class="col-md-9">
+                                        </div>
+
+                                        <div class="col-md-3" style="text-align:right">
+                                            <span class="btn btn-info" onclick="insertDecument()">Add Document</span>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="CasemyModal" class="modalCase">
+                <div class="row w-100 mx-0">
+                    <div class="col-lg-10 mx-auto">
+
+                        <!-- Modal content -->
+                        <div class="modal-content-case">
+                            <div class="row">
+                                <div class="col-md-12 ml-auto">
+                                    <span class="closeCase pull-right">&times;</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h4 class="card-title">Add Documents</h4>
+                                    <div class="form-group">
+                                        <label>Documents Tags</label>
+                                        <select id="notestagCase" class="js-example-basic-single w-100 form-control">
+                                            <option>Select</option>
+
+                                        </select>
+                                    </div>
+                                    <div id="ulCasetagnotes"></div>
+                                    <div class="form-group">
+                                        <label>Case</label>
+                                        <select id="cases" class="js-example-basic-single w-100 form-control">
+                                            <option>Select</option>
+
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Documents Tittle</label>
+                                        <input id="CaseNotesTittle" class="form-control" />
+                                        <div style="color:red ;display:none" id="CaseDocumentsTittle"></div>
+                                    </div>
+                                    <label>Description</label>
+                                    <textarea id="CasedecumentDescription" class="form-control" style="height: auto"></textarea>
+                                    <br />
+                                    <label>Uploads Documents</label>
+
+
+
+                                    <input type="file" id="casedecument" value="select your documents" style="margin-left:20px" />
+                                    <div style="color:red ;display:none" id="CaseSelectDocument"></div>
+
+
+                                    <div class="row">
+                                        <div class="col-md-9">
+                                        </div>
+
+                                        <div class="col-md-3" style="text-align:right">
+                                            <span class="btn btn-info" onclick="insertCaseDecument()">Add Document</span>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+
+    <script src="~/assets/js/lite.min.js"></script>
+    <script>
+
+        $('#summernote').summernote({
+            placeholder: 'Descripation',
+            height: 100,
+            toolbar: [
+                // [groupName, [list of button]]
+                ['style', ['bold', 'italic', 'underline', 'clear']],
+                ['font', ['strikethrough', 'superscript', 'subscript']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']]
+            ]
+
+        });
+        $('#summernoteDetail').summernote({
+            placeholder: 'Descripation',
+            height: 100,
+            toolbar: [
+                // [groupName, [list of button]]
+                ['style', ['bold', 'italic', 'underline', 'clear']],
+                ['font', ['strikethrough', 'superscript', 'subscript']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']]
+            ]
+
+        }); $('#summernoteEdit').summernote({
+            placeholder: 'Descripation',
+            height: 100,
+            toolbar: [
+                // [groupName, [list of button]]
+                ['style', ['bold', 'italic', 'underline', 'clear']],
+                ['font', ['strikethrough', 'superscript', 'subscript']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']]
+            ]
+
+        });
+    </script>
+
+    <script>
+        $("#notestag").change(function () {
+
+            var text = $("#notestag option:selected").text();
+            if (text != "Select") {
+
+                $("#ultagnotes").append("<li class='btn btn-success'>" + $("#notestag option:selected").text() + "<span class='closeTags pull-right' onclick='DeleteItem(this)'>&times;</span></li > ");
+            }
+        });
+    </script>
+    <script>
+        $("#notestagEdit").change(function () {
+
+            var text = $("#notestagEdit option:selected").text();
+            if (text != "Select") {
+
+                $("#ulCasetagnotesEdit").append("<li class='btn btn-success'>" + $("#notestagEdit option:selected").text() + "<span class='closeTags pull-right' onclick='DeleteItem(this)'>&times;</span></li > ");
+            }
+        });
+    </script>
+    <script>
+        $("#notestagCase").change(function () {
+            var text = $("#notestagCase option:selected").text();
+
+            if (text != "Select") {
+
+                $("#ulCasetagnotes").append("<li class='btn btn-success'>" + $("#notestagCase option:selected").text() + "<span class='closeCaseTags pull-right' onclick='DeleteItem(this)'>&times;</span></li > ");
+            }
+
+        });
+    </script>
+    <script>
+        $("#noteCasestag").change(function () {
+            var text = $("#noteCasestag option:selected").text();
+
+            if (text != "Select") {
+
+                $("#ulCasetagnotes").append("<li class='btn btn-success'>" + $("#noteCasestag option:selected").text() + "<span class='closeCaseTags pull-right' onclick='DeleteItem(this)'>&times;</span></li > ");
+            }
+
+        });
+    </script>
+
+    <script>
+
+        // Get the modal
+        var modalcase = document.getElementById("CasemyModal");
+
+        // Get the button that opens the modal
+        var btncase = document.getElementById("myBtnCase");
+
+        // Get the <span> element that closes the modal
+        var spancase = document.getElementsByClassName("closeCase")[0];
+
+        // When the user clicks the button, open the modal
+        btncase.onclick = function () {
+            modalcase.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        spancase.onclick = function () {
+            modalcase.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modalcase) {
+                modalcase.style.display = "none";
+            }
+        }
+    </script>
+
+    <script>
+
+        // Get the modal
+        var modal = document.getElementById("myModal");
+
+        // Get the button that opens the modal
+        var btn = document.getElementById("myBtn");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("closeAdd")[0];
+
+        // When the user clicks the button, open the modal
+        btn.onclick = function () {
+            modal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+    <script>
+        function DeleteItem(ctl) {
+
+            $(ctl).parents("li").remove();
+
+        }
+    </script>
+    <script>
+        var remoteServerURl = "";
+        var plan = null;
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            token = localStorage.getItem('token');
+        });
+        function getRemoteServerURl() {
+            //$.ajax({
+            //type: 'GET',
+            //url: '/common/getConfigurationValue',
+            //data: { sectionName: "app", paramName: "remoteServerUrl" }
+            //}).done(function (response) {
+            //    remoteServerURl = response.parameter;
+            //    getDecumentsTag();
+
+            //    getCases();
+
+
+            //})
+
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+            getCases();
+            getDecumentsTag();
+        };
+        async function insertCaseDecument() {
+            var documenttittle = $('#CaseNotesTittle').val();
+            if (documenttittle == "") {
+                document.getElementById("CaseDocumentsTittle").innerHTML = "Tittle is required";
+
+                $('#CaseDocumentsTittle').show();
+                return
+            }
+
+            var decument;
+            var selecteddecument = $("#casedecument");
+            var selecteddecuments = $("#casedecument").val();
+            var extention = selecteddecuments.split('.').pop();
+            if (selecteddecument.get(0).files.length >= 1) {
+                let myFile = document.getElementById('casedecument').files[0];
+                decument = await fileToByteArray(myFile);
+            }
+            else {
+                document.getElementById("CaseSelectDocument").innerHTML = "please select Document";
+                $('#CaseSelectDocument').show();
+                return
+            }
+
+
+            var NotesTagArray = new Array();
+            $("#ulCasetagnotes LI").each(function () {
+
+                var notesTag = {};
+                notesTag.name = $(this).text().substring(0, $(this).text().length - 1)
+
+                NotesTagArray.push(notesTag);
+            });
+            var notestittle = "";
+            var i;
+            for (i = 0; i < NotesTagArray.length; i++) {
+                if (NotesTagArray.length == 1) {
+                    notestittle = NotesTagArray[i].name + ","
+                }
+                else if (i == 0) {
+                    notestittle = NotesTagArray[i].name
+
+                }
+                else {
+                    notestittle = notestittle + "," + NotesTagArray[i].name;
+
+                }
+            }
+            var trimenotetagstr = notestittle.substring(0, notestittle.length - 1)
+            var descripation = $('#CasedecumentDescription').val();
+            var tokenVal = $("#tokenInput").val();
+
+            var model = {
+                DecumentTittle: $('#CaseNotesTittle').val(),
+                DecumentTags: trimenotetagstr,
+                UserId: $("#current-userid").val(),
+                CaseId: $("#cases option:selected").val(),
+                DecumentDescripation: descripation,
+                DecumentType: "Case",
+                extention: extention,
+                File: decument,
+                Tokken: tokenVal,
+            }
+            token = localStorage.getItem('token');
+            $.ajax({
+                url: `${remoteServerURl}api/Documents/AddDocuments`,
+                type: "POST",
+                headers: { "Authorization": 'Bearer ' + token },
+                dataType: 'json',
+                data: JSON.stringify(model),
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+
+                    //window.location.href = '@Url.Action("ManageDocuments", "Admin")'
+                    toastr.success("Added Sucessfully");
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 2200);
+                },
+                error: function (response) {
+                    if (response.responseText == 'Please Add Firm Details First') {
+                        window.location.href = '@Url.Action("AddFirm", "Admin", new { area= "Attorney" })';
+                    }
+                }
+            });
+        };
+        async function insertDecument() {
+
+            var documenttittle = $('#PNotesTittle').val();
+            if (documenttittle == "") {
+                document.getElementById("DocumentsTittle").innerHTML = "Tittle is required";
+
+                $('#DocumentsTittle').show();
+                return
+            }
+
+
+            var decument;
+            var selecteddecument = $("#decument");
+            var selecteddecuments = $("#decument").val();
+            var extention = selecteddecuments.split('.').pop();
+            if (selecteddecument.get(0).files.length >= 1) {
+                let myFile = document.getElementById('decument').files[0];
+
+
+                decument = await fileToByteArray(myFile);
+
+            }
+            else {
+                document.getElementById("SelectDocument").innerHTML = "please select Document";
+                $('#SelectDocument').show();
+                return
+            }
+
+            var NotesTagArray = new Array();
+            $("#ultagnotes LI").each(function () {
+
+                var notesTag = {};
+                notesTag.name = $(this).text().substring(0, $(this).text().length - 1)
+
+                NotesTagArray.push(notesTag);
+            });
+            var notestittle = "";
+            var i;
+            for (i = 0; i < NotesTagArray.length; i++) {
+                if (NotesTagArray.length == 1) {
+                    notestittle = NotesTagArray[i].name + ","
+                }
+                else if (i == 0) {
+                    notestittle = NotesTagArray[i].name
+
+                }
+                else {
+                    notestittle = notestittle + "," + NotesTagArray[i].name;
+
+                }
+            }
+            var trimenotetagstr = notestittle.substring(0, notestittle.length - 1)
+            var descripation = $('#decumentDescription').val();
+            var tokenVal = $("#tokenInput").val();
+
+            var model = {
+
+                DecumentTittle: $('#PNotesTittle').val(),
+                DecumentTags: trimenotetagstr,
+                DecumentDescripation: descripation,
+                UserId: $("#current-userid").val(),
+                extention: extention,
+                DecumentType: "Personal",
+                File: decument,
+                Tokken: tokenVal,
+            };
+
+            token = localStorage.getItem('token');
+            $.ajax({
+                url: `${remoteServerURl}api/Documents/AddDocuments`,
+                headers: { "Authorization": 'Bearer ' + token },
+                type: "POST",
+                dataType: 'json',
+                data: JSON.stringify(model),
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    //window.location.href = '@Url.Action("ManageDocuments", "Admin")'
+                    toastr.success("Added Sucessfully");
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 2200);
+
+
+                },
+                error: function (response) {
+                    if (response.responseText == 'Please Add Firm Details First') {
+                        window.location.href = '@Url.Action("AddFirm", "Admin", new { area= "Attorney" })';
+                    }
+                }
+            });
+        };
+
+        function getDecumentsTag() {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/ConfigManagement/GetDocumentTag`,
+                headers: { "Authorization": 'Bearer ' + token },
+                error: function (data) {
+                    if (data.responseText == 'Please Add Firm Details First') {
+                        window.location.href = '@Url.Action("AddFirm", "Admin", new { area= "Attorney" })';
+                    }
+                }
+            }).done(function (data) {
+                let options = "<option value='undefined'>Select</option>";
+                $.each(data, function (a, b) {
+                    options += "<option value='" + b.id + "'>" + b.documentTagName + "</option>";
+                });
+
+                $("#notestag").html(options);
+                $("#notestagCase").html(options);
+            })
+        };
+        function getCases() {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/Case/GetCases`,
+                headers: { "Authorization": 'Bearer ' + token },
+                error: function (data) {
+                    if (data.responseText == 'Please Add Firm Details First') {
+                        window.location.href = '@Url.Action("AddFirm", "Admin", new { area= "Attorney" })';
+                    }
+                }
+            }).done(function (data) {
+                let options = "<option value='undefined'>Select</option>";
+                $.each(data, function (a, b) {
+                    options += "<option value='" + b.id + "'>" + b.caseName + "</option>";
+                });
+
+                $("#cases").html(options);
+
+            })
+        };
+        function DeleteDocuments(Id) {
+
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'DELETE',
+                url: `${remoteServerURl}api/Documents/DeleteDocuments?Id=${Id}`,
+                headers: { "Authorization": 'Bearer ' + token },
+                error: function (data) {
+                    if (data.responseText == 'Please Add Firm Details First') {
+                        window.location.href = '@Url.Action("AddFirm", "Admin", new { area= "Attorney" })';
+                    }
+                }
+            }).done(function (data) {
+                //window.location.href = '@Url.Action("ManageDocuments", "Admin")'
+                toastr.success("Deleted Sucessfully");
+                setTimeout(function () {
+                    window.location.reload();
+                }, 2200);
+            })
+        };
+
+    </script>
+    <script>
+        function fileToByteArray(file) {
+            return new Promise((resolve, reject) => {
+                try {
+                    let reader = new FileReader();
+                    let fileByteArray = [];
+                    reader.readAsArrayBuffer(file);
+                    reader.onloadend = (evt) => {
+                        if (evt.target.readyState == FileReader.DONE) {
+                            let arrayBuffer = evt.target.result,
+                                array = new Uint8Array(arrayBuffer);
+                            for (byte of array) {
+                                fileByteArray.push(byte);
+                            }
+                        }
+                        resolve(fileByteArray);
+                    }
+                } catch (e) {
+                    reject(e);
+                }
+            })
+        }
+        $(document).ready(function () {
+            $('#datatable').dataTable({
+                "columnDefs": [
+                    { "searchable": false, "targets": 5 }
+                ]
+            });
+        });
+    </script>
+
+
+}
+
+
+
+
+
+
+
+

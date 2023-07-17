@@ -1,0 +1,81 @@
+﻿
+@model AbsolCase.Models.Notes
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Example 1</title>
+
+    <link href="~/Logo/style.css" rel="stylesheet" />
+</head>
+<body>
+    <header class="clearfix">
+        <div id="logo">
+            <img src="~/Logo/Law-Office-of-Lydia-Charles.png" />
+        </div>
+
+        <h1>Notes</h1>
+
+
+    </header>
+
+    <main>
+        <h2>
+            Notes Tag
+        </h2>
+        <br />
+        <p>@Model.NotesTag</p>
+        <h2>
+            Notes Tittle
+        </h2>
+        <br />
+        <p>@Model.NotesTittle</p>
+        <br />
+        <h3>
+
+            Notes Description
+        </h3>
+        <br />
+        @Html.Raw(@Model.NotesDescripation)
+
+
+        <br />
+
+    </main>
+    <footer>
+        <div><span>DATE</span> August 17, 2015</div>
+    </footer>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
