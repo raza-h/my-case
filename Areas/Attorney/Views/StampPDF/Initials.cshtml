@@ -1,0 +1,298 @@
+﻿@model AbsolCase.Models.PDFEditor
+@{
+    ViewData["Title"] = "Send Name";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    int Id = ViewBag.Id;
+}
+@if (TempData["response"] != null)
+{
+    <div class="alert-danger" id="msgalert">
+        @TempData["response"].ToString()
+    </div>
+}
+<style>
+    .col-form-label {
+        padding-top: 0px !important;
+    }
+</style>
+<div class="col-md-12 grid-margin stretch-card ms-3 mt-3 pe-4 me-3">
+    <div class="card">
+        <div class="card-body">
+            <form class="form-sample" asp-controller="StampPDF" asp-action="Index" method="post" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <input type="number" value="@Id" style="display:none;" name="Id" />
+                            <label asp-for="TextToAdd" class="col-sm-3 col-form-label">Write Name</label>
+                            <div class="col-sm-9">
+                                <input @*asp-for="TextToAdd"*@ type="text" class="form-control" id="TextToAdd" name="TextToAdd" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                @*<button class="btn btn-warning" onclick="SendEnvelope()" style="float:right">Send</button>*@
+                @*<button class="btn btn-warning" onclick="SendEnvelope1()" style="float:right">Send</button>*@
+                <button class="btn btn-warning" type="submit">Upload</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+
+
+        var file = null;
+        $('#fileInput').change(function () {
+            file = $(this)[0].files[0];
+            // Perform further operations with the file
+        });
+
+        $("#userId").change(function () {
+            var text = $("#userId option:selected").text();
+
+            if (text != "Select User") {
+                var existingNames = $("#usersList li").map(function () {
+                    return $(this).text().trim().split("×")[0].trim();
+                }).get();
+
+                var splittedText = text.split("×")[0].trim();
+
+                if (existingNames.includes(splittedText)) {
+                    // Name already exists, handle accordingly
+                    toastr.error("Name already exists in the list.");
+                } else {
+                    $("#usersList").append("<li data-valId=" + $("#userId option:selected").val() + " class='btn btn-success'>" + splittedText + "<span class='closeCaseTags pull-right' onclick='DeleteItemm(this)'>&times;</span></li> ");
+                }
+            }
+        });
+        //$("#sendenvelope").on('click', function() {
+        //    e.preventDefault();
+        //    debugger;
+        //    var text = $("#TextToAdd").val();
+        //    var file =$("input[name='PdfFile']")[0].files[0];
+        //    var pdftext = {};
+
+        //    pdftext.TextToAdd = text;
+
+        //    pdftext.PdfFile =  file;
+
+        //    $.ajax({
+        //        url: '@Url.Action("SendEnvelope", "PDFEditor")',
+        //        type: 'POST',
+        //        dataType: 'json', // Add this line if you expect JSON response from the server
+        //        data: JSON.stringify(pdftext),
+        //        contentType: 'application/json', // Set the correct content type
+        //        success: function(response) {
+        //            // Handle success response
+        //            if (response == "Document Sent") {
+        //                window.location.href = ('@Url.Action("SendEnvelope","PDFEditor")');
+        //            } else {
+        //                //window.location.href = ('@Url.Action("DocuIndex","Integrations")');
+        //            }
+        //        },
+        //        error: function(response) {
+        //            // Handle error response
+        //        }
+        //    });
+        //});
+
+
+        //$(document).ready(function() {
+        //$("#sendenvelope").on('click', function(e) {
+        //    e.preventDefault(); // Prevent the default form submission
+
+        //    var text = $("#TextToAdd").val();
+        //    var pdftext = {};
+        //    //text = JSON.stringify(pdftext);
+        //    //var selectedUser = $("#userId").val();
+        //    var formData = new FormData();
+
+        //    formData.append("TextToAdd", textJSON.stringify(text));
+        //    //formData.append("User", selectedUser);
+        //    formData.append("PdfFile", $("input[name='PdfFile']")[0].files[0]);
+
+        //    $.ajax({
+        //        url: '@Url.Action("SendEnvelope", "PDFEditor")',
+        //        type: 'POST',
+        //        data: formData,
+        //        //processData: ,
+        //        contentType: "application/json",
+        //        success: function(response) {
+        //            // Handle success response
+        //            if (response == "Document Sent") {
+        //                window.location.href = '@Url.Action("SendEnvelope", "PDFEditor")';
+        //            } else {
+        //                window.location.href = '@Url.Action("DocuIndex", "Integrations")';
+        //            }
+        //        },
+        //        error: function(response) {
+        //            // Handle error response
+        //        }
+        //    });
+        //});
+        //});
+
+
+    </script>
+    <script>
+
+        var remoteServerURl = "";
+        var token = "";
+        $(function () {
+            getRemoteServerURl();
+            token = localStorage.getItem('token');
+        });
+
+        function getRemoteServerURl() {
+            var ReceivedURL = GetURL();
+            remoteServerURl = ReceivedURL;
+            getUsers();
+        };
+        setTimeout(function () {
+            $("#msgalert").hide();
+        }, 3500);
+
+        function getUsers() {
+            token = localStorage.getItem('token');
+            $.ajax({
+                type: 'GET',
+                url: `${remoteServerURl}api/UserManagement/GetAllUsers`,
+                headers: { "Authorization": 'Bearer ' + token }
+            }).done(function (data) {
+                console.log(data)
+                let options = "<option value='undefined'>Select User</option>";
+                $.each(data, function (a, b) {
+                    options += "<option value='" + b.id + "'>" + b.firstName + " " + b.lastName + "</option>";
+                });
+
+
+                $("#userId").html(options);
+            })
+        };
+
+        function SendEnvelope1() {
+            var text = $("#TextToAdd").val();
+            var file = $("input[name='PdfFile']")[0].files[0];
+            var pdftext = {};
+
+            pdftext.TextToAdd = text;
+
+            pdftext.PdfFile = file;
+
+            $.ajax({
+                url: '@Url.Action("SendEnvelope", "PDFEditor")',
+                type: 'POST',
+                dataType: 'json', // Add this line if you expect JSON response from the server
+                data: JSON.stringify(pdftext),
+                contentType: 'application/json', // Set the correct content type
+                success: function (response) {
+                    // Handle success response
+                    if (response == "Document Sent") {
+                        window.location.href = ('@Url.Action("SendEnvelope","PDFEditor")');
+                    } else {
+                    }
+                },
+                error: function (response) {
+                    // Handle error response
+                }
+            });
+        }
+
+        function SendEnvelope() {
+            event.preventDefault();
+            //var billingContact = $('#BillingContact').val();
+            //var BillingMethod = $('#BillingMethod').val();
+
+
+
+            var NotesTagArray = new Array();
+            $("#usersList LI").each(function () {
+
+                var notesTag = {};
+                notesTag.name = $(this).text().substring(0, $(this).text().length - 1)
+                notesTag.id = $(this).attr("data-valId");
+
+                NotesTagArray.push(notesTag);
+            });
+            console.log(NotesTagArray);
+            var notestittle = "";
+            var i;
+            for (i = 0; i < NotesTagArray.length; i++) {
+                if (NotesTagArray.length == 1) {
+                    notestittle = NotesTagArray[i].id + ","
+                }
+                else if (i == 0) {
+                    notestittle = NotesTagArray[i].id
+
+                }
+                else {
+                    notestittle = notestittle + "," + NotesTagArray[i].id;
+
+                }
+            }
+            var trimenotetagstr = notestittle;
+
+
+
+
+            //var model = {
+            //    Document: file,
+            //    UsersList: trimenotetagstr,
+            //};
+            //console.log(model);
+            //$.ajax({
+            //    url: '@Url.Action("SendEnvelopePost", "Integrations")',
+            //    type: "POST",
+            //    dataType: 'json',
+            //    data: JSON.stringify(model),
+            //    contentType: "application/json; charset=utf-8",
+            //    success: function (data) {
+
+            //    },
+            //    error: function (data) {
+
+            //        console.log("error");
+            //    },
+            //});
+            //token = localStorage.getItem('token');
+            var formData = new FormData();
+            formData.append('Document', file);
+            formData.append('UsersList', trimenotetagstr);
+
+            //$.ajax({
+            //    url: '@Url.Action("SendEnvelope", "PDFEditor")',
+            //    type: 'POST',
+            //    dataType: 'json',
+            //    data: formData,
+            //    contentType: false, // Let jQuery handle the content type
+            //    processData: false, // Prevent jQuery from processing the data
+            //    success: function(response) {
+            //        // Handle success response
+            //        if (response == "Document Sent") {
+            //            window.location.href = ('@Url.Action("SendEnvelope","PDFEditor")');
+            //        } else {
+            //            window.location.href = ('@Url.Action("DocuIndex","Integrations")');
+            //        }
+            //    },
+            //    error: function(response) {
+            //        // Handle error response
+            //    }
+            //});
+
+
+        }
+
+    </script>
+    <script>
+        function DeleteItemm(ctl) {
+            $(ctl).parents("li").remove();
+
+        }
+    </script>
+}

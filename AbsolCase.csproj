@@ -43,6 +43,7 @@
     <PackageReference Include="axios.js" Version="0.18.0" />
     <PackageReference Include="DinkToPdf" Version="1.0.8" />
     <PackageReference Include="DocuSign.Integration.Client.dll" Version="1.7.2" />
+    <PackageReference Include="iTextSharp" Version="5.5.13.3" />
     <PackageReference Include="jQuery" Version="3.4.1" />
     <PackageReference Include="jquery.validate.unobtrusive.bootstrap" Version="1.2.3" />
     <PackageReference Include="jQuery.Validation.Unobtrusive" Version="2.0.20710" />
@@ -78,6 +79,7 @@
     <Folder Include="Areas\Staff\Data\" />
     <Folder Include="Areas\Staff\Models\" />
     <Folder Include="Configurations\Subscription\Data\" />
+    <Folder Include="wwwroot\files\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,8 @@
+﻿@{
+    string obj = ViewBag.extendedPath;
+    string message = ViewBag.Message;
+    string path = $"{ViewBag.basePath.TrimStart('\"').TrimEnd('\"')}/{obj}" ;
+}
+
+<h1>DOCUMENT</h1>
+<a href=@path class="btn btn-primary">View Document</a>

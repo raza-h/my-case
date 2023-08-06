@@ -250,6 +250,18 @@ namespace AbsolCase.Areas.Attorney.Controllers
             }
         }
 
+        public IActionResult FetchDocument(string Id)
+        {
+            SResponse resp = Fetch.GotoService("api", $"Documents/GetDocumentsById?Id={Id}", "Get");
+            string jsonResp = JsonConvert.SerializeObject(resp.Resp);
+            Decuments _resultModel = JsonConvert.DeserializeObject<Decuments>(resp.Resp);
+            resp = Fetch.GotoService("api", $"Documents/GetRootPath", "Get");
+            string basePath = JsonConvert.SerializeObject(resp.Resp);
+            ViewBag.extendedPath = _resultModel.DecumentPath;
+            ViewBag.Message = jsonResp;
+            ViewBag.basePath = basePath;
+            return View();
+        }
         public IActionResult ManageDocumentSign()
         {
             try
@@ -332,7 +344,7 @@ namespace AbsolCase.Areas.Attorney.Controllers
                 string path = "";
                 //int docid = Convert.ToInt32(id);
                 string _decumentPath = string.Empty;
-                SResponse resp = AbsolCase.Configuration.RequestSender.Fetch.GotoService("api", $"Integration/GetDocumentsByEnvelopeId?Id={id}", "GET");
+                SResponse resp = Fetch.GotoService("api", $"Integration/GetDocumentsByEnvelopeId?Id={id}", "GET");
                 DocumentSign DecumentResp = JsonConvert.DeserializeObject<DocumentSign>(resp.Resp);
                 fileExtention = DecumentResp.DocumentSavedPath.Substring(DecumentResp.DocumentSavedPath.IndexOf('.') + 1);
                 path = $"{configuration.GetValue<string>("App:RemoteServerUrl")}" + $"{DecumentResp.DocumentSavedPath}";
